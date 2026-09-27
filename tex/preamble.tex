@@ -19,6 +19,9 @@
 
 % ---------- 版面 ----------
 \usepackage[top=2.6cm, bottom=2.6cm, left=2.6cm, right=2.6cm]{geometry}
+% 允许一行内多拉伸 2em 的弹性，用于吸收 1pt 级别的 Overfull hbox（例如表格里
+% 无法断行的短 token）；正文观感不受影响，但可把 Overfull 计数压到 0。
+\setlength{\emergencystretch}{2em}
 \usepackage{setspace}
 \onehalfspacing
 \sloppy

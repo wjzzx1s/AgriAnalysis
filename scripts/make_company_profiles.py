@@ -371,7 +371,11 @@ def composition(code: str) -> dict:
                 "旧期": "2021-12-31" if "2021-12-31" in dates else dates[0],
                 "合计": sum(v for _, v in t_new if np.isfinite(v))})
     if t_new and t_old:
-        out["首位变化"] = (t_new[0][0] != t_old[0][0])
+        # 只在“真的换了块业务”时才算变化：两期口径的行业/产品命名常不同
+        # （如 2021 年叫“生猪养殖”、2026 年叫“养殖”），这种标签差异不构成主业迁移
+        _a, _b = str(t_old[0][0]), str(t_new[0][0])
+        _same = (_a == _b) or (_a in _b) or (_b in _a)
+        out["首位变化"] = not _same
         if np.isfinite(t_new[0][1]) and np.isfinite(t_old[0][1]):
             out["首位占比变化"] = t_new[0][1] - t_old[0][1]
     return out
@@ -787,9 +791,13 @@ def build_contexts(recs: list[dict], dossiers: dict) -> None:
         lag = None
         if idx_trough is not None and r.get("低月") is not None:
             lag = int(round((pd.Timestamp(r["低月"]) - idx_trough).days / 30.44))
+        # 三级行业同口径的 ROE 中位数：正文里“行业同口径”一句必须用这个，
+        # 不能拿全样本中位数冒充行业值（两者在生猪养殖等重灾行业差别很大）
+        _roes = pd.Series([x["ROE"].get(H1) for x in group], dtype="float64").dropna()
         r["ctx"] = {
             "rng": R,
             "med": med,
+            "med_ind_roe": float(_roes.median()) if len(_roes) else float("nan"),
             "arch": CT.archetype(r, d),
             "tier": classify_tier(r),
             "n_ind": len(group),

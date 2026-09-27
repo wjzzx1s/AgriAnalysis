@@ -97,12 +97,21 @@ def order_cn(n: int) -> str:
     r"""名次：交给导言区已加载的 zhnumber 宏渲染中文数字（第 \zhnumber{11} → 第十一）。"""
     if not n:
         return "—"
-    return r"第 \zhnumber{%d} " % int(n)
+    return r"第\zhnumber{%d}位" % int(n)
 
 
-def cut(s: str, n: int = 60) -> str:
+def cut(s: str, n: int = 60, slack: int = 18) -> str:
+    """摘录截断：优先切到 n 之后最近的标点（最多多取 slack 字），
+    避免出现“1,850.0……”“支……”这类切在数字/词中间、读起来像坏掉的片段。"""
     s = str(s or "").strip().rstrip("。；;,.，")
-    return s if len(s) <= n else s[:n] + "……"
+    if len(s) <= n:
+        return s
+    at = max(s.rfind(ch, 0, n + slack) for ch in "；，、。：")
+    if at < n // 2:                     # 附近没有标点，退化为硬截断
+        at = n
+    out = s[:at].rstrip("；，、。： ")
+    out = re.sub(r"[-\u2011\d][\d,\.]*$", "", out).rstrip()   # 去掉末尾半截数字
+    return out + "……"
 
 
 # ------------------------------------------------------------------ 公司类型
@@ -238,7 +247,7 @@ def para_basic(r: dict, d, ctx: dict) -> str:
         opener = R.choice([
             f"{name}成立于 {founded} 年，",
             f"公司前身可追溯至 {founded} 年，",
-            f"{founded} 年设立至今，{name}",
+            f"{founded} 年设立至今，{name}是",
         ])
     if d.position:
         load.append(f"{opener}{tesc(d.position)}{'' if d.position.endswith(('。', '）')) else '。'}")
@@ -267,7 +276,7 @@ def para_basic(r: dict, d, ctx: dict) -> str:
         seg.append(f"截至 {r.get('行情日期') or '—'}收盘价 {num_txt(r.get('最新收盘'), 2)} 元，"
                    f"流通市值 {num_txt(cap, 1)} 亿元，近一年{signed_pct(r.get('近一年涨跌%'))}")
         if rank and total:
-            seg.append(f"流通市值在三级行业“{ind3}”的 {total} 家公司中排{order_cn(rank)}位")
+            seg.append(f"流通市值在三级行业“{ind3}”的 {total} 家公司中排{order_cn(rank)}")
     yoy = r.get("近一年涨跌%", np.nan)
     if np.isfinite(yoy) and np.isfinite(ctx["med"].get("yoy", np.nan)):
         m = ctx["med"]["yoy"]
@@ -282,16 +291,23 @@ def para_basic(r: dict, d, ctx: dict) -> str:
         items = "；".join(f"{tesc(k)} {num_txt(v, 1)}\\%" for k, v in c["新"] if np.isfinite(v))
         if items:
             unit = "行业" if "行业" in str(c.get("类别")) else "产品"
-            load.append(f"按 {ctx['comp_period']}披露的{unit}构成，收入占比前三位为{items}。")
-            if c.get("旧") and c.get("首位变化"):
-                load.append(f"与 2021 年年报相比，第一大{unit}由“{tesc(c['旧'][0][0])}”"
-                            f"变为“{tesc(c['新'][0][0])}”，主业重心已经迁移。")
-
+            # 分部收入含内部交易、未抵消至合并口径时可能超过 100%，
+            # 写成“收入占比 131.1%”会显得荒谬，须改成“分部数据”并说明不可比
+            _mx = max([v for _, v in c["新"] if np.isfinite(v)] or [0])
+            if _mx > 100:
+                load.append(f"按 {ctx['comp_period']}披露的{unit}分部数据（含内部交易、未抵消至合并口径）"
+                            f"为{items}；该口径与合并营业收入不可直接比较。")
+            else:
+                load.append(f"按 {ctx['comp_period']}披露的{unit}构成，收入占比前三位为{items}。")
+            if c.get("旧") and c.get("首位变化") and _mx <= 100:
+                load.append(f"与 2021 年年报相比，第一大{unit}口径由“{tesc(c['旧'][0][0])}”（{num_txt(c['旧'][0][1], 1)}\\%）"
+                        f"变为“{tesc(c['新'][0][0])}”（{num_txt(c['新'][0][1], 1)}\\%）；"
+                        f"两期披露的分类口径有调整，占比差异中同时包含分类因素。")
     # 事实要点（沿革中后面的关键节点）
     notes = [i for i in hist[1:4] if i.text]
     if notes:
         load.append("发展过程中的关键节点包括：" +
-                    "；".join(f"{tesc(cut(n.text, 44))}（{tesc(str(n.time))}）" for n in notes[:3]) + "。")
+                "；".join(f"{tesc(cut(n.text, 44))}（{tesc(str(n.time))}）" for n in notes[:3]) + "。")
     return " ".join(load) + src_note(notes[:3])
 
 
@@ -320,7 +336,7 @@ def para_price(r: dict, d, ctx: dict) -> str:
                     f"{num_txt(mv, 1)}\\%")
         if ctx.get("rank_vol") and ctx.get("n_ind"):
             seg += (f"，在三级行业“{tesc(r.get('三级') or '—')}”的 {ctx['n_ind']} 家公司中"
-                    f"波动率排{order_cn(ctx['rank_vol'])}位")
+                    f"波动率排{order_cn(ctx['rank_vol'])}")
         load.append(seg + "。")
     # 把关键的涨跌段与公司自己的事件对齐
     legs = r.get("legs")
@@ -433,18 +449,25 @@ def para_profit(r: dict, d, ctx: dict) -> str:
            f"销售净利率 {num_txt(npr, 1)}\\%、毛利率 {num_txt(gpr, 1)}\\%")
     rank_roe, n_ind = ctx["rank_roe"], ctx["n_ind"]
     if rank_roe and n_ind and np.isfinite(roe):
-        seg += f"，ROE 在“{tesc(r.get('三级') or '—')}”{n_ind} 家公司中排{order_cn(rank_roe)}位"
+        seg += (f"，ROE 在“{tesc(r.get('三级') or '—')}”{n_ind} 家公司中"
+                f"按数值由高到低排{order_cn(rank_roe)}")
     load.append(seg + "。")
-    # 与行业中位数比较
+    # 与行业中位数比较（行业值必须用同一口径的三级行业中位数，不能用全样本中位数冒充）
     med_roe = ctx["med"].get("roe", np.nan)
     if np.isfinite(roe) and np.isfinite(med_roe):
         gap = roe - med_roe
-        load.append(R.choice([
-            f"行业同口径半年 ROE 的中位数为 {num_txt(med_roe, 2)}\\%，该公司{'高于' if gap > 0 else '低于'}中位数 "
-            f"{num_txt(abs(gap), 2)} 个百分点。",
+        choices = []
+        med_ind = ctx.get("med_ind_roe", float("nan"))
+        if np.isfinite(med_ind):
+            g_ind = roe - med_ind
+            choices.append(
+                f"按同一口径，三级行业“{tesc(r.get('三级') or '—')}”{ctx.get('n_ind')} 家公司的半年 ROE 中位数为 "
+                f"{num_txt(med_ind, 2)}\\%，该公司{'高于' if g_ind > 0 else '低于'}其中位数 "
+                f"{num_txt(abs(g_ind), 2)} 个百分点。")
+        choices.append(
             f"同期全样本半年 ROE 中位数 {num_txt(med_roe, 2)}\\%，公司与之相差 "
-            f"{num_txt(abs(gap), 2)} 个百分点（{'略好于' if gap > 0 else '弱于'}中位数公司）。",
-        ]))
+            f"{num_txt(abs(gap), 2)} 个百分点（{'略好于' if gap > 0 else '弱于'}中位数公司）。")
+        load.append(R.choice(choices))
     # 亏损/盈利的成因（来自事实底稿，缺失时不强加解释）
     rev_txt, ni_txt = f"{e:.2f}" if np.isfinite(e) else None, f"{abs(f):.2f}" if np.isfinite(f) else None
     cause = []
@@ -455,10 +478,20 @@ def para_profit(r: dict, d, ctx: dict) -> str:
             continue
         if rev_txt and rev_txt in i.text and ni_txt and ni_txt in i.text:
             continue      # 只是复述当期数字，不构成成因
+        # 年报口径的“实现营业收入 … 归属于上市公司股东的净利润 …”是数据复述，
+        # 与上面的表格重复，且不含成因；只有在提到原因/减值/价格等驱动时才保留
+        if (re.search(r"实现营业收入|全年营业收入", i.text)
+                and re.search(r"归属于上市公司股东的净利润|归母净利润", i.text)
+                and not re.search(r"原因|由于|受|导致|拖累|影响|减值|计提|停产|疫情|火灾|重整", i.text)):
+            continue
         cause.append(i)
     cause = sorted(cause, key=lambda i: i.sort_key, reverse=True)[:2]
     if cause:
-        load.append("结合公司披露，" + "；".join(tesc(cut(i.text, 52)) for i in cause) + "。")
+        # 事实条目常以“公司披露拟…”开头，再加“结合公司披露，”就成了“公司披露…公司披露…”
+        lead = R.choice(["结合公司披露，", "公司公告显示，", "从公开披露看，", "公告披露的信息包括："])
+        if cause[0].text.startswith(("公司", "拟", "因", "受", "本")):
+            lead = ""
+        load.append(lead + "；".join(tesc(cut(i.text, 52)) for i in cause) + "。")
     cites = cause
     return " ".join(x for x in load if x) + src_note(cites)
 
@@ -478,7 +511,7 @@ def para_finance(r: dict, d, ctx: dict) -> str:
         s += f"，较 {y} {'上升' if ch >= 0 else '下降'} {num_txt(abs(ch), 1)} 个百分点"
     med_debt = ctx["med"].get("debt", np.nan)
     if np.isfinite(med_debt) and np.isfinite(dbt):
-        s += f"（样本中位数 {num_txt(med_debt, 1)}\\%，所处三级行业内排{order_cn(ctx['rank_debt'])}位）"
+        s += f"（样本中位数 {num_txt(med_debt, 1)}\\%，所处三级行业内按由低到高排{order_cn(ctx['rank_debt'])}）"
     load.append(s + "。")
     # 偿债与债务结构（资产负债表口径）
     cash = get(r, "货币资金亿", H1)
@@ -578,16 +611,19 @@ def para_strategy(r: dict, d, ctx: dict) -> str:
     if c.get("ok") and c.get("旧"):
         unit = "行业" if "行业" in str(c.get("类别")) else "产品"
         old, new = c["旧"][0], c["新"][0]
-        if c.get("首位变化"):
-            load.append(f"主营结构的迁移已经落到报表上：2021 年年报的第一大{unit}为"
+        _share_ok = np.isfinite(new[1]) and np.isfinite(old[1]) and new[1] <= 100 and old[1] <= 100
+        if c.get("首位变化") and _share_ok:
+            load.append(f"主营结构的口径变化已经落到报表上：2021 年年报的第一大{unit}为"
                         f"“{tesc(old[0])}”（{num_txt(old[1], 1)}\\%），"
-                        f"{ctx['comp_period']}变为“{tesc(new[0])}”（{num_txt(new[1], 1)}\\%）。")
-        elif np.isfinite(c.get("首位占比变化", np.nan)) and abs(c["首位占比变化"]) >= 10:
+                        f"{ctx['comp_period']}为“{tesc(new[0])}”（{num_txt(new[1], 1)}\\%）；"
+                        f"公司在这两期的分部划分方式有过调整。")
+        elif _share_ok and np.isfinite(c.get("首位占比变化", np.nan)) and abs(c["首位占比变化"]) >= 10:
             load.append(f"第一大{unit}“{tesc(new[0])}”的收入占比由 2021 年年报的 "
                         f"{num_txt(old[1], 1)}\\% 变为 {num_txt(new[1], 1)}\\%"
                         f"（{num_txt(abs(c['首位占比变化']), 1)} 个百分点），收入结构出现再平衡。")
         else:
-            load.append(f"第一大{unit}仍是“{tesc(new[0])}”，收入占比 {num_txt(new[1], 1)}\\%，"
+            _w = ("分部口径的收入（含内部交易）" if not _share_ok else "收入占比")
+            load.append(f"第一大{unit}仍是“{tesc(new[0])}”，{_w} {num_txt(new[1], 1)}\\%，"
                         f"与 2021 年年报相比没有方向性变化。")
     # 结论句：按类型给不同的判断
     trans = bool(items) or c.get("首位变化") or (ev.get("重大重组与并购", 0) >= 5)
@@ -641,13 +677,22 @@ def para_invest(r: dict, d, ctx: dict) -> str:
         load.append(lead)
         FIN_RE = re.compile(r"IPO|增发|定增|可转债|配股|债券|借款|贷款|授信|重整投资|战略投资|募资|募集")
         big = [i for i in rows if i.scale and re.search(r"亿|万元", str(i.scale))]
+        # 已解除/终止的协议（如天邦食品 2026-09 被投资人单方解约的重整投资协议）
+        # 不能与已完成的融资并列，否则读者会以为钱已到账
+        DEAD_RE = re.compile(r"解除|终止|中止|撤回|未实施|被否|失败|未获")
+        live = [i for i in big if not DEAD_RE.search(i.text)]
+        if live:
+            big = live
         if big:
             # 优先真正的融资类条目（IPO/增发/可转债/借款/重整投资），再按时间取最近的
             pick = sorted(big, key=lambda i: (0 if FIN_RE.search(f"{i.kind} {i.text}") else 1,
                                               -i.sort_key[0] * 10000 - i.sort_key[1]))[:2]
             load.append("其中规模较大的两笔为：" +
                         "；".join(f"{tesc(str(i.time))}{tesc(i.kind or '')}"
-                                  f"（{tesc(cut(str(i.scale), 30))}）" for i in pick) + "。")
+                                  f"（{tesc(cut(str(i.scale), 30))}）"
+                                  + ("，\u8be5\u4e8b\u9879\u540e\u7eed\u5df2\u7ec8\u6b62\u6216\u89e3\u9664\uff0c\u4e0d\u6784\u6210\u5df2\u5230\u4f4d\u8d44\u91d1"
+                                     if DEAD_RE.search(i.text) else "")
+                                  for i in pick) + "\u3002")
     # 股本与分红
     sh, dv = r["share"], r["div"]
     seg = f"股本方面，近三年披露股本变动 {sh['n2023']} 次"

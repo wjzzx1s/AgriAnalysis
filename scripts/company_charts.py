@@ -125,8 +125,8 @@ def fin_chart(r: dict) -> str:
         r"\begin{center}",
         r"\begin{tikzpicture}",
         r"\begin{groupplot}[",
-        r"  group style={group size=2 by 1, horizontal sep=0.75cm},",
-        r"  width=6.75cm, height=4.3cm,",
+        r"  group style={group size=2 by 1, horizontal sep=0.70cm},",
+        r"  width=6.55cm, height=4.3cm,",
         r"  tick label style={font=\tiny},",
         r"  title style={font=\scriptsize\heiti},",
         r"  yticklabel style={font=\tiny},",
@@ -217,7 +217,7 @@ def fin_table(r: dict) -> str:
     cols = [("20231231", "2023 年"), ("20241231", "2024 年"), ("20251231", "2025 年"),
             ("20250630", "2025 年半年报"), ("20260630", "2026 年半年报")]
     nm = tex_escape(r["名称"])
-    L = [r"\begin{center}\small\setlength{\tabcolsep}{4pt}",
+    L = [r"\begin{center}\small\setlength{\tabcolsep}{3.4pt}",
          rf"\captionof{{table}}[{nm}（{r['代码']}）关键财务指标]{{"
          rf"{nm}（{r['代码']}）关键财务指标（合并报表口径；两个半年报期均未年化；"
          rf"现金短债比 $=$ 货币资金 $\div$ 短期债务）}}",
@@ -279,7 +279,7 @@ def financing_table(r: dict, rows: list) -> str:
         return out
 
     for it in rows:
-        t = tex_escape(str(it.time or "---"))
+        t = brk(it.time or "---")
         kind = tex_escape(it.kind or "---")
         scale = brk(it.scale if it.scale else "").strip() or "---"
         # 先按长度截断、再转义：若先转义再切片，可能把 "\\%" 切一半，

@@ -345,3 +345,11 @@ data/raw/**
 *.tmp*
 _manifest.json.bad*
 
+# 逐公司画像的版式探针（scripts/make_probe_tex.py 生成的临时文件）
+_probe.tex
+_probe.pdf
+_probe.log
+_probe.aux
+_probe.out
+_probe.synctex.gz
+

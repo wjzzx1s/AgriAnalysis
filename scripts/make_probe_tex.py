@@ -41,6 +41,8 @@ def main(codes: list[str]) -> None:
         body.append(bs[c])
     tex = "\n".join([
         r"\documentclass[11pt, a4paper, fontset=none, zihao=-4]{ctexart}",
+        # 与正式报告保持同样版心：否则探针的文本宽度更大，图形/表格越界问题查不出来
+        r"\usepackage[top=2.6cm, bottom=2.6cm, left=2.6cm, right=2.6cm]{geometry}",
         r"\input{tex/preamble}",
         r"\begin{document}",
         r"\setcounter{section}{8}",

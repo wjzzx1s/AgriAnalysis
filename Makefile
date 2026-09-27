@@ -8,6 +8,9 @@ LATEX     := xelatex
 LATEXFLAGS := -interaction=nonstopmode -halt-on-error -file-line-error -synctex=1
 
 TEXSRC := $(wildcard $(TEXDIR)/*.tex)
+# 生成的片段也必须算依赖：否则 scripts/*.py 重新生成 tex/gen/** 之后，
+# make 会认为 main.pdf 仍是最新的（"无需做任何事"），改了内容却不重编
+GENSRC := $(wildcard $(TEXDIR)/gen/*.tex) $(wildcard $(TEXDIR)/gen/profiles/*.tex)
 DATSRC := $(wildcard $(DATADIR)/*.dat) $(wildcard $(DATADIR)/*.csv)
 
 .PHONY: all pdf data profiles aux check clean distclean view fetch
@@ -17,8 +20,11 @@ all: pdf
 # 两遍编译 + biber（解析交叉引用、目录与 gb7714 参考文献）
 pdf: $(MAIN).pdf
 
-$(MAIN).pdf: $(MAIN).tex $(TEXSRC) $(DATSRC) refs.bib
-	$(LATEX) $(LATEXFLAGS) $(MAIN)
+$(MAIN).pdf: $(MAIN).tex $(TEXSRC) $(GENSRC) $(DATSRC) refs.bib
+# 第一遍允许非零退出：全新构建时 .aux 尚无交叉引用与文献标签，LaTeX 会报
+# “undefined references”并以非零状态结束；此时 PDF 已写出，后续两遍会解析完毕。
+# 后两遍不加 “-”，仍严格失败；最终结果由 make check 校验。
+	-$(LATEX) $(LATEXFLAGS) $(MAIN)
 	biber $(MAIN)
 	$(LATEX) $(LATEXFLAGS) $(MAIN)
 	$(LATEX) $(LATEXFLAGS) $(MAIN)
