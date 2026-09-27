@@ -20,11 +20,25 @@
 \pagenumbering{Roman}
 \input{tex/abstract.tex}
 \newpage
+% 目录页首不再单独排版“目录”标题（页眉已标明），只保留页眉标记
+\makeatletter
+\renewcommand\tableofcontents{%
+  \@mkboth{\contentsname}{\contentsname}%
+  \@starttoc{toc}%
+}
+\makeatother
 \tableofcontents
 \newpage
-% 图表索引：公司画像逐家配图后条数过多，故不再单独列出
-% \listoffigures
-% \listoftables
+
+% ---------------------------------------------------------------- 图表目录
+\phantomsection
+\addcontentsline{toc}{section}{图目录}
+\listoffigures
+\clearpage
+\phantomsection
+\addcontentsline{toc}{section}{表目录}
+\listoftables
+\newpage
 
 % ---------------------------------------------------------------- 正文
 \pagenumbering{arabic}

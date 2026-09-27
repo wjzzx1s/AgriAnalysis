@@ -3,16 +3,19 @@
 """把 data/raw/company/<code>_<kind>.csv 加工为第二部分（上市公司画像）所需的数据表。
 
 产出：
-  data/clean/company_master.csv    每家公司一行：行业、上市信息、市值、三年财务、事件计数
+  data/clean/company_master.csv    每家公司一行：行业、上市信息、市值、2026 年半年报财务、事件计数
   data/clean/company_events.csv    每家公司一行的公告分类计数（战略转型/融资/风险线索）
   data/clean/company_ind_*.csv     按申万行业汇总
   data/clean/comp_ind_count.dat    行业公司数（tikz）
   data/clean/comp_mktcap.dat       流通市值分布（tikz）
-  data/clean/comp_roe.dat          2025 年 ROE 分布（tikz）
-  data/clean/comp_growth_scatter.dat  营收增速-净利率散点（tikz）
+  data/clean/comp_roe.dat          2026 年半年报 ROE 分布（tikz）
+  data/clean/comp_growth_scatter.dat  营收同比-净利率散点（tikz）
   tex/gen/company_master.tex       全量公司表（longtable）
   tex/gen/company_by_ind.tex       分行业汇总表
   notes/company_summary.md         汇总统计说明
+
+口径说明：第二部分（上市公司画像）统一采用 **2026 年半年报** 作为财务口径
+（合并报表、未年化），2023---2025 年年报数据仅作为趋势对照保留。
 """
 from __future__ import annotations
 
@@ -30,6 +33,16 @@ COMP = os.path.join(RAW, "company")
 GEN = os.path.join(os.path.dirname(CLEAN), "..", "tex", "gen")
 GEN = os.path.abspath(GEN)
 NOTES = os.path.join(os.path.dirname(os.path.dirname(CLEAN)), "notes")
+
+# 财务口径：年报（近三年，作趋势对照）与半年报（2026 年半年报为统一口径）
+ANNUAL = ("2023", "2024", "2025")
+H1 = "20260630"
+H1_PREV = "20250630"
+
+# 从财务摘要取用的指标：(接口指标名, 内部字段名)
+FA_METRICS = [("营业总收入", "营业收入"), ("归母净利润", "归母净利润"),
+              ("净资产收益率(ROE)", "ROE"), ("毛利率", "毛利率"),
+              ("销售净利率", "销售净利率"), ("资产负债率", "资产负债率")]
 
 LOG: list[str] = []
 
@@ -55,6 +68,26 @@ def num(x) -> float:
         return v if np.isfinite(v) else np.nan
     except (TypeError, ValueError):
         return np.nan
+
+
+def period_name(p: str) -> str:
+    """报告期标签 → 中文期次（20260630 → “2026 年半年报”）。"""
+    p = str(p)
+    if p == H1:
+        return "2026 年半年报"
+    if p == H1_PREV:
+        return "2025 年半年报"
+    if p.endswith("1231"):
+        return f"{p[:4]} 年年报"
+    return p
+
+
+def fin_ind_at(fi: pd.DataFrame | None, col: str, date: str) -> float:
+    """财务指标表（fin_ind）中某一报告期的单个指标值。"""
+    if fi is None or not len(fi) or col not in fi.columns:
+        return np.nan
+    s = fi[fi["日期"].astype(str).str[:10] == date]
+    return num(s.iloc[0][col]) if len(s) else np.nan
 
 
 # ---------------------------------------------------------------- 公告分类规则
@@ -121,35 +154,46 @@ def build() -> None:
                 rec["流通市值亿元"] = float(last["close"]) * float(
                     last.get("outstanding_share", np.nan) or np.nan) / 1e8
 
-        # --- 财务摘要（新浪）
+        # --- 财务摘要（新浪）：年报 2023---2025 + 半年报 2025H1 / 2026H1
+        #     第二部分统一以 2026 年半年报为财务口径，年报数据保留作趋势对照
         fa = rd(code, "fin_abstract")
+        fi = rd(code, "fin_ind")
+        periods = [(yr, f"{yr}1231") for yr in ANNUAL] + \
+                  [("2025H1", H1_PREV), ("2026H1", H1)]
         if fa is not None and len(fa):
             fa = fa.copy()
             fa["指标"] = fa["指标"].astype(str).str.strip()
             fa["选项"] = fa["选项"].astype(str).str.strip()
             common = fa[fa["选项"] == "常用指标"]
-            for metric, key in [("营业总收入", "营业收入"), ("归母净利润", "归母净利润"),
-                                ("净资产收益率(ROE)", "ROE"), ("毛利率", "毛利率"),
-                                ("销售净利率", "销售净利率"), ("资产负债率", "资产负债率")]:
+            for metric, key in FA_METRICS:
                 s = common[common["指标"] == metric]
                 if not len(s):
                     continue
                 s = s.iloc[0]
-                for yr in ("2023", "2024", "2025"):
-                    col = f"{yr}1231"
+                for label, col in periods:
                     if col in s.index:
-                        rec[f"{key}{yr}"] = num(s[col])
+                        rec[f"{key}{label}"] = num(s[col])
+            # 净资产为负时接口不返回 ROE，用财务指标表的披露值兜底
+            if not np.isfinite(rec.get("ROE2026H1", np.nan)):
+                v = fin_ind_at(fi, "净资产收益率(%)", "2026-06-30")
+                if np.isfinite(v):
+                    rec["ROE2026H1"] = v
             # 单位换算：营收/净利 -> 亿元
             for key in ("营业收入", "归母净利润"):
-                for yr in ("2023", "2024", "2025"):
-                    c = f"{key}{yr}"
+                for label, _ in periods:
+                    c = f"{key}{label}"
                     if c in rec and np.isfinite(rec.get(c, np.nan)):
-                        rec[f"{key}{yr}(亿元)"] = rec[c] / 1e8
+                        rec[f"{c}(亿元)"] = rec[c] / 1e8
             if np.isfinite(rec.get("营业收入2025", np.nan)) and \
                np.isfinite(rec.get("营业收入2023", np.nan)) and rec["营业收入2023"] > 0:
                 rec["营收两年CAGR%"] = ((rec["营业收入2025"] / rec["营业收入2023"]) ** 0.5 - 1) * 100
+            if np.isfinite(rec.get("营业收入2026H1", np.nan)) and \
+               np.isfinite(rec.get("营业收入2025H1", np.nan)) and rec["营业收入2025H1"] > 0:
+                rec["营收同比2026H1%"] = (rec["营业收入2026H1"] / rec["营业收入2025H1"] - 1) * 100
             if np.isfinite(rec.get("归母净利润2025", np.nan)):
-                rec["2025盈利"] = "盈利" if rec["归母净利润2025"] > 0 else "亏损"
+                rec["2025盈亏"] = "盈利" if rec["归母净利润2025"] > 0 else "亏损"
+            if np.isfinite(rec.get("归母净利润2026H1", np.nan)):
+                rec["2026H1盈亏"] = "盈利" if rec["归母净利润2026H1"] > 0 else "亏损"
 
         # --- 总股本与股本变动（巨潮）
         sc = rd(code, "share_chg")
@@ -227,11 +271,11 @@ def build() -> None:
     ind = m.groupby("三级行业").agg(
         公司数=("代码", "count"),
         总流通市值亿元=("流通市值亿元", "sum"),
-        平均营收2025亿元=("营业收入2025(亿元)", "mean"),
-        营收CAGR中位数=("营收两年CAGR%", "median"),
-        亏损公司数=("2025盈利", lambda s: int((s == "亏损").sum())),
-        平均ROE2025=("ROE2025", "mean"),
-        平均资产负债率=("资产负债率2025", "mean"),
+        平均营收2026H1亿元=("营业收入2026H1(亿元)", "mean"),
+        营收同比中位数=("营收同比2026H1%", "median"),
+        亏损公司数=("2026H1盈亏", lambda s: int((s == "亏损").sum())),
+        平均ROE2026H1=("ROE2026H1", "mean"),
+        平均资产负债率2026H1=("资产负债率2026H1", "mean"),
     ).reset_index().sort_values("公司数", ascending=False)
     ind.round(2).to_csv(os.path.join(CLEAN, "company_by_industry.csv"),
                         index=False, encoding="utf-8-sig")
@@ -253,38 +297,39 @@ def build() -> None:
             for i, (lb, n) in enumerate(cnt.items()):
                 fh.write(f"{i} {int(n)} {lb}\n")
 
-    roe = pd.to_numeric(m["ROE2025"], errors="coerce").dropna()
+    roe = pd.to_numeric(m["ROE2026H1"], errors="coerce").dropna()
     if len(roe):
-        bins = [-100, -20, -10, -5, 0, 5, 10, 20, 100]
-        labels = ["<-20", "-20~-10", "-10~-5", "-5~0", "0~5", "5~10", "10~20", ">20"]
+        # 半年度 ROE（未年化），分档按半年口径设置
+        bins = [-100, -10, -5, -2, 0, 2, 5, 10, 100]
+        labels = ["<-10", "-10~-5", "-5~-2", "-2~0", "0~2", "2~5", "5~10", ">10"]
         cnt = pd.cut(roe, bins=bins, labels=labels).value_counts().reindex(labels).fillna(0)
         with open(os.path.join(CLEAN, "comp_roe.dat"), "w", encoding="utf-8") as fh:
             fh.write("i n label\n")
             for i, (lb, n) in enumerate(cnt.items()):
                 fh.write(f"{i} {int(n)} {lb}\n")
 
-    sc = m[["代码", "营收两年CAGR%", "销售净利率2025", "流通市值亿元", "三级行业"]].copy()
-    sc = sc.dropna(subset=["营收两年CAGR%", "销售净利率2025"])
-    sc = sc[(sc["营收两年CAGR%"].between(-60, 120)) &
-            (sc["销售净利率2025"].between(-80, 40))]
+    sc = m[["代码", "营收同比2026H1%", "销售净利率2026H1", "流通市值亿元", "三级行业"]].copy()
+    sc = sc.dropna(subset=["营收同比2026H1%", "销售净利率2026H1"])
+    sc = sc[(sc["营收同比2026H1%"].between(-60, 120)) &
+            (sc["销售净利率2026H1"].between(-80, 40))]
     with open(os.path.join(CLEAN, "comp_growth_scatter.dat"), "w", encoding="utf-8") as fh:
         fh.write("growth margin cap label\n")
         for _, r in sc.iterrows():
-            fh.write(f"{r['营收两年CAGR%']:.2f} {r['销售净利率2025']:.2f} "
+            fh.write(f"{r['营收同比2026H1%']:.2f} {r['销售净利率2026H1']:.2f} "
                      f"{r['流通市值亿元']:.1f} {r['代码']}\n")
 
-    # 资产负债率 - ROE 散点（融资需求分层的依据）
-    dd = m[["代码", "资产负债率2025", "ROE2025", "归母净利润2025(亿元)"]].copy()
-    dd = dd.dropna(subset=["资产负债率2025", "ROE2025"])
+    # 资产负债率 - ROE 散点（融资需求分层的依据；2026 年 6 月末 / 2026 年半年报）
+    dd = m[["代码", "资产负债率2026H1", "ROE2026H1", "归母净利润2026H1(亿元)"]].copy()
+    dd = dd.dropna(subset=["资产负债率2026H1", "ROE2026H1"])
     with open(os.path.join(CLEAN, "comp_debt_roe.dat"), "w", encoding="utf-8") as fh:
         fh.write("debt roe np label\n")
         for _, r in dd.iterrows():
-            fh.write(f"{r['资产负债率2025']:.2f} {r['ROE2025']:.2f} "
-                     f"{r['归母净利润2025(亿元)']:.2f} {r['代码']}\n")
+            fh.write(f"{r['资产负债率2026H1']:.2f} {r['ROE2026H1']:.2f} "
+                     f"{r['归母净利润2026H1(亿元)']:.2f} {r['代码']}\n")
 
-    # 高负债 + 亏损公司（融资需求最高的一档）
-    de = pd.to_numeric(m["资产负债率2025"], errors="coerce")
-    npf = pd.to_numeric(m["归母净利润2025(亿元)"], errors="coerce")
+    # 高负债 + 亏损公司（融资需求最高的一档；2026 年半年报口径）
+    de = pd.to_numeric(m["资产负债率2026H1"], errors="coerce")
+    npf = pd.to_numeric(m["归母净利润2026H1(亿元)"], errors="coerce")
     risk = m[(npf < 0) & (de > 65)].copy()
     risk["de"] = de[risk.index]
     risk = risk.sort_values("de", ascending=False)
@@ -304,11 +349,13 @@ def build() -> None:
     if len(mc):
         log(f"- 流通市值（亿元）：合计 {mc.sum():.0f}，中位数 {mc.median():.1f}，"
             f"最大 {mc.max():.0f}")
-    if "2025盈利" in m:
-        log(f"- 2025 年亏损公司：{int((m['2025盈利'] == '亏损').sum())} 家")
-    if "ROE2025" in m:
-        r2 = pd.to_numeric(m["ROE2025"], errors="coerce")
-        log(f"- 2025 年 ROE：中位数 {r2.median():.2f}%，"
+    if "2026H1盈亏" in m:
+        log(f"- 2026 年上半年亏损公司：{int((m['2026H1盈亏'] == '亏损').sum())} 家")
+    if "2025盈亏" in m:
+        log(f"- 2025 年亏损公司（对照）：{int((m['2025盈亏'] == '亏损').sum())} 家")
+    if "ROE2026H1" in m:
+        r2 = pd.to_numeric(m["ROE2026H1"], errors="coerce")
+        log(f"- 2026 年上半年 ROE（未年化）：中位数 {r2.median():.2f}%，"
             f"为正的公司 {int((r2 > 0).sum())} 家，为负 {int((r2 < 0).sum())} 家")
     log("\n### 按三级行业的公司数与规模\n")
     log(ind.to_string(index=False))
@@ -338,10 +385,10 @@ def write_industry_tables(m: pd.DataFrame) -> None:
     os.makedirs(GEN, exist_ok=True)
     cols = [("代码", "代码", None), ("名称", "公司简称", None),
             ("流通市值亿元", "市值（亿元）", 1),
-            ("营业收入2025(亿元)", "营收（亿元）", 1),
-            ("归母净利润2025(亿元)", "净利（亿元）", 2),
-            ("营收两年CAGR%", "CAGR（\\%）", 1),
-            ("ROE2025", "ROE（\\%）", 1),
+            ("营业收入2026H1(亿元)", "营收（亿元）", 1),
+            ("营收同比2026H1%", "同比（\\%）", 1),
+            ("归母净利润2026H1(亿元)", "净利（亿元）", 2),
+            ("ROE2026H1", "ROE（\\%）", 1),
             ("公告-再融资", "再融资公告", 0),
             ("公告-重大重组与并购", "重组公告", 0)]
     for key, inds in industry_groups().items():
@@ -350,7 +397,7 @@ def write_industry_tables(m: pd.DataFrame) -> None:
             sub = sub.sort_values("流通市值亿元", ascending=False, na_position="last")
         out = [r"\begingroup\scriptsize\setlength{\tabcolsep}{2pt}",
                r"\begin{longtable}{@{}llrrrrrrr@{}}",
-               r"\caption{农业上市公司分行业明细（%s；财务为 2025 年年报，公告计数窗口 2023-09---2026-09）}\label{tab:comp-%s}\\" % (
+               r"\caption{农业上市公司分行业明细（%s；财务为 2026 年半年报，ROE 未年化，公告计数窗口 2023-09---2026-09）}\label{tab:comp-%s}\\" % (
                    "、".join(inds), key),
                r"\toprule", " & ".join(c[1] for c in cols) + r" \\", r"\midrule",
                r"\endfirsthead",
@@ -393,15 +440,16 @@ def write_tex(m: pd.DataFrame, ind: pd.DataFrame) -> None:
     cols = [("代码", "代码", None), ("名称", "公司简称", None),
             ("行业", "申万三级行业", None),
             ("流通市值亿元", "市值（亿元）", 1),
-            ("营业收入2025(亿元)", "营收（亿元）", 1),
-            ("营收两年CAGR%", "CAGR（\\%）", 1),
-            ("归母净利润2025(亿元)", "净利（亿元）", 2),
-            ("ROE2025", "ROE（\\%）", 1),
-            ("资产负债率2025", "负债率（\\%）", 1)]
+            ("营业收入2026H1(亿元)", "营收（亿元）", 1),
+            ("营收同比2026H1%", "同比（\\%）", 1),
+            ("归母净利润2026H1(亿元)", "净利（亿元）", 2),
+            ("ROE2026H1", "ROE（\\%）", 1),
+            ("资产负债率2026H1", "负债率（\\%）", 1)]
     m2 = m2.sort_values("流通市值亿元", ascending=False, na_position="last")
     out = [r"\begingroup\scriptsize\setlength{\tabcolsep}{1.5pt}",
            r"\begin{longtable}{@{}llp{1.9cm}rrrrrr@{}}",
-           r"\caption{申万农林牧渔行业 A 股上市公司画像总表（按流通市值降序；市值时点 2026-09-24，财务为 2025 年年报）}"
+           r"\caption{申万农林牧渔行业 A 股上市公司画像总表（按流通市值降序；市值时点 2026-09-24，"
+           r"财务为 2026 年半年报（未年化），资产负债率为 2026 年 6 月末）}"
            r"\label{tab:company-master}\\", r"\toprule",
            " & ".join(c[1] for c in cols) + r" \\", r"\midrule", r"\endfirsthead",
            r"\multicolumn{9}{l}{\small（续）}\\", r"\toprule",
@@ -424,17 +472,18 @@ def write_tex(m: pd.DataFrame, ind: pd.DataFrame) -> None:
     # 分行业汇总表
     i2 = ind.rename(columns={"三级行业": "行业"})
     out = [r"\begin{table}[htbp]\centering\footnotesize",
+           r"\caption{按申万三级行业汇总的农业上市公司数量与经营指标（2026 年半年报口径；"
+           r"ROE 为半年报披露的算术平均值、未年化，市值时点 2026-09-24）}",
+           r"\label{tab:company-by-industry}",
            r"\begin{tabular}{@{}lrrrrrr@{}}", r"\toprule",
-           r"申万三级行业 & 公司数 & 总流通市值 & 平均营收 & 营收 CAGR & 亏损 & 平均 ROE \\",
-           r" & & （亿元） & 2025（亿元） & 中位数（\%） & 公司数 & 2025（\%） \\", r"\midrule"]
+           r"申万三级行业 & 公司数 & 总流通市值 & 平均营收 & 营收同比 & 亏损 & 平均 ROE \\",
+           r" & & （亿元） & 2026H1（亿元） & 中位数（\%） & 公司数 & 2026H1（\%） \\", r"\midrule"]
     for _, r in i2.iterrows():
         out.append(f"{tex_escape(r['行业'])} & {int(r['公司数'])} & "
-                   f"{fmt(r['总流通市值亿元'], 0)} & {fmt(r['平均营收2025亿元'], 1)} & "
-                   f"{fmt(r['营收CAGR中位数'], 1)} & {int(r['亏损公司数'])} & "
-                   f"{fmt(r['平均ROE2025'], 1)} \\\\")
+                   f"{fmt(r['总流通市值亿元'], 0)} & {fmt(r['平均营收2026H1亿元'], 1)} & "
+                   f"{fmt(r['营收同比中位数'], 1)} & {int(r['亏损公司数'])} & "
+                   f"{fmt(r['平均ROE2026H1'], 1)} \\\\")
     out += [r"\bottomrule", r"\end{tabular}",
-            r"\caption{按申万三级行业汇总的农业上市公司数量与经营指标（2025 年年报口径；ROE 为算术平均，市值时点 2026-09-24）}",
-            r"\label{tab:company-by-industry}",
             r"\end{table}"]
     with open(os.path.join(GEN, "company_by_ind.tex"), "w", encoding="utf-8") as fh:
         fh.write("\n".join(out) + "\n")

@@ -464,11 +464,16 @@ def analyze(code: str, name: str, meta: dict) -> dict | None:
                         ("现金流", "经营现金流量净额"), ("商誉", "商誉"),
                         ("净资产", "股东权益合计(净资产)")]:
         rec[key] = metrics_of(fa, metric, periods)
-    rec["流动比率"] = fin_ind_val(fi, "流动比率", "2025-12-31")
-    rec["速动比率"] = fin_ind_val(fi, "速动比率", "2025-12-31")
-    rec["存货天数"] = fin_ind_val(fi, "存货周转天数", "2025-12-31")
-    rec["应收天数"] = fin_ind_val(fi, "应收账款周转天数", "2025-12-31")
-    rec["总资产"] = fin_ind_val(fi, "总资产(元)", "2025-12-31")
+    # 财务指标表（fin_ind）：优先取 2026 年半年报（6 月末），缺失时回退 2025 年年报
+    def fin_pref(col: str) -> float:
+        v = fin_ind_val(fi, col, "2026-06-30")
+        return v if np.isfinite(v) else fin_ind_val(fi, col, "2025-12-31")
+
+    rec["流动比率"] = fin_pref("流动比率")
+    rec["速动比率"] = fin_pref("速动比率")
+    rec["存货天数"] = fin_pref("存货周转天数")
+    rec["应收天数"] = fin_pref("应收账款周转天数")
+    rec["总资产"] = fin_pref("总资产(元)")
 
     def g(key: str, period: str) -> float:
         return rec.get(key, {}).get(period, np.nan)
@@ -476,8 +481,12 @@ def analyze(code: str, name: str, meta: dict) -> dict | None:
     rec["营收亿"] = {p: g("营收", p) / 1e8 for p in periods}
     rec["归母亿"] = {p: g("归母", p) / 1e8 for p in periods}
     rec["现金流亿"] = {p: g("现金流", p) / 1e8 for p in periods}
-    rec["净资产亿"] = g("净资产", "20251231") / 1e8
-    rec["商誉亿"] = g("商誉", "20251231") / 1e8
+    # 净资产与商誉：优先 2026 年半年报，缺失时回退 2025 年年报
+    for key in ("净资产", "商誉"):
+        v = g(key, H1)
+        rec[f"{key}期"] = H1 if np.isfinite(v) else "20251231"
+    rec["净资产亿"] = g("净资产", rec["净资产期"]) / 1e8
+    rec["商誉亿"] = g("商誉", rec["商誉期"]) / 1e8
 
     # ---------- 公告、股本、分红、主营构成 ----------
     rec["events"] = events_of(code)
@@ -563,21 +572,12 @@ def para_cycle(r: dict) -> str:
 
 
 def para_profit(r: dict) -> str:
+    """盈利情况：当期口径统一为 2026 年半年报，2023---2025 年年报作趋势对照。"""
+    e, f = r["营收亿"].get(H1, np.nan), r["归母亿"].get(H1, np.nan)
+    ep, fp = r["营收亿"].get(H1_PREV, np.nan), r["归母亿"].get(H1_PREV, np.nan)
     a, b = r["营收亿"].get("20231231", np.nan), r["营收亿"].get("20251231", np.nan)
     na, nb = r["归母亿"].get("20231231", np.nan), r["归母亿"].get("20251231", np.nan)
     s = ""
-    if np.isfinite(a) and np.isfinite(b) and a > 0:
-        cagr = ((b / a) ** 0.5 - 1) * 100
-        s += (f"2023---2025 年营业收入由 {yi(a)} 亿元变为 {yi(b)} 亿元"
-              f"（两年年均复合增速 {zz(cagr)}），")
-    elif np.isfinite(b):
-        s += f"2025 年营业收入 {yi(b)} 亿元，"
-    if np.isfinite(na) and np.isfinite(nb):
-        s += f"归母净利润由 {yi(na)} 亿元变为 {yi(nb)} 亿元。"
-    else:
-        s += "归母净利润数据缺失。"
-    e, f = r["营收亿"].get(H1, np.nan), r["归母亿"].get(H1, np.nan)
-    ep, fp = r["营收亿"].get(H1_PREV, np.nan), r["归母亿"].get(H1_PREV, np.nan)
     if np.isfinite(e):
         s += f"2026 年上半年营业收入 {yi(e)} 亿元"
         if np.isfinite(ep) and ep > 0:
@@ -586,52 +586,71 @@ def para_profit(r: dict) -> str:
         if np.isfinite(f):
             s += f"归母净利润 {yi(f)} 亿元"
             if np.isfinite(fp) and abs(fp) > 1e-6:
-                s += f"（同比 {zz((f / abs(fp) - 1) * 100) if fp > 0 else '由亏转盈' if f > 0 else '亏损收窄' if abs(f) < abs(fp) else '亏损扩大'}）"
+                s += (f"（同比 {zz((f / abs(fp) - 1) * 100)}）" if fp > 0
+                      else "（由亏转盈）" if f > 0
+                      else "（亏损收窄）" if abs(f) < abs(fp) else "（亏损扩大）")
             s += "。"
         else:
             s += "归母净利润数据缺失。"
-    roe = r["ROE"].get("20251231", np.nan)
-    npr = r["净利率"].get("20251231", np.nan)
-    gpr = r["毛利率"].get("20251231", np.nan)
-    extra = [f"2025 年 ROE {dash(roe, 1, '%')}", f"销售净利率 {dash(npr, 1, '%')}",
-             f"毛利率 {dash(gpr, 1, '%')}"]
-    s += "，".join(extra) + "。"
-    # 定性
-    y = nb
-    h = f
-    if np.isfinite(y) and y > 0 and np.isfinite(h) and h > 0:
-        s += "公司 2025 年报与 2026 年半年报均实现归母净利润为正，是周期底部中盈利能力较为稳定的一类。"
-    elif np.isfinite(y) and y > 0 and np.isfinite(h) and h <= 0:
-        s += "公司 2025 年盈利而 2026 年上半年转亏，说明其盈利对价格变化高度敏感，下半年需观察价格与成本的相对变化。"
-    elif np.isfinite(y) and y <= 0 and np.isfinite(h) and h > 0:
-        s += "公司在 2026 年上半年已经扭亏，是报告样本中较早出现盈利修复的一类。"
-    elif np.isfinite(y) and y <= 0 and np.isfinite(h) and h <= 0:
-        if np.isfinite(fp) and abs(h) > abs(fp):
-            s += "公司连续处于亏损状态且 2026 年上半年亏损同比扩大，资产负债表的修复尚未开始。"
+    elif np.isfinite(b):
+        s += f"2026 年半年报营业收入缺失（2025 年营业收入 {yi(b)} 亿元）。"
+    s += "作为趋势对照，"
+    if np.isfinite(a) and np.isfinite(b) and a > 0:
+        cagr = ((b / a) ** 0.5 - 1) * 100
+        s += (f"2023---2025 年营业收入由 {yi(a)} 亿元变为 {yi(b)} 亿元"
+              f"（两年年均复合增速 {zz(cagr)}），")
+    if np.isfinite(na) and np.isfinite(nb):
+        s += f"归母净利润由 {yi(na)} 亿元变为 {yi(nb)} 亿元。"
+    else:
+        s += "年报归母净利润数据缺失。"
+    roe = r["ROE"].get(H1, np.nan)
+    npr = r["净利率"].get(H1, np.nan)
+    gpr = r["毛利率"].get(H1, np.nan)
+    s += (f"2026 年上半年 ROE {dash(roe, 1, '%')}（半年报披露值、未年化），"
+          f"销售净利率 {dash(npr, 1, '%')}，毛利率 {dash(gpr, 1, '%')}。")
+    # 定性判断：以 2026 年上半年为当期，与上年同期比较
+    if np.isfinite(f) and f > 0:
+        if np.isfinite(fp) and f > fp:
+            s += "公司在 2026 年上半年实现盈利且同比改善，是周期底部中盈利能力较为稳定的一类。"
         else:
-            s += "公司连续处于亏损状态，但 2026 年上半年亏损同比收窄，属于周期底部的边际改善者。"
+            s += ("公司在 2026 年上半年实现盈利，但同比有所回落，"
+                  "盈利对价格变化的敏感性较高，下半年需观察价格与成本的相对变化。")
+    elif np.isfinite(f) and f <= 0:
+        if np.isfinite(fp) and fp < 0 and abs(f) < abs(fp):
+            s += "公司 2026 年上半年仍处亏损，但亏损额同比收窄，属于周期底部的边际改善者。"
+        elif np.isfinite(fp) and fp < 0:
+            s += "公司连续处于亏损状态且 2026 年上半年亏损同比扩大，资产负债表的修复尚未开始。"
+        elif np.isfinite(fp) and fp > 0:
+            s += "公司由 2025 年上半年的盈利转为 2026 年上半年的亏损，说明其盈利对价格变化高度敏感。"
+        else:
+            s += "公司在 2026 年上半年处于亏损状态，需结合后续报告期观察价格与成本的相对变化。"
     return s
 
 
 def para_finance(r: dict) -> str:
+    """财务分析：以 2026 年半年报（2026 年 6 月末）为准，年报数据作对照。"""
+    d = r["负债率"].get(H1, np.nan)
     d25 = r["负债率"].get("20251231", np.nan)
     d23 = r["负债率"].get("20231231", np.nan)
-    s = f"2025 年末资产负债率 {dash(d25, 1, '%')}"
-    if np.isfinite(d23) and np.isfinite(d25):
-        ch = d25 - d23
+    s = f"2026 年 6 月末资产负债率 {dash(d, 1, '%')}"
+    if np.isfinite(d25) and np.isfinite(d):
+        ch = d - d25
+        s += f"，较 2025 年末{'上升' if ch > 0 else '下降'} {abs(ch):.1f} 个百分点"
+    elif np.isfinite(d23) and np.isfinite(d):
+        ch = d - d23
         s += f"，较 2023 年末{'上升' if ch > 0 else '下降'} {abs(ch):.1f} 个百分点"
     s += "。"
     if np.isfinite(r.get("流动比率", np.nan)):
-        s += (f"2025 年报的流动比率为 {r['流动比率']:.2f}、速动比率 {dash(r.get('速动比率'), 2)}，"
+        s += (f"2026 年半年报的流动比率为 {r['流动比率']:.2f}、速动比率 {dash(r.get('速动比率'), 2)}，"
               f"{'短期偿债指标偏紧' if r['流动比率'] < 1.2 else '短期偿债指标尚可'}；")
     if np.isfinite(r.get("存货天数", np.nan)):
         s += (f"存货周转天数 {r['存货天数']:.0f} 天、应收账款周转天数 "
               f"{dash(r.get('应收天数'), 0)} 天。")
-    cf = r["现金流亿"].get("20251231", np.nan)
+    cf = r["现金流亿"].get(H1, np.nan)
     if np.isfinite(cf):
-        s += f"2025 年经营活动现金流净额 {yi(cf)} 亿元"
-        if np.isfinite(r["归母亿"].get("20251231", np.nan)):
-            ni = r["归母亿"]["20251231"]
+        s += f"2026 年上半年经营活动现金流净额 {yi(cf)} 亿元"
+        if np.isfinite(r["归母亿"].get(H1, np.nan)):
+            ni = r["归母亿"][H1]
             s += "，" + ("经营现金流为正，可在不依赖外部融资的情况下维持运营。"
                          if cf > 0 and ni > 0 else
                          "经营现金流为负，日常运营对债务与股东投入的依赖度较高。"
@@ -640,9 +659,9 @@ def para_finance(r: dict) -> str:
         else:
             s += "。"
     if np.isfinite(r.get("商誉亿", np.nan)) and r["商誉亿"] > 1:
-        s += f"2025 年末商誉 {yi(r['商誉亿'])} 亿元，占净资产的 {r['商誉亿'] / r['净资产亿'] * 100:.1f}%（若存在减值风险会直接冲击净资产）。" \
+        s += f"2026 年 6 月末商誉 {yi(r['商誉亿'])} 亿元，占净资产的 {r['商誉亿'] / r['净资产亿'] * 100:.1f}%（若存在减值风险会直接冲击净资产）。" \
             if np.isfinite(r.get("净资产亿", np.nan)) and r["净资产亿"] > 0 else \
-            f"2025 年末商誉 {yi(r['商誉亿'])} 亿元。"
+            f"2026 年 6 月末商誉 {yi(r['商誉亿'])} 亿元。"
     return s
 
 
@@ -726,45 +745,49 @@ def para_invest(r: dict) -> str:
 
 
 def para_need(r: dict) -> str:
-    d = r["负债率"].get("20251231", np.nan)
-    ni = r["归母亿"].get("20251231", np.nan)
-    roe = r["ROE"].get("20251231", np.nan)
+    """未来潜在融资需求：统一以 2026 年半年报（含 2026 年 6 月末资产负债率）分层。"""
+    d = r["负债率"].get(H1, np.nan)
+    ni = r["归母亿"].get(H1, np.nan)
+    roe = r["ROE"].get(H1, np.nan)
     rev = r["events"]["ev"]
     loss = np.isfinite(ni) and ni < 0
     high_debt = np.isfinite(d) and d > 65
     s = ""
     if loss and high_debt:
         s = (f"按第 \\ref{{sec:financing-need}} 节的分层口径，公司属于第一档“补血型”："
-             f"2025 年归母净利润 {yi(ni)} 亿元、年末资产负债率 {dash(d, 1, '%')}（高于 65% 的警戒线）。")
+             f"2026 年上半年归母净利润 {yi(ni)} 亿元、2026 年 6 月末资产负债率 "
+             f"{dash(d, 1, '%')}（高于 65% 的警戒线）。")
         if d > 80:
             s += "负债率已超过 80%，净资产被亏损侵蚀的程度较深，属于全部样本中资产负债表最紧张的一组。"
-        gap = abs(ni)
         if np.isfinite(r.get("总资产", np.nan)) and np.isfinite(d):
+            # 半年报亏损年化后作为全年亏损估计，再加一年利息
+            gap = 2 * abs(ni)
             debt = d / 100 * r["总资产"] / 1e8
             interest = 0.6 * debt * 0.04
-            gap_hi = abs(ni) + interest
-            s += (f"按“补足当年亏损 + 覆盖一年利息”的粗略口径（有息负债按负债总额的 60%、"
+            gap_hi = gap + interest
+            s += (f"按“上半年亏损年化 + 覆盖一年利息”的粗略口径（有息负债按负债总额的 60%、"
                   f"利率 4% 估算），融资缺口约 {gap:.1f}---{gap_hi:.1f} 亿元。")
         s += ("可行的融资路径为定向增发、债务重组、出售非核心资产或引入战略投资者；"
               "由于处于亏损状态，股权融资需要股价配合，债务置换与资产处置的可行性更高。")
     elif loss and not high_debt:
-        s = (f"公司 2025 年归母净利润为负（{yi(ni)} 亿元），但资产负债率 {dash(d, 1, '%')} "
+        s = (f"公司 2026 年上半年归母净利润为负（{yi(ni)} 亿元），但资产负债率 {dash(d, 1, '%')} "
              f"仍低于 65% 的警戒线，暂不属于第一档“补血型”。")
         s += ("当前融资需求以补充流动资金、支撑低谷期的经营性支出为主；"
               "若 2026 年下半年亏损延续、负债率抬升，则会向第一档迁移。")
-    elif (np.isfinite(roe) and roe > 10) and np.isfinite(d) and d < 65:
-        s = (f"公司 2025 年 ROE {dash(roe, 1, '%')}、资产负债率 {dash(d, 1, '%')}，"
+    elif (np.isfinite(roe) and roe > 5) and np.isfinite(d) and d < 65:
+        s = (f"公司 2026 年上半年 ROE {dash(roe, 1, '%')}（未年化，折合约 {dash(roe * 2, 1, '%')}）、"
+             f"2026 年 6 月末资产负债率 {dash(d, 1, '%')}，"
              f"资产负债表具备进一步加杠杆的空间，属于第三档“扩张型”。")
         s += ("融资需求以产能扩张、海外布局与品类并购为主，"
               "这类融资通常被市场定价为成长而非补血，单笔规模多在 5---20 亿元量级。")
     elif high_debt:
-        s = (f"公司 2025 年实现盈利但资产负债率 {dash(d, 1, '%')} 偏高，"
+        s = (f"公司 2026 年上半年实现盈利但 2026 年 6 月末资产负债率 {dash(d, 1, '%')} 偏高，"
              f"处于“以经营现金流修复杠杆”的过渡状态。")
         s += ("潜在融资需求以债务置换与流动性补充为主，而非股权补血；"
               "若行业景气继续下行，杠杆水平会先于利润恶化。")
     else:
-        s = (f"公司 2025 年资产负债率 {dash(d, 1, '%')}、ROE {dash(roe, 1, '%')}，"
-             f"资产负债表稳健且盈利水平平淡，暂无刚性融资需求。")
+        s = (f"公司 2026 年 6 月末资产负债率 {dash(d, 1, '%')}、2026 年上半年 ROE "
+             f"{dash(roe, 1, '%')}（未年化），资产负债表稳健且盈利水平平淡，暂无刚性融资需求。")
         s += ("潜在融资需求以技改扩产、并购与被并购为主，规模取决于其扩张节奏。")
     n_reorg = rev.get("重大重组与并购", 0)
     if n_reorg >= 10:
@@ -805,6 +828,7 @@ def chart(r: dict) -> str:
     years = list(range(px.index[0].year, px.index[-1].year + 1))
     zz_path = f"data/clean/profiles/pxzz_{r['代码']}.dat"
     px_path = f"data/clean/profiles/px_{r['代码']}.dat"
+    nm = tex_escape(r["名称"])
     return "\n".join([
         r"\begin{center}",
         r"\begin{tikzpicture}",
@@ -825,8 +849,9 @@ def chart(r: dict) -> str:
         r"\end{axis}",
         r"\end{tikzpicture}",
         "",
-        rf"{{\footnotesize 图：{tex_escape(r['名称'])}月度收盘价（元）与 ZigZag 周期骨架"
-        rf"（阈值 {ZZ_PCT * 100:.0f}\%，圆点为周期转折点）。}}",
+        rf"\captionof{{figure}}[{nm}（{r['代码']}）股价与周期骨架]{{"
+        rf"{nm}（{r['代码']}）月度收盘价（元/股）与 ZigZag 周期骨架"
+        rf"（阈值 {ZZ_PCT * 100:.0f}\%，圆点为周期转折点）}}",
         r"\end{center}",
     ])
 
@@ -838,9 +863,13 @@ FIN_ROWS = [("营业收入（亿元）", "营收亿"), ("归母净利润（亿�
 
 def fin_table(r: dict) -> str:
     cols = [("20231231", "2023 年"), ("20241231", "2024 年"),
-            ("20251231", "2025 年"), (H1, "2026 年半年报")]
-    L = [r"\begin{center}\small",
-         r"\begin{tabular}{@{}lrrrr@{}}", r"\toprule",
+            ("20251231", "2025 年"), (H1_PREV, "2025 年半年报"), (H1, "2026 年半年报")]
+    nm = tex_escape(r["名称"])
+    # tabcolsep 收紧：5 个数值列 + 指标列在版心内刚好留出余量（默认 6pt 会溢出 1.7pt）
+    L = [r"\begin{center}\small\setlength{\tabcolsep}{4pt}",
+         rf"\captionof{{table}}[{nm}（{r['代码']}）关键财务指标]{{"
+         rf"{nm}（{r['代码']}）关键财务指标（合并报表口径；两个半年报期均未年化）}}",
+         r"\begin{tabular}{@{}lrrrrr@{}}", r"\toprule",
          "指标 & " + " & ".join(c[1] for c in cols) + r" \\", r"\midrule"]
     for label, key in FIN_ROWS:
         vals = []
@@ -848,8 +877,7 @@ def fin_table(r: dict) -> str:
             v = r[key].get(p, np.nan)
             vals.append(yi(v, 2) if key in ("营收亿", "归母亿", "现金流亿") else dash(v, 1))
         L.append(label + " & " + " & ".join(vals) + r" \\")
-    L += [r"\bottomrule", r"\end{tabular}", "",
-          r"{\footnotesize 表：关键财务指标（合并报表口径；2026 年半年报数据未年化）。}",
+    L += [r"\bottomrule", r"\end{tabular}",
           r"\end{center}"]
     return "\n".join(L)
 
@@ -926,6 +954,9 @@ def csv_row(r: dict) -> dict:
         "负债率2023": r["负债率"].get("20231231"), "负债率2024": r["负债率"].get("20241231"),
         "负债率2025": r["负债率"].get("20251231"), "负债率2026H1": r["负债率"].get(H1),
         "现金流2025亿": r["现金流亿"].get("20251231"),
+        "ROE2026H1": r["ROE"].get(H1), "毛利率2026H1": r["毛利率"].get(H1),
+        "净利率2026H1": r["净利率"].get(H1), "现金流2026H1亿": r["现金流亿"].get(H1),
+        "净资产亿": r.get("净资产亿"), "净资产期": r.get("净资产期"),
         "流动比率": r.get("流动比率"), "速动比率": r.get("速动比率"),
         "存货周转天数": r.get("存货天数"), "应收周转天数": r.get("应收天数"),
         "商誉亿": r.get("商誉亿"),
@@ -1030,38 +1061,17 @@ def main() -> None:
         for i, lb in enumerate(labels):
             fh.write(f"{i} {int(dist['2025H1'][lb])} {int(dist['2026H1'][lb])} {lb}\n")
 
-    # ---- 2026 年半年报概览表（附录） ----
-    h1 = df[["代码", "名称", "三级", "营收2026H1亿", "营收2026H1同比%",
-             "归母2026H1亿", "负债率2026H1"]].copy()
-    h1 = h1.sort_values("营收2026H1亿", ascending=False, na_position="last")
-    out = [r"\begingroup\scriptsize\setlength{\tabcolsep}{2pt}",
-           r"\begin{longtable}{@{}llp{2.4cm}rrrr@{}}",
-           r"\caption{农业上市公司 2026 年半年报经营概览（按营业收入降序；合并报表口径，未年化，资产负债率为 2026 年 6 月末）}"
-           r"\label{tab:company-h1}\\\\", r"\toprule",
-           r"代码 & 公司简称 & 申万三级行业 & 营业收入（亿元） & 同比（\%） & 归母净利润（亿元） & 资产负债率（\%） \\",
-           r"\midrule", r"\endfirsthead",
-           r"\multicolumn{7}{l}{\small（续）}\\", r"\toprule",
-           r"代码 & 公司简称 & 申万三级行业 & 营业收入（亿元） & 同比（\%） & 归母净利润（亿元） & 资产负债率（\%） \\",
-           r"\midrule", r"\endhead", r"\bottomrule", r"\endlastfoot"]
-    for _, r in h1.iterrows():
-        out.append(" & ".join([
-            r["代码"], tex_escape(r["名称"]), tex_escape(r["三级"]),
-            yi(r["营收2026H1亿"]), zz(r["营收2026H1同比%"]) .replace("%", r"\%"),
-            yi(r["归母2026H1亿"]), dash(r["负债率2026H1"], 1)]) + r" \\")
-    out += [r"\end{longtable}",
-            r"\endgroup"]
-    with open(os.path.join(GENROOT, "company_h1_2026.tex"), "w", encoding="utf-8") as fh:
-        fh.write("\n".join(out) + "\n")
+    # ---- 2026 年半年报概览表：已并入附录 B 的画像总表（company_master.tex），不再单独出表 ----
 
     # ---- 摘要 ----
     n26 = int(df["归母2026H1亿"].notna().sum()) if "归母2026H1亿" in df else 0
     log(f"\n## 覆盖情况\n")
     log(f"- 有月度行情（≥12 个月）：{len(recs)} 家")
     log(f"- 有 2026 年半年报归母净利润：{n26} 家")
-    log(f"- 2025 年亏损：{int((pd.to_numeric(df['归母2025亿'], errors='coerce') < 0).sum())} 家")
+    log(f"- 2025 年亏损（对照）：{int((pd.to_numeric(df['归母2025亿'], errors='coerce') < 0).sum())} 家")
     log(f"- 2026 年上半年亏损：{int((pd.to_numeric(df['归母2026H1亿'], errors='coerce') < 0).sum())} 家")
-    log(f"- 资产负债率 > 65%（2025）："
-        f"{int((pd.to_numeric(df['负债率2025'], errors='coerce') > 65).sum())} 家")
+    log(f"- 资产负债率 > 65%（2026 年 6 月末）："
+        f"{int((pd.to_numeric(df['负债率2026H1'], errors='coerce') > 65).sum())} 家")
     with open(os.path.join(NOTES, "company_profiles_summary.md"), "w",
               encoding="utf-8") as fh:
         fh.write("\n".join(str(x) for x in LOG) + "\n")

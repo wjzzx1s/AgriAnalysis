@@ -35,6 +35,9 @@
      \textbf{产能调整 $\to$ 价格反应 10$\sim$14 个月}。\\
      由于退出（淘汰母猪）比进入（补栏）耗时更长，周期呈现“涨得快、跌得久”的非对称形态。};
 \end{tikzpicture}
+
+\captionof{figure}{生猪周期的“产能—利润—价格”传导链：六步闭环与两个关键时滞}
+\label{fig:hog-chain}
 \end{center}
 
 在蛛网模型的框架下（第 \ref{sec:fw-framework} 节），母猪的生物学周期使供给在半年内几乎不响应
@@ -166,8 +169,8 @@
 \begin{figure}[htbp]
 \centering
 \begin{tikzpicture}
-\begin{groupplot}[group style={group size=3 by 1, horizontal sep=0.7cm},
-  agri axis, width=4.65cm, height=4.2cm,
+\begin{groupplot}[group style={group size=3 by 1, horizontal sep=0.75cm},
+  agri axis, width=5.6cm, height=4.9cm,
   tick label style={font=\tiny}, label style={font=\scriptsize},
   every axis plot/.append style={line width=0.9pt},
   title style={font=\scriptsize}]
@@ -177,8 +180,10 @@
   \addplot[SoftRed, thick] table[x index=0, y index=1]{data/clean/hogx_猪粮比价.dat};
   \addplot[dashed, InkGray, domain=2020:2027]{6};
   \addplot[dashed, SoftRed, domain=2020:2027]{5};
-  \node[font=\tiny, InkGray, anchor=west] at (axis cs:2020.1,6.6) {6:1 三级预警};
-  \node[font=\tiny, SoftRed, anchor=west] at (axis cs:2020.1,1.6) {5:1 一级预警};
+  \node[font=\tiny, InkGray, anchor=west, fill=white, fill opacity=0.85,
+    text opacity=1, inner sep=1pt] at (axis cs:2020.1,6.6) {6:1 三级预警};
+  \node[font=\tiny, SoftRed, anchor=west, fill=white, fill opacity=0.85,
+    text opacity=1, inner sep=1pt] at (axis cs:2020.1,1.6) {5:1 一级预警};
 \nextgroupplot[yearticks, title={（b）仔猪价格},
   xmin=2019, xmax=2027, ymin=0, ymax=160,
   xtick={2019,2021,2023,2025}]
@@ -263,7 +268,7 @@
 \begin{axis}[agri axis, yearticks,
   width=13.6cm, height=5.6cm,
   xlabel={年份}, ylabel={生猪出栏平均体重（公斤）},
-  xmin=2015, xmax=2027, ymin=92, ymax=150,
+  xmin=2015, xmax=2027, ymin=92, ymax=156,
   xtick={2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026,2027},
   ytick={100,110,120,130,140,150},
   legend pos=south west, legend entries={出栏平均体重（月度）},
@@ -271,11 +276,14 @@
 \addplot[AquaTeal, thick] table[x index=0, y index=1]{data/clean/hog_spot_均重.dat};
 \addplot[dashed, InkGray, domain=2015:2027]{120};
 \node[font=\scriptsize, InkGray, anchor=south west] at (axis cs:2015.1,120.5) {120 公斤};
-\node[font=\scriptsize, SoftRed, anchor=south west] at (axis cs:2021.1,146.0) {2021 年压栏峰值 146.2};
-\node[font=\scriptsize, SoftRed, anchor=north east, align=right]
-  at (axis cs:2026.5,138) {2026 年 6---7 月\\回升至 139.2};
-\node[font=\scriptsize, AgriGreen, anchor=west, align=left]
-  at (axis cs:2026.55,124) {8---9 月\\骤降至 125.3};
+\node[font=\scriptsize, SoftRed, anchor=south west, fill=white, fill opacity=0.85,
+  text opacity=1, inner sep=1.5pt] at (axis cs:2021.1,145.4) {2021 年压栏峰值 146.2};
+\node[font=\scriptsize, SoftRed, anchor=south east, align=right, fill=white,
+  fill opacity=0.85, text opacity=1, inner sep=1.5pt]
+  at (axis cs:2026.93,140.4) {2026 年 6---7 月\\回升至 139.2};
+\node[font=\scriptsize, AgriGreen, anchor=south east, align=right, fill=white,
+  fill opacity=0.85, text opacity=1, inner sep=1.5pt]
+  at (axis cs:2026.93,104.5) {2026 年 8---9 月\\骤降至 125.3};
 \end{axis}
 \end{tikzpicture}
 \caption{生猪出栏平均体重（2015 年 8 月---2026 年 9 月）}

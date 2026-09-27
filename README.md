@@ -11,7 +11,10 @@
    盈利与财务、重大战略转型、历史融投资与未来潜在融资需求七个维度的画像。
 
 数据时点为 **2026 年 9 月**：行情数据的最后一个交易日为 2026 年 9 月 24 日，
-财务数据含 2026 年半年报（合并报表口径，未年化）。
+财务数据含 2026 年半年报（合并报表口径，未年化）。**第二部分（第 7—14 章）统一以
+2026 年半年报作为当期财务口径**（资产负债率取 2026 年 6 月末），
+2025 年半年报作为同口径对照、2023—2025 年年报作为趋势对照；
+半年报未年化、种植业收入确认的季节性等口径限制在正文与图表题注中逐处标明。
 
 ## 目录结构
 
@@ -29,13 +32,14 @@
 | `tex/ch07`–`tex/ch14` | 第二部分：总体格局、分行业分析（含**各行业章末尾的“上市公司画像”小节**）与战略转型/融资总览 |
 | `tex/gen/profiles/*.tex` | 逐公司画像片段（104 家，按行业分组），由脚本生成后 `\input` 到第 8—13 章的“上市公司画像”小节 |
 | `tex/ch15-conclusion.tex` | 结论与启示（第二部分末章，编号自动连续） |
-| `tex/appendix-*.tex` | 附录：数据来源与口径、公司明细表（含 2026 半年报概览）、期货合约参数 |
+| `tex/appendix-*.tex` | 附录：数据来源与口径、公司明细表（画像总表为 2026 年半年报口径）、期货合约参数 |
 | `scripts/fetch_*.py` | 数据抓取（开源财经数据接口 → `data/raw/`） |
 | `scripts/make_dat.py` | 数据加工（`data/raw/` → `data/clean/*.dat` + 分析摘要） |
 | `scripts/analyze_corr.py` | 相关矩阵、领先滞后、传导回归、ZigZag 分段 |
 | `scripts/make_tables.py` | 第一部分表格与图表数据的 LaTeX 片段（`tex/gen/*.tex`） |
 | `scripts/make_company.py` | 公司汇总表与分行业表（`data/clean/company_master.csv` 等） |
 | `scripts/make_company_profiles.py` | **逐公司画像**：指标计算、股价/骨架数据、LaTeX 片段 |
+| `scripts/company_stats.py` | 汇总第二部分正文所需的统计量 → `notes/company_stats_h1.md`（正文数字的唯一来源） |
 | `scripts/check_margins.py` | 逐页检查 PDF 内容是否越出页边距（图片/表格 overfull 自检） |
 | `scripts/build_check.sh` | `make check`：错误行、Overfull 计数、未定义引用、页数 |
 | `data/raw/` | 原始数据（未入库，含 `_manifest.json` 记录接口、抓取时间、行列数；`hog_capacity_official.csv` 记录官方发布期次及其来源） |
@@ -82,13 +86,27 @@ fontspec）。
 
 ## 写作与数据一致性约定
 
+- **缺失值一律不写作 0**：清洗阶段把接口/官方记录里的 0 占位（如月度期次无
+  猪肉产量、生猪存栏、生猪出栏）转为空值，`make_tables.py` 的 `fmt()` 统一渲染为
+  `\nodata`（“—”）。
+- **表格题注置顶**：`make_tables.py` 生成的短表把 `\caption`/`\label` 写在表格之前；
+  longtable 的题注落在表体内首行。
 - 正文中的一切数字来自 `scripts/` 产出的 CSV / `.dat`，或 `notes/` 中汇总的统计量；
-  不手工填写数据。
+  不手工填写数据。第二部分的正文统计量统一取自 `notes/company_stats_h1.md`
+  （由 `scripts/company_stats.py` 生成）。
+- **图表编号与目录**：图表按章编号（`\numberwithin{figure/table}{section}`，
+  正文为“图 7-1”“表 7-1”，附录自动变为“表 A-1”），题注统一为“编号 标题”两行居中式样
+  （`\captionsetup` 见 `tex/preamble.tex`），表格题注一律置于表格**上方**；
+  `main.tex` 中的 `\listoffigures`/`\listoftables` 生成图目录与表目录，
+  与目录并列。逐公司画像的 104 张股价图与 104 张财务表也全部编号并进入图表目录。
 - 图表一律用 TikZ / pgfplots 绘制，数据经 `data/clean/*.dat` 注入，不用位图截图。
 - 逐公司画像的八个自然段（基本情况、历史股价、周期分析、盈利、财务、转型、
   融投资、融资需求）全部由 `scripts/make_company_profiles.py` 依数据生成；
   每家公司一小节（`\subsubsection`，源码片段在 `tex/gen/profiles/`），
   按流通市值降序排列，插入所属行业章的“上市公司画像”小节，正文不做手工单点修改。
+- **口径标注规则**：凡使用半年度数据的结论，一律写明“（未年化）”或“半年报口径”；
+  凡引用年报数据作对照，一律写明“（年报对照/趋势对照）”，
+  不与半年报数据直接并列比较。
 - 官方公开发布的最新产业数据（如 2025 年年度与 2026 年的能繁母猪存栏）在
   `data/raw/hog_capacity_official.csv` 中逐行记录来源，由 `make_dat.py` 并入
   `data/clean/hog_capacity_recent.csv` 与产能作图序列；akshare 接口未覆盖的期次

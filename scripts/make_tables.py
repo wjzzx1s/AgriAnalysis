@@ -70,6 +70,9 @@ def table(rows: list[dict], caption: str, label: str, colspec: str,
         out.append(r"\begin{longtable}{" + colspec + "}")
     out.append(size)
     if not longtable:
+        # 表格题注统一置于表格上方（与“表 X-N”编号约定一致）
+        out.append(r"\caption{" + caption + "}")
+        out.append(r"\label{" + label + "}")
         # 只在超出版心时缩放：\resizebox{\textwidth}{!} 会把窄表放大，
         # 导致表格文字大于正文（用户要求表格字号不超过正文）。
         out.append(r"\begin{adjustbox}{max width=\textwidth}")
@@ -100,11 +103,9 @@ def table(rows: list[dict], caption: str, label: str, colspec: str,
     else:
         out.append(r"\end{tabular}")
         out.append(r"\end{adjustbox}")
-    if not longtable:
-        out.append(r"\caption{" + caption + "}")
-        out.append(r"\label{" + label + "}")
-    else:
-        out.append(r"\caption{" + caption + r"}\label{" + label + r"}\\")
+    if longtable:
+        # longtable 的题注写在表体内（表头之后），故后接 LaTeX 换行
+        out.append("\\caption{" + caption + "}\\label{" + label + "}\\\\")
     # 用户要求：删除图表下的“资料来源”一行。口径文本仍保留在脚本里备查，但不写入 tex。
     if note:
         out.append(r"\par\vspace{2pt}{\footnotesize\sffamily " + note + r"}")
@@ -194,7 +195,7 @@ def t_hog_capacity() -> None:
             r"2025 年（全年/年末）与 2026 年数据来自国家统计局年度数据与"
             r"农业农村部公开发布（来源逐行记录于 "
             r"\texttt{data/raw/hog\_capacity\_official.csv}）；"
-            r"0 表示该口径当期未公布。"))
+            r"— 表示该口径当期未公布。"))
 
 
 def dat_fut_norm(codes: list[str] | None = None,

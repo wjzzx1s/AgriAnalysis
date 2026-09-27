@@ -173,10 +173,43 @@
 \usepackage[hidelinks, bookmarksnumbered=true,
             CJKbookmarks=true]{hyperref}
 \usepackage{footmisc}
+% ---------- 图表题注：统一样式与按章编号 ----------
 \usepackage{caption}
-\captionsetup{font={small,sf}, labelfont={bf},
-              labelsep=quad, skip=4pt}
-\captionsetup[table]{position=top}
+% 图表按章（section）编号：正文为 图 7-1、表 7-1，附录为 图 A-1、表 B-1
+% （附录中 \thesection 自动变为 A、B、C，无须额外设置）
+\numberwithin{figure}{section}
+\numberwithin{table}{section}
+\renewcommand{\thefigure}{\thesection-\arabic{figure}}
+\renewcommand{\thetable}{\thesection-\arabic{table}}
+% 标签与标题之间的间隔（中文题注习惯：略宽于半角空格）
+\DeclareCaptionLabelSeparator{agri}{\hspace{0.6em}}
+% 统一题注：标签“图 7-1”为加粗黑体，标题为小号宋体，整体居中；
+% 图题置于图下、表题置于表上（浮动表由 position=top 保证，非浮动表由调用处的顺序保证）
+\captionsetup{
+  font={small},
+  labelfont={bf,sf},
+  labelsep=agri,
+  justification=centering,
+  singlelinecheck=false,
+  skip=5pt,
+  % 逐公司画像的图表用 \captionof 插入（不进浮动体），
+  % 若不关闭 hypcap，hyperref 会对每个 \captionof 报一次忽略警告
+  hypcap=false,
+}
+\captionsetup[table]{position=top, skip=4pt, justification=centering}
+% 图表目录：标题保持与章标题同级，条目用 \small 与紧缩行距，避免占用过多篇幅
+\renewcommand{\listfigurename}{图目录}
+\renewcommand{\listtablename}{表目录}
+\makeatletter
+\renewcommand{\listoffigures}{%
+  \section*{\listfigurename}%
+  \@mkboth{\listfigurename}{\listfigurename}%
+  \begingroup\small\setstretch{0.95}\@starttoc{lof}\endgroup}
+\renewcommand{\listoftables}{%
+  \section*{\listtablename}%
+  \@mkboth{\listtablename}{\listtablename}%
+  \begingroup\small\setstretch{0.95}\@starttoc{lot}\endgroup}
+\makeatother
 
 % ---------- 自定义宏 ----------
 % 图表数据来源脚注（放在图表正下方）

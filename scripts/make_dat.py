@@ -344,6 +344,13 @@ def build_hog_cycle(monthly: dict[str, pd.Series]) -> None:
                           ignore_index=True)
             log(f"- 追加官方发布期次 {len(add)} 行（来源见 hog_capacity_official.csv）")
 
+        # 生产口径（猪肉产量 / 生猪存栏 / 生猪出栏）只在季度与年度发布，月度期次在
+        # 接口与官方发布记录中均以 0 占位——0 不是真实观测值。按“缺失不得写作 0”的
+        # 约定统一转为缺失值，由 make_tables.py 的 fmt() 渲染为“—”。
+        for col in ["猪肉产量", "生猪存栏", "生猪出栏"]:
+            if col in q.columns:
+                v = pd.to_numeric(q[col], errors="coerce").astype(float)
+                q.loc[v == 0, col] = np.nan
         q.to_csv(f"{CLEAN}/hog_capacity_recent.csv", index=False, encoding="utf-8-sig")
         log("\n- 最新季度/月度产能：")
         log(q.to_string(index=False))
