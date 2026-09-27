@@ -64,3 +64,21 @@ akshare 开源接口（底层为新浪财经、东方财富、巨潮资讯网、
   中汇总的统计量；不手工填写数据。
 - 图表一律用 TikZ / pgfplots 绘制，数据经 `data/clean/*.dat` 注入，不用位图截图。
 - 图下 `\srcfile{}` 标注来源与口径；表用 `\datacal{}` 标注口径。
+
+## 编译注意事项（踩过的坑）
+
+1. **pgfplots 选项顺序**：`agri axis` 样式内含 `width=13.2cm, height=6.2cm`，
+   局部 `width/height` 必须写在 `agri axis` **之后**，否则被样式覆盖，
+   并排子图会溢出页边距（曾导致 286pt overfull、右侧子图被裁切）。
+2. **`yticklabels from table` 要求表头是真实表头行**：`.dat` 首行不能写成
+   `# i rho label`（注释会被跳过，列名解析失败），须写成 `i rho label`。
+   按索引访问（`x index=0, y index=1`）的 `.dat` 可继续用 `#` 注释首行。
+3. **`\num{}` 不能含斜杠**：`\num{2025/26}` 会触发 siunitx 错误，需写成纯文本。
+4. **`\verb` 不能出现在命令参数里**（如 `\srcfile{}`、表格单元格内），
+   改用 `\texttt{}` 并把下划线写成 `\_`。
+5. **构建时不要把 make 的输出接到 `| head`**：SIGPIPE 会在 `\end{document}`
+   前杀死 xelatex，导致 `main.bcf` 截断、biber 报 “malformed”，
+   参考文献全部变成未解析。请重定向到日志文件后再 grep。
+6. **长表（longtable）宽度**：表格列数多时用 `\scriptsize` +
+   `\setlength{\tabcolsep}{2pt}`，普通 `table` 则由 `make_tables.py`
+   统一包 `\resizebox{\textwidth}{!}{...}`。
