@@ -95,9 +95,14 @@ def main() -> None:
     # ---------------------------------------------------------- 分层
     w("## 二、潜在融资需求分层（第 14 章）")
     w()
+    # 三档互不重复：按“补血—保壳—扩张”的顺序依次判定，公司只归入最紧迫的一档
+    # （与 scripts/make_company_profiles.py 的 classify_tier 口径一致）
     t1 = p[(p["归母2026H1亿"] < 0) & (p["负债率2026H1"] > 65)]
-    t2 = p[pd.to_numeric(p.get("公告-重大重组与并购"), errors="coerce") >= 10]
-    t3 = p[(p["ROE2026H1"] > 5) & (p["负债率2026H1"] < 65)]
+    rest = p[~p.index.isin(t1.index)]
+    _rg = pd.to_numeric(p.get("公告-重大重组与并购"), errors="coerce")
+    t2 = rest[_rg.reindex(rest.index) >= 10]
+    rest2 = rest[~rest.index.isin(t2.index)]
+    t3 = rest2[(rest2["ROE2026H1"] > 5) & (rest2["负债率2026H1"] < 65)]
     w(f"- 第一档“补血型”（2026H1 亏损且 6 月末负债率 > 65%）：{len(t1)} 家，"
       f"其中负债率 > 80% 的 {int((t1['负债率2026H1'] > 80).sum())} 家，"
       f"2026 上半年亏损合计 {n(t1['归母2026H1亿'].sum(), 1)} 亿元；"
@@ -108,6 +113,30 @@ def main() -> None:
     w(f"  - 名单：{'、'.join(t2['名称'].tolist())}")
     w(f"- 第三档“扩张型”（2026H1 ROE > 5% 且 6 月末负债率 < 65%）：{len(t3)} 家")
     w(f"  - 名单：{'、'.join(f'{r.名称}（ROE {n(r.ROE2026H1, 1)}%）' for r in t3.itertuples())}")
+    both = p[(p["归母2026H1亿"] < 0) & (p["负债率2026H1"] > 65)
+             & (_rg >= 10)]
+    if len(both):
+        w(f"- 两档标准同时命中的 {len(both)} 家（{'、'.join(both['名称'].tolist())}）"
+          f"按“补血优先”计入第一档，故第二档为 {len(t2)} 家而非 {len(t2) + len(both)} 家")
+    w()
+
+    # ---------------------------------------------------------- 债务结构与滚动偿付压力
+    w("## 二之二、债务结构与滚动偿付压力（2026 年 6 月末；第 14 章与附录表 \\ref{tab:company-financing} 的口径）")
+    w()
+    cash, sd = p["货币资金2026H1亿"], p["短期债务2026H1亿"]
+    ibd, csr = p["有息负债2026H1亿"], p["现金短债比2026H1"]
+    gap = (sd - cash).clip(lower=0)
+    w(f"- 有息负债合计（短期借款 + 一年内到期的非流动负债 + 长期借款 + 应付债券）："
+      f"{n(ibd.sum(), 0)} 亿元；货币资金合计 {n(cash.sum(), 0)} 亿元")
+    w(f"- 短期债务超过货币资金（现金短债比 < 1）的 {int((csr < 1).sum())} 家，"
+      f"其中低于 0.5 的 {int((csr < 0.5).sum())} 家，无法计算（缺科目）的 {int(csr.isna().sum())} 家；"
+      f"现金短债比中位数 {n(csr.median(), 2)}")
+    w(f"- 以“短期债务 − 货币资金”衡量的静态缺口（仅计正值）：全样本合计 {n(gap.sum(), 0)} 亿元；"
+      f"第一档 {len(t1)} 家合计 {n(gap.loc[t1.index].sum(), 0)} 亿元")
+    w(f"  - 第一档：货币资金 {n(cash.loc[t1.index].sum(), 1)} 亿元 vs 短期债务 "
+      f"{n(sd.loc[t1.index].sum(), 1)} 亿元、有息负债 {n(ibd.loc[t1.index].sum(), 1)} 亿元")
+    w(f"- 2025 年全年“取得借款收到的现金”合计 {n(pd.to_numeric(p['取得借款2025亿'], errors='coerce').sum(), 0)} 亿元、"
+      f"“偿还债务支付的现金”合计 {n(pd.to_numeric(p['偿还债务2025亿'], errors='coerce').sum(), 0)} 亿元")
     w()
 
     # ---------------------------------------------------------- 板块
