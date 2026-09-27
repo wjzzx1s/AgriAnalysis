@@ -2,7 +2,7 @@
 \begin{table}[htbp]
 \centering
 \small
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
 类别对 & 品种对数 & 平均相关 & 最大相关 & 最小相关 \\
@@ -36,8 +36,7 @@
 林果 -- 其他 & 2 & -0.073 & -0.010 & -0.136 \\
 \bottomrule
 \end{tabular}
-}
+\end{adjustbox}
 \caption{同一时间窗口（2021-02～2026-08）内大类之间的平均相关系数}
 \label{tab:corr-group}
-\srcfile{作者根据 22 个品种的月度对数收益率在同一 67 个月窗口内计算，5\% 显著性阈值 $|\rho|>0.24$。}
 \end{table}

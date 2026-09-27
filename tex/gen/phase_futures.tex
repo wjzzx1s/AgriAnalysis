@@ -2,12 +2,12 @@
 \begin{table}[htbp]
 \centering
 \scriptsize
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{@{}lllrrrrrr@{}}
 \toprule
 品种 & 代码 & 大类 & 上涨段月均\% & 下跌段月均\% & 差值（pp） & 同向月占比\% & 上涨月数 & 下跌月数 \\
 \midrule
-生猪 & LH & 养殖 & +5.36 & -3.56 & +8.92 & \nadata & 15 & 47 \\
+生猪 & LH & 养殖 & +5.36 & -3.56 & +8.92 & \nodata & 15 & 47 \\
 鸡蛋 & JD & 养殖 & +0.53 & -0.69 & +1.22 & 64.50 & 15 & 47 \\
 玉米 & C & 粮食 & -0.10 & -0.32 & +0.22 & 56.50 & 15 & 47 \\
 玉米淀粉 & CS & 粮食 & -0.34 & -0.23 & -0.11 & 53.20 & 15 & 47 \\
@@ -32,8 +32,7 @@
 纸浆 & SP & 其他 & +1.06 & -0.72 & +1.79 & 50.00 & 15 & 47 \\
 \bottomrule
 \end{tabular}
-}
+\end{adjustbox}
 \caption{生猪期货上涨段与下跌段中各品种的月均收益（2021—2026）}
 \label{tab:phase-futures}
-\srcfile{作者计算；“同向月占比”指该品种月度收益与生猪价格同号的月份比例。}
 \end{table}

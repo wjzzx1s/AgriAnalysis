@@ -10,7 +10,7 @@ LATEXFLAGS := -interaction=nonstopmode -halt-on-error -file-line-error -synctex=
 TEXSRC := $(wildcard $(TEXDIR)/*.tex)
 DATSRC := $(wildcard $(DATADIR)/*.dat) $(wildcard $(DATADIR)/*.csv)
 
-.PHONY: all pdf data aux check clean distclean view fetch
+.PHONY: all pdf data profiles aux check clean distclean view fetch
 
 all: pdf
 
@@ -33,6 +33,13 @@ data:
 	.venv/bin/python scripts/make_dat.py
 	.venv/bin/python scripts/analyze_corr.py
 	.venv/bin/python scripts/make_tables.py
+	.venv/bin/python scripts/make_company.py
+	.venv/bin/python scripts/make_company_profiles.py
+
+# 只重跑第二部分逐公司画像（依赖 data/raw/company/ 与 company_legacy/）
+profiles:
+	.venv/bin/python scripts/make_company.py
+	.venv/bin/python scripts/make_company_profiles.py
 
 # 编译产物自检：错误行、警告数、页数
 check:

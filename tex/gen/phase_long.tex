@@ -2,7 +2,7 @@
 \begin{table}[htbp]
 \centering
 \scriptsize
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{@{}lllrrrrrr@{}}
 \toprule
 品种 & 代码 & 大类 & 上涨段月均\% & 下跌段月均\% & 差值（pp） & 同向月占比\% & 上涨月数 & 下跌月数 \\
@@ -30,8 +30,7 @@
 菜粕 & RM & 压榨链 & -1.06 & +1.03 & -2.09 & 49.30 & 61 & 73 \\
 \bottomrule
 \end{tabular}
-}
+\end{adjustbox}
 \caption{生猪现货价格上涨段与下跌段中各品种的月均收益（2015—2026）}
 \label{tab:phase-long}
-\srcfile{作者计算；“同向月占比”指该品种月度收益与生猪价格同号的月份比例。}
 \end{table}

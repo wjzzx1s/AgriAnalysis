@@ -2,7 +2,7 @@
 \begin{table}[htbp]
 \centering
 \small
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{@{}llrrlrr@{}}
 \toprule
 起点 & 终点 & 起点价 & 终点价 & 方向 & 持续月数 & 幅度\% \\
@@ -15,8 +15,7 @@
 2024-08 & 2026-04 & 18\,432.95 & 10\,420.71 & 下跌 & 19.90 & -43.50 \\
 \bottomrule
 \end{tabular}
-}
-\caption{生猪期货价格（2021 年上市至今）的周期分段}
+\end{adjustbox}
+\caption{生猪期货价格（2021 年上市至今）的周期分段（末段截至 2026 年 4 月；ZigZag 阈值 18\%）}
 \label{tab:hog-legs-fut}
-\srcfile{资料来源于 akshare（猪易数据生猪价格指数、新浪财经生猪期货主力连续），分段用 ZigZag 算法（波动幅度阈值 18\%）由作者计算。}
 \end{table}

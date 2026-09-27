@@ -27,7 +27,7 @@ CN = str.maketrans("0123456789.%+-", "0123456789.%+-")
 def fmt(v, nd: int = 2, plus: bool = False) -> str:
     """数值 → LaTeX 文本（千分位用 \\, 分隔，缺失写 --- ）。"""
     if v is None or (isinstance(v, float) and (np.isnan(v) or np.isinf(v))):
-        return r"\nadata"
+        return r"\nodata"
     if isinstance(v, str):
         return v
     if isinstance(v, (int, np.integer)):
@@ -52,12 +52,15 @@ def esc(s) -> str:
 def table(rows: list[dict], caption: str, label: str, colspec: str,
           headers: list[str] | None = None, note: str = "", src: str = "",
           size: str = r"\small", longtable: bool = False,
-          align_map: dict | None = None, nd: int = 2) -> str:
-    """rows: [{列名: 值}]；headers 为中文表头（与 rows 的键一一对应）。"""
+          align_map: dict | None = None, nd: int = 2,
+          nd_map: dict | None = None) -> str:
+    """rows: [{列名: 值}]；headers 为中文表头（与 rows 的键一一对应）。
+    nd_map 可按列覆盖小数位（如整数的滞后阶用 0）。"""
     df = pd.DataFrame(rows)
     cols = list(df.columns)
     heads = headers or cols
     align_map = align_map or {}
+    nd_map = nd_map or {}
     out = []
     env = "longtable" if longtable else "table"
     if not longtable:
@@ -67,8 +70,9 @@ def table(rows: list[dict], caption: str, label: str, colspec: str,
         out.append(r"\begin{longtable}{" + colspec + "}")
     out.append(size)
     if not longtable:
-        # 统一用 \resizebox 收窄到版心宽度：表格列数多、数字含千分位时不溢出页面
-        out.append(r"\resizebox{\textwidth}{!}{%")
+        # 只在超出版心时缩放：\resizebox{\textwidth}{!} 会把窄表放大，
+        # 导致表格文字大于正文（用户要求表格字号不超过正文）。
+        out.append(r"\begin{adjustbox}{max width=\textwidth}")
         out.append(r"\begin{tabular}{" + colspec + "}")
     out.append(r"\toprule")
     out.append(" & ".join(heads) + r" \\")
@@ -86,7 +90,7 @@ def table(rows: list[dict], caption: str, label: str, colspec: str,
         for c in cols:
             v = r[c]
             if isinstance(v, (int, np.integer, float, np.floating)) and not isinstance(v, bool):
-                cells.append(fmt(v, nd=nd, plus=align_map.get(c) == "plus"))
+                cells.append(fmt(v, nd=nd_map.get(c, nd), plus=align_map.get(c) == "plus"))
             else:
                 cells.append(esc(v))
         out.append(" & ".join(cells) + r" \\")
@@ -95,14 +99,13 @@ def table(rows: list[dict], caption: str, label: str, colspec: str,
         out.append(r"\end{longtable}")
     else:
         out.append(r"\end{tabular}")
-        out.append(r"}")
+        out.append(r"\end{adjustbox}")
     if not longtable:
         out.append(r"\caption{" + caption + "}")
         out.append(r"\label{" + label + "}")
     else:
         out.append(r"\caption{" + caption + r"}\label{" + label + r"}\\")
-    if src:
-        out.append(r"\srcfile{" + src + "}")
+    # 用户要求：删除图表下的“资料来源”一行。口径文本仍保留在脚本里备查，但不写入 tex。
     if note:
         out.append(r"\par\vspace{2pt}{\footnotesize\sffamily " + note + r"}")
     if not longtable:
@@ -135,22 +138,23 @@ def t_fut_summary() -> None:
             "区间涨跌%", "年化波动%", "历史最高", "历史最低", "峰谷比"]
     rows = df[keep].to_dict("records")
     write("fut_summary", table(
-        rows, caption="农产品相关期货品种样本概况（主力连续，全部可得历史）",
+        rows, caption="农产品相关期货品种样本概况（主力连续，全部可得历史；末月 2026 年 9 月为不完整月度）",
         label="tab:fut-summary",
-        colspec=r"@{}llllrrrrrrrrrr@{}",
+        colspec=r"@{}lllllrrrrrrrr@{}",
         headers=["品种", "代码", "大类", "起始", "结束", "月度数", "月均价格",
                  "最新", "区间涨跌\\%", "年化波动\\%", "历史最高", "历史最低", "峰谷比"],
         align_map={"区间涨跌%": "plus"},
         size=r"\scriptsize",
-        src=r"新浪财经期货主力连续行情（akshare \texttt{futures\_main\_sina}），作者计算；"
-            r"价格单位见附录 \ref{app:contracts}，区间涨跌幅为首末月度均价之比减一。"))
+        src=r"期货主力连续合约行情；"
+            r"价格单位见附录 \ref{app:contracts}，区间涨跌幅为首末月度均价之比减一；"
+            r"末月为 2026 年 9 月的不完整月度（行情截至 2026-09-24）。"))
 
 
 def t_hog_legs() -> None:
     for src_name, out, cap, lab in [
-        ("hog_legs_long", "hog_legs_long", "生猪现货价格指数的周期分段（2015 年至今）",
+        ("hog_legs_long", "hog_legs_long", "生猪现货价格指数的周期分段（2015 年 1 月---2026 年 4 月（末段截至 4 月）；ZigZag 阈值 20\\%）",
          "tab:hog-legs-long"),
-        ("hog_legs", "hog_legs_fut", "生猪期货价格（2021 年上市至今）的周期分段",
+        ("hog_legs", "hog_legs_fut", "生猪期货价格（2021 年上市至今）的周期分段（末段截至 2026 年 4 月；ZigZag 阈值 18\\%）",
          "tab:hog-legs-fut"),
     ]:
         df = load(src_name)
@@ -164,10 +168,10 @@ def t_hog_legs() -> None:
             colspec=r"@{}llrrlrr@{}",
             headers=["起点", "终点", "起点价", "终点价", "方向", "持续月数", "幅度\\%"],
             align_map={"幅度%": "plus"},
-            src=r"资料来源于 akshare（猪易数据生猪价格指数、新浪财经生猪期货主力连续），"
+            src=r"猪易数据生猪价格指数与生猪期货主力连续合约行情，"
                 r"分段用 ZigZag 算法（" +
                 ("波动幅度阈值 20\\%" if src_name == "hog_legs_long" else "波动幅度阈值 18\\%") +
-                r"）由作者计算。"))
+                r"）。"))
 
 
 def t_hog_capacity() -> None:
@@ -180,12 +184,16 @@ def t_hog_capacity() -> None:
     cap2 = cap.rename(columns=names)
     rows = cap2.to_dict("records")
     write("hog_capacity_recent", table(
-        rows, caption="2025 年能繁母猪存栏与生猪产销（季度与月度口径）",
+        rows, caption="能繁母猪存栏与生猪产销：2025 年季度/月度与 2026 年最新数据",
         label="tab:hog-capacity-recent",
         colspec=r"@{}lrrrr@{}",
         headers=list(cap2.columns),
         nd=0, size=r"\footnotesize",
-        src=r"国家统计局数据（经 akshare \texttt{futures\_hog\_supply} 转载）；"
+        src=r"国家统计局与农业农村部公开数据；"
+            r"2025 年季度/月度为国家统计局统计口径，"
+            r"2025 年（全年/年末）与 2026 年数据来自国家统计局年度数据与"
+            r"农业农村部公开发布（来源逐行记录于 "
+            r"\texttt{data/raw/hog\_capacity\_official.csv}）；"
             r"0 表示该口径当期未公布。"))
 
 
@@ -245,7 +253,11 @@ def dat_phase_scatter() -> None:
 
 
 def dat_sw_corr() -> None:
-    """申万子行业指数与生猪期货的相关性（供条形图）。"""
+    """申万子行业指数与生猪期货的相关性（供条形图）。
+
+    标签带上申万层级（一/二/三级）：同一名称在不同层级会出现两次
+    （如二级“动物保健”与三级“动物保健Ⅲ”），只写名称无法区分。
+    """
     df = load("sw_corr_hog")
     if df is None or df.empty:
         return
@@ -253,7 +265,9 @@ def dat_sw_corr() -> None:
     with open(os.path.join(CLEAN, "sw_corr_hog.dat"), "w", encoding="utf-8") as fh:
         fh.write("i rho label\n")
         for i, (_, r) in enumerate(df.iterrows()):
-            fh.write(f"{i} {r['与生猪期货月收益相关']:.4f} {r['行业名称']}\n")
+            lv = str(r.get("层级", "")).strip()
+            label = f"{r['行业名称']}（{lv}）" if lv else str(r["行业名称"])
+            fh.write(f"{i} {r['与生猪期货月收益相关']:.4f} {label}\n")
 
 
 def dat_phase_bar(kind: str, name: str) -> None:
@@ -296,7 +310,7 @@ def t_corr_group() -> None:
         label="tab:corr-group", colspec=r"@{}lrrrr@{}",
         headers=["类别对", "品种对数", "平均相关", "最大相关", "最小相关"],
         nd=3,
-        src=r"作者根据 22 个品种的月度对数收益率在同一 67 个月窗口内计算，"
+        src=r"22 个品种的月度对数收益率在同一 67 个月窗口内的相关系数，"
             r"5\% 显著性阈值 $|\rho|>0.24$。"))
 
 
@@ -315,7 +329,7 @@ def t_corr_hog() -> None:
         label="tab:corr-hog", colspec=r"@{}llr@{}",
         headers=["品种", "大类", "与生猪期货的相关系数"],
         align_map={"相关系数": "plus"}, nd=3,
-        src=r"作者计算；样本 67 个月，5\% 显著性阈值 $|\rho|>0.24$。"))
+        src=r"样本 67 个月，5\% 显著性阈值 $|\rho|>0.24$。"))
 
 
 def t_leadlag() -> None:
@@ -328,7 +342,9 @@ def t_leadlag() -> None:
         label="tab:leadlag", colspec=r"@{}lllrrrl@{}",
         headers=["品种", "代码", "大类", "同期相关", "最大显著相关", "滞后月", "判定"],
         align_map={"同期相关": "plus", "最大显著相关": "plus"}, nd=3,
-        src=r"作者计算；比较对象为价格对 12 个月移动平均的偏离（周期分量），"
+        nd_map={"滞后月": 0},
+        src=r"比较对象为价格对 12 个月移动平均的偏离（周期分量），样本 2021-02～2026-08，"
+            r"滞后阶 $k\in[-9,+9]$（每阶要求有效样本不少于 48 个月）；"
             r"只报告通过 5\% 显著性的滞后阶；滞后月 $k>0$ 表示生猪领先 $k$ 个月。"))
 
 
@@ -338,12 +354,13 @@ def t_transmission() -> None:
         return
     rows = df.to_dict("records")
     write("transmission", table(
-        rows, caption="生猪价格向各品种的传导回归（月度收益，HAC 稳健标准误）",
+        rows, caption="生猪价格向各品种的传导回归（月度收益，HAC 稳健标准误；“显著”指 $|t|>1.96$，即 5\\% 水平）",
         label="tab:transmission", colspec=r"@{}lllrrrrl@{}",
         headers=["品种", "代码", "大类", "显著滞后阶数", "最优滞后 $k$", "$\\beta$",
                  "$t$ 值", "显著 $k$ 清单"],
         align_map={"β": "plus"}, nd=3,
-        src=r"作者计算；$r^{i}_t=\alpha+\beta_k r^{\text{LH}}_{t-k}+\varepsilon_t$，"
+        nd_map={"显著滞后阶": 0, "最优滞后k(月)": 0},
+        src=r"$r^{i}_t=\alpha+\beta_k r^{\text{LH}}_{t-k}+\varepsilon_t$，"
             r"Newey--West 滞后阶 6，样本 2021-02～2026-08。"))
 
 
@@ -375,7 +392,7 @@ def t_phase() -> None:
                        "上涨段月均收益%": "plus", "上涨段月均%": "plus",
                        "下跌段月均收益%": "plus", "下跌段月均%": "plus"},
             nd=2, size=r"\scriptsize",
-            src=r"作者计算；“同向月占比”指该品种月度收益与生猪价格同号的月份比例。"))
+            src=r"“同向月占比”指该品种月度收益与生猪价格同号的月份比例。"))
 
 
 def t_phase_sw() -> None:
@@ -391,7 +408,7 @@ def t_phase_sw() -> None:
         align_map={"上涨段月均收益%": "plus", "下跌段月均收益%": "plus",
                    "差值(pp)": "plus"},
         size=r"\scriptsize",
-        src=r"作者根据申万行业指数月度收盘计算。"))
+        src=r"申万行业指数月度收盘。"))
 
 
 def t_sw_summary() -> None:
@@ -399,19 +416,21 @@ def t_sw_summary() -> None:
     if df is None:
         return
     nm = {**SW_L2, **SW_L3}
-    df["层级"] = np.where(df["行业代码"].isin(SW_L2), "二级",
-                          np.where(df["行业代码"].isin(SW_L3), "三级", "一级"))
+    codes = df["行业代码"].astype(str)
+    df["层级"] = np.where(codes.isin(SW_L2), "二级",
+                          np.where(codes.isin(SW_L3), "三级", "一级"))
     rows = df[["行业代码", "行业名称", "层级", "起始", "最新", "近1年涨跌%",
                "近3年涨跌%", "历史最高", "历史最低", "峰谷比"]].to_dict("records")
     write("sw_summary", table(
         rows, caption="申万农业行业指数概况（截至 2026 年 9 月）",
         label="tab:sw-summary", colspec=r"@{}lllrrrrrrr @{}".replace(" ", ""),
         headers=["行业代码", "行业名称", "层级", "起始", "最新", "近 1 年\\%",
-                 "近 3 年\\%", "历史最高", "历史最低", "峰谷比"],
+                 "2023 年初以来\\%", "历史最高", "历史最低", "峰谷比"],
         align_map={"近1年涨跌%": "plus", "近3年涨跌%": "plus"},
         size=r"\scriptsize",
-        src=r"申万宏源行业指数日行情（akshare \texttt{index\_hist\_sw}），作者按月转换；"
-            r"“近 1 年”“近 3 年”为期末对上年同期（2023 年 9 月）的涨跌幅。"))
+        src=r"申万宏源行业指数日行情，按月转换为月度序列；"
+            r"“近 1 年”为 2026-09-24 对 2025 年 9 月的涨跌幅，"
+            r"“2023 年初以来”的基期为 2023 年 1 月（约 3.75 年，因 2021 版行业分类自 2021-12-13 起实施）。"))
 
 
 def t_vol() -> None:
@@ -420,11 +439,11 @@ def t_vol() -> None:
         return
     rows = df.to_dict("records")
     write("vol_summary", table(
-        rows, caption="品种波动率与周期振幅",
+        rows, caption="品种波动率与周期振幅（月度对数收益率年化，$\\sqrt{12}$；主窗口 2021-02～2026-08）",
         label="tab:vol", colspec=r"@{}lllrrrrrr@{}",
         headers=["代码", "品种", "大类", "主窗口年化波动\\%", "全样本年化波动\\%",
                  "主窗口最高", "主窗口最低", "主窗口峰谷比", "最长历史峰谷比"],
-        src=r"作者根据月度对数收益率计算，年化因子 $\\sqrt{12}$；"
+        src=r"月度对数收益率，年化因子 $\\sqrt{12}$；"
             r"主窗口为 2021-02～2026-08。"))
 
 

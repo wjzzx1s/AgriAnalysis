@@ -2,8 +2,8 @@
 \begin{table}[htbp]
 \centering
 \scriptsize
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{@{}llllrrrrrrrrrr@{}}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{@{}lllllrrrrrrrr@{}}
 \toprule
 品种 & 代码 & 大类 & 起始 & 结束 & 月度数 & 月均价格 & 最新 & 区间涨跌\% & 年化波动\% & 历史最高 & 历史最低 & 峰谷比 \\
 \midrule
@@ -34,8 +34,7 @@
 纸浆 & SP & 其他 & 2018-11 & 2026-09 & 95 & 5\,604.40 & 4\,841.90 & -7.30 & 16.90 & 7\,264.10 & 4\,418.00 & 1.64 \\
 \bottomrule
 \end{tabular}
-}
-\caption{农产品相关期货品种样本概况（主力连续，全部可得历史）}
+\end{adjustbox}
+\caption{农产品相关期货品种样本概况（主力连续，全部可得历史；末月 2026 年 9 月为不完整月度）}
 \label{tab:fut-summary}
-\srcfile{新浪财经期货主力连续行情（akshare \texttt{futures\_main\_sina}），作者计算；价格单位见附录 \ref{app:contracts}，区间涨跌幅为首末月度均价之比减一。}
 \end{table}

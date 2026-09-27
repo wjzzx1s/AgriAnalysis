@@ -125,7 +125,7 @@ SW_L3 = {"850111": "种子", "850112": "粮食种植", "850113": "其他种植�
          "850142": "畜禽饲料", "850143": "水产饲料", "850144": "宠物食品",
          "850151": "果蔬加工", "850152": "粮油加工", "850154": "其他农产品加工",
          "850172": "生猪养殖", "850173": "肉鸡养殖", "850174": "其他养殖",
-         "850181": "动物保健"}
+         "850181": "动物保健Ⅲ"}
 
 
 # ---------------------------------------------------------------- 1. 期货月度序列
@@ -330,6 +330,20 @@ def build_hog_cycle(monthly: dict[str, pd.Series]) -> None:
         log("\n- 全国生猪产能年度数据（万头、万吨）：")
         log(y[["年", "能繁母猪存栏", "生猪存栏", "生猪出栏", "猪肉产量"]].to_string(index=False))
         q = cap[~cap["周期"].astype(str).str.match(r"^\d{4}$")].copy()
+
+        # 追加官方公开发布的最新期次（2025 年年度与 2026 年季度/月度）：
+        # akshare 的“生猪产能”接口最新只到 2025 年 10 月，而报告的产业事实引用
+        # 国家统计局 2025 年年度数据与农业农村部 2026 年发布会口径（见 notes/research/
+        # A-hog-feed.md 的逐条引文与链接）。数据来源逐行记录在
+        # data/raw/hog_capacity_official.csv 的“来源”列，便于核对。
+        off = load_raw("hog_capacity_official")
+        if off is not None and len(off):
+            keep = ["周期", "能繁母猪存栏", "猪肉产量", "生猪存栏", "生猪出栏"]
+            add = off[[c for c in keep if c in off.columns]].copy()
+            q = pd.concat([q[[c for c in keep if c in q.columns]], add],
+                          ignore_index=True)
+            log(f"- 追加官方发布期次 {len(add)} 行（来源见 hog_capacity_official.csv）")
+
         q.to_csv(f"{CLEAN}/hog_capacity_recent.csv", index=False, encoding="utf-8-sig")
         log("\n- 最新季度/月度产能：")
         log(q.to_string(index=False))
@@ -350,6 +364,9 @@ def build_hog_cycle(monthly: dict[str, pd.Series]) -> None:
                 mm2 = re.search(r"(\d{1,2})月", s)
                 if mm2:
                     mm = int(mm2.group(1))
+                elif re.search(r"全年|年末", s):
+                    # 年度数据（如“2025年（全年/年末）”）落在当年 12 月
+                    mm = 12
             try:
                 val = float(r["能繁母猪存栏"])
             except (TypeError, ValueError):

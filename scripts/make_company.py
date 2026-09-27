@@ -187,20 +187,22 @@ def build() -> None:
                 impl = fh[(fh[dcol] >= pd.Timestamp("2022-01-01")) &
                           (prog.str.contains("实施", na=False) | ~prog.str.contains("预案|取消", na=False))]
                 rec["近三年分红次数"] = int(len(impl))
-                rec["近三年每股分红合计"] = float(fh.loc[impl.index, pcol].sum()) \
+                # 现金分红比例为「每 10 股派现（元）」，换算为每股须除以 10
+                rec["近三年每股分红合计"] = float(fh.loc[impl.index, pcol].sum()) / 10.0 \
                     if (pcol and len(impl)) else 0.0
                 rec["最近分红方案"] = str(prog.iloc[-1])[:20]
 
         # --- 公告事件（巨潮，近三年）
         dc = rd(code, "disc")
-        ev = {name: 0 for name, _ in EVENT_RULES}
+        rec["名称"] = name  # 事件表用同一公司名：注意不要被下面的循环变量覆盖
+        ev = {cat: 0 for cat, _ in EVENT_RULES}
         if dc is not None and len(dc):
             dc = dc.copy()
             dc["公告时间"] = pd.to_datetime(dc["公告时间"], errors="coerce")
             dc = dc[dc["公告时间"] >= pd.Timestamp("2023-09-01")]
             for t in dc["公告标题"].astype(str):
-                for name in classify(t):
-                    ev[name] += 1
+                for cat in classify(t):
+                    ev[cat] += 1
             rec["近三年公告数"] = int(len(dc))
             # 记录最相关的三条“转型/融资”类公告标题，供人工核对
             key = dc[dc["公告标题"].astype(str).str.contains(
@@ -209,7 +211,7 @@ def build() -> None:
                 key["公告标题"].astype(str).head(3).tolist())[:150]
         rec.update({f"公告-{k}": v for k, v in ev.items()})
         rows.append(rec)
-        erows.append({"代码": code, "名称": name, **ev,
+        erows.append({"代码": code, "名称": rec.get("名称", name), **ev,
                       "近三年公告数": rec.get("近三年公告数", 0)})
 
     m = pd.DataFrame(rows)
@@ -348,7 +350,7 @@ def write_industry_tables(m: pd.DataFrame) -> None:
             sub = sub.sort_values("流通市值亿元", ascending=False, na_position="last")
         out = [r"\begingroup\scriptsize\setlength{\tabcolsep}{2pt}",
                r"\begin{longtable}{@{}llrrrrrrr@{}}",
-               r"\caption{农业上市公司分行业明细（%s）}\label{tab:comp-%s}\\" % (
+               r"\caption{农业上市公司分行业明细（%s；财务为 2025 年年报，公告计数窗口 2023-09---2026-09）}\label{tab:comp-%s}\\" % (
                    "、".join(inds), key),
                r"\toprule", " & ".join(c[1] for c in cols) + r" \\", r"\midrule",
                r"\endfirsthead",
@@ -360,8 +362,6 @@ def write_industry_tables(m: pd.DataFrame) -> None:
                 tex_escape(r.get(k, "")) if nd is None else fmt(r.get(k, np.nan), nd)
                 for k, _, nd in cols) + r" \\")
         out += [r"\end{longtable}",
-                r"\srcfile{巨潮资讯网、新浪财经；财务为 2025 年年报（合并口径）数据，"
-                r"公告计数窗口为 2023 年 9 月---2026 年 9 月，按公告标题关键词统计。}",
                 r"\endgroup"]
         with open(os.path.join(GEN, f"comp_{key}.tex"), "w", encoding="utf-8") as fh:
             fh.write("\n".join(out) + "\n")
@@ -401,7 +401,7 @@ def write_tex(m: pd.DataFrame, ind: pd.DataFrame) -> None:
     m2 = m2.sort_values("流通市值亿元", ascending=False, na_position="last")
     out = [r"\begingroup\scriptsize\setlength{\tabcolsep}{1.5pt}",
            r"\begin{longtable}{@{}llp{1.9cm}rrrrrr@{}}",
-           r"\caption{申万农林牧渔行业 A 股上市公司画像总表（按流通市值降序）}"
+           r"\caption{申万农林牧渔行业 A 股上市公司画像总表（按流通市值降序；市值时点 2026-09-24，财务为 2025 年年报）}"
            r"\label{tab:company-master}\\", r"\toprule",
            " & ".join(c[1] for c in cols) + r" \\", r"\midrule", r"\endfirsthead",
            r"\multicolumn{9}{l}{\small（续）}\\", r"\toprule",
@@ -417,9 +417,6 @@ def write_tex(m: pd.DataFrame, ind: pd.DataFrame) -> None:
                 cells.append(fmt(v, nd))
         out.append(" & ".join(cells) + r" \\")
     out += [r"\end{longtable}",
-            r"\srcfile{巨潮资讯网（公司概况、股本变动、分红、公告）、新浪财经（财务摘要、"
-            r"日行情与流通股本）；市值 $=$ 最新收盘价 $\times$ 流通股本，"
-            r"财务口径为合并报表年度末数据。}",
             r"\endgroup"]
     with open(os.path.join(GEN, "company_master.tex"), "w", encoding="utf-8") as fh:
         fh.write("\n".join(out) + "\n")
@@ -436,9 +433,8 @@ def write_tex(m: pd.DataFrame, ind: pd.DataFrame) -> None:
                    f"{fmt(r['营收CAGR中位数'], 1)} & {int(r['亏损公司数'])} & "
                    f"{fmt(r['平均ROE2025'], 1)} \\\\")
     out += [r"\bottomrule", r"\end{tabular}",
-            r"\caption{按申万三级行业汇总的农业上市公司数量与经营指标（2025 年年报口径）}",
+            r"\caption{按申万三级行业汇总的农业上市公司数量与经营指标（2025 年年报口径；ROE 为算术平均，市值时点 2026-09-24）}",
             r"\label{tab:company-by-industry}",
-            r"\srcfile{作者根据巨潮资讯网、新浪财经公开数据计算；ROE 为各公司 ROE 的算术平均。}",
             r"\end{table}"]
     with open(os.path.join(GEN, "company_by_ind.tex"), "w", encoding="utf-8") as fh:
         fh.write("\n".join(out) + "\n")

@@ -2,7 +2,7 @@
 \begin{table}[htbp]
 \centering
 \small
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{@{}llr@{}}
 \toprule
 品种 & 大类 & 与生猪期货的相关系数 \\
@@ -30,8 +30,7 @@
 棕榈油 & 压榨链 & +0.003 \\
 \bottomrule
 \end{tabular}
-}
+\end{adjustbox}
 \caption{各品种与生猪期货月度收益率的相关系数（2021-02～2026-08）}
 \label{tab:corr-hog}
-\srcfile{作者计算；样本 67 个月，5\% 显著性阈值 $|\rho|>0.24$。}
 \end{table}
