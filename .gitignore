@@ -337,13 +337,14 @@ __pycache__/
 .ipynb_checkpoints/
 notes/tmp/
 
-# 原始抓取数据（约 50MB，可由 scripts/fetch_*.py 完全重跑生成）
-data/raw/**
-# 但抓取清单要入库：它是数据溯源记录（接口名、行列数、抓取时间）
-!data/raw/_manifest.json
-# 巨潮/新浪的临时与备份文件
+# 抓取与加工数据全部入库（研究报告的复现基础）：
+# data/raw/ 为 scripts/fetch_*.py 的原始抓取结果，data/clean/ 为脚本加工结果，
+# data/facts/ 为逐公司事实底稿。三者都需要随报告一起入库，不再忽略。
+# 只忽略真正的临时/备份/缓存文件：
 *.tmp*
 _manifest.json.bad*
+data/raw/*~
+# 清单的“坏文件”备份与 tmp 之外，抓取清单 _manifest.json 本身是数据溯源记录，正常入库。
 
 # 逐公司画像的版式探针（scripts/make_probe_tex.py 生成的临时文件）
 _probe.tex
