@@ -292,12 +292,10 @@ def financing_table(r: dict, rows: list) -> str:
          r"\begin{adjustbox}{max width=\textwidth}",
          r"\begin{tabular}{@{}p{1.45cm}p{2.55cm}p{4.05cm}p{4.95cm}@{}}", r"\toprule",
          r"时间 & 方式 & 规模 & 用途与说明 \\", r"\midrule"]
-    def brk(txt: str) -> str:
-        """先截断、再转义，最后在千分位逗号与顿号后插可断点（长数字串否则不折行）。"""
-        txt = str(txt)
-        txt = compact_amounts(str(txt))
-        if len(txt) > 46:
-            txt = txt[:46] + "……"
+    def brk(txt: str, limit: int = 46) -> str:
+        """先归一到子句边界（无省略号），再转义，最后在逗号/顿号后插可断点（长数字串否则不折行）。"""
+        import company_digest as DG
+        txt = DG.shorten(DG.money(DG.tidy(str(txt))), limit)
         out = tex_escape(txt)
         for ch in ("，", ",", "、", "/"):
             out = out.replace(ch, ch + r"\allowbreak{}")
@@ -310,10 +308,7 @@ def financing_table(r: dict, rows: list) -> str:
         # 先按长度截断、再转义：若先转义再切片，可能把 "\\%" 切一半，
         # 留下悬空的反斜杠（如 "10\\……"）而报 Undefined control sequence
         note = "；".join(x for x in (it.use, it.note) if x) or it.text
-        if len(note) > 44:
-            cut_at = max(note.rfind(p, 0, 44) for p in "；，、。")
-            note = (note[:cut_at] if cut_at > 20 else note[:44]) + "……"
-        note = tex_escape(note)
+        note = brk(note, 40)          # 子句边界收缩，不加省略号（行长收短，减少表格越界）
         L.append(f"{t} & {kind} & {scale} & {note} \\\\")
     L += [r"\bottomrule", r"\end{tabular}", r"\end{adjustbox}", r"\end{center}"]
     return "\n".join(L)

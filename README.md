@@ -44,6 +44,7 @@
 | `scripts/make_tables.py` | 第一部分表格与图表数据的 LaTeX 片段（`tex/gen/*.tex`） |
 | `scripts/make_company.py` | 公司汇总表与分行业表（`data/clean/company_master.csv` 等） |
 | `scripts/make_company_profiles.py` | **逐公司画像**：指标计算、对比统计（行业排名/中位数）、画像上下文、LaTeX 片段 |
+| `scripts/company_digest.py` | **提炼层**：底稿公告语 → 报告语（去公文壳、去程序语、子句择优、无省略号收缩） |
 | `scripts/company_text.py` | 画像正文撰写：由事实底稿 + 指标组合成八个维度（按公司类型选择表述，避免模板化） |
 | `scripts/company_charts.py` | 画像图表：股价与行业指数对比图、近年主要财务指标组合图 |
 | `scripts/company_facts.py` | 事实底稿的读取、校验与检索（`data/facts/*.yaml`） |
@@ -51,7 +52,8 @@
 | `scripts/make_probe_tex.py` | 抽取若干公司拼成独立测试文档（`_probe.tex`），用于快速校验画像版式 |
 | `scripts/company_stats.py` | 汇总第二部分正文所需的统计量 → `notes/company_stats_h1.md`（正文数字的唯一来源） |
 | `scripts/check_margins.py` | 逐页检查 PDF 内容是否越出页边距（图片/表格 overfull 自检） |
-| `scripts/build_check.sh` | `make check`：错误行、Overfull 计数、未定义引用、页数 |
+| `scripts/check_profile_text.py` | 画像正文文字自检：省略号、残句、公告搬运痕迹、段内重复、段落长度 |
+| `scripts/build_check.sh` | `make check`：错误行、Overfull 计数、正文文字自检、未定义引用、页数 |
 | `data/raw/` | 原始数据（未入库，含 `_manifest.json` 记录接口、抓取时间、行列数；`hog_capacity_official.csv` 记录官方发布期次及其来源） |
 | `data/clean/` | 作图数据 `.dat`（pgfplots 直读）、分析结果 `.csv`、`profiles/` 逐公司股价与财务作图数据 |
 | `data/facts/` | **逐公司事实底稿**（`<6位代码>.yaml`，格式见 `SCHEMA.md`）：104 家公司全覆盖、共 3368 条事实、503 条融资历史条目，只收录有来源 URL 的事实 |
@@ -124,6 +126,16 @@ fontspec）。
   （重整/高杠杆亏损/扩张/稳态/保壳）变化，事实条目本身也是逐家不同的。
   每家公司一小节（`\subsubsection`，源码片段在 `tex/gen/profiles/`），
   按流通市值降序排列，插入所属行业章的“上市公司画像”小节，正文不做手工单点修改。
+- **画像正文的提炼层**：底稿条目多取自公告原文，不能直接搬进正文。
+  `scripts/company_digest.py` 把一条底稿变成一句报告语：去掉公文壳
+  （《关于…的公告》→ 事项本身）、程序语（文号、登记、保荐与承销、董事会/监事会届次）、
+  与财务表重复的报表明细，再在子句间择优（重大事件与金额优先，列举残段、纯金额片段降权），
+  最后在子句边界上收缩到字数预算——**输出里不出现省略号**。
+  段落生成器只管“选哪几条、怎样归纳”，切句与措辞统一交给提炼层；
+  新增底稿字段时应在这里加清洗规则，不要在段落代码里做字符截断。
+- **正文文字自检**：`make check` 会运行 `scripts/check_profile_text.py`，逐家公司检查正文与表格
+  中的省略号、残句、公告搬运痕迹、段内重复与段落长度。命中即视为错误，
+  须回到提炼层修规则后重新 `make profiles`，不手工改 `tex/gen/`。
 - **未来融资需求的两个量化口径**（正文逐家给出，并汇总到第 14 章）：
   `短期债务缺口 = 期末短期债务 − 货币资金`（滚动偿付压力）与
   `年化经营缺口 = 半年归母净利润 × 2`（维持当期盈利水平的现金消耗）。

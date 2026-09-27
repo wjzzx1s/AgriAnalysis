@@ -31,6 +31,13 @@ else
   echo "（无）"
 fi
 
+echo "== 画像正文文字自检（省略号 / 残句 / 公告搬运痕迹 / 段内重复）=="
+if [ -x .venv/bin/python ]; then
+  .venv/bin/python scripts/check_profile_text.py 2
+else
+  python3 scripts/check_profile_text.py 2
+fi
+
 echo "== 未定义引用 / 标签 =="
 echo "引用未解析   : $(grep -c -E 'Reference .* undefined|Citation .* undefined|There were undefined references' "$LOG" || true)"
 echo "（另有字体形状 undefined 提示，属中文斜体缺字形，不影响排版：$(grep -c 'Font shape.*undefined' "$LOG" || true) 处）"
