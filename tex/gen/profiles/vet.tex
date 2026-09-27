@@ -9,6 +9,7 @@
 \pfl{历史股价} 自 2021 年 1 月至 2026 年 9 月，股价由 22.77 元变为 11.40 元，累计 -49.9\%，区间最高 22.77 元（2021 年 1 月）、最低 6.26 元（2024 年 8 月）；当前价相当于区间最高价的 50.1\%，为区间最低价的 1.82 倍。 月度收益的年化波动率 37.5\%，高于全样本中位数 37.4\%，在三级行业“动物保健Ⅲ”的 9 家公司中波动率排第\zhnumber{5}位。 从事件看，2024 年 8 月 至 2026 年 1 月的上涨（+188.3\%）与公司原拟向控股股东方非公开发行不超过8亿元（发行价8.29元/股）的计划已于2025年7月终止……（2025-07-15）在时间上重合；2021 年 1 月 至 2022 年 9 月的下跌（-65.7\%）与公司公司终止2021年度非公开发行A股股票事项……（2022-04-08）在时间上重合——股价的拐点多数能在公司自身的资本运作与风险事件上找到对应。
 
 \begin{center}
+\begin{minipage}{\textwidth}\centering
 \begin{tikzpicture}
 \begin{axis}[
   width=12.6cm, height=3.9cm, scale only axis,
@@ -28,6 +29,7 @@
 \end{tikzpicture}
 
 \captionof{figure}[生物股份（600201）股价与周期骨架]{生物股份（600201）月度收盘价（元/股）与 ZigZag 周期骨架（阈值 25\%，圆点为周期转折点）}
+\end{minipage}
 \end{center}
 
 \pfl{过去周期分析} 以 25\% 的 ZigZag 阈值划分，样本区间内股价形成 2 个主升段与 3 个主跌段。 最大主升段出现在 2024 年 8 月 至 2026 年 1 月，17 个月+188.3\%；最大主跌段为 2021 年 1 月 至 2022 年 9 月，20 个月-65.7\%。 最近一次转折出现在 2026 年 9 月（下跌段自 2026 年 1 月起，8 个月-36.8\%），当前处于该段的延续之中。 公司股价较申万农林牧渔指数提前约 21 个月见底，是板块中较早定价周期反转的公司之一。 动保的需求由存栏量而非价格决定（第 \ref{sec:vet} 节）：猪价下行阶段龙头养殖企业的逆势扩产反而推升了疫苗与兽药需求，这正是动保股价与猪价“脱钩”的原因，公司 2026 年上半年实现盈利、半年 ROE 1.9\%（未年化），好于全样本中位数（0.75\%），下行周期对其报表的冲击小于同业。
@@ -56,17 +58,19 @@ ROE（\%） & 5.4 & 1.9 & 1.9 & 1.1 & 1.9 \\
 \end{center}
 
 \begin{center}
+\begin{minipage}{\textwidth}\centering
 \begin{tikzpicture}
 \begin{groupplot}[
-  group style={group size=2 by 1, horizontal sep=0.70cm},
-  width=6.55cm, height=4.3cm,
+  group style={group size=2 by 1, horizontal sep=0.60cm},
+  width=6.85cm, height=4.60cm,
   tick label style={font=\tiny},
   title style={font=\scriptsize\heiti},
   yticklabel style={font=\tiny},
+  ylabel style={font=\tiny},
   grid=major, grid style={LightGray, line width=0.3pt},
   axis line style={InkGray, line width=0.5pt},
   enlarge x limits={abs=0.8},
-  legend style={font=\scriptsize, at={(0.5,-0.22)}, anchor=north,
+  legend style={font=\scriptsize, at={(0.5,-0.20)}, anchor=north,
                 legend columns=2, draw=none, fill=none, column sep=6pt},
 ]
 \nextgroupplot[
@@ -96,32 +100,46 @@ ROE（\%） & 5.4 & 1.9 & 1.9 & 1.1 & 1.9 \\
 \end{tikzpicture}
 \begin{tikzpicture}
 \begin{axis}[
-  width=14.35cm, height=2.9cm, scale only axis,
+  name=finbot,
+  width=13.75cm, height=3.10cm, scale only axis,
   ymin=-1.71, ymax=19.18,
   xtick={0,1,2,3,4,5.7},
   xticklabels={2021,2022,2023,2024,2025,2026H1},
   tick label style={font=\tiny},
   yticklabel style={font=\tiny},
-  ylabel={亿元}, ylabel style={font=\scriptsize},
+  ylabel={亿元}, ylabel style={font=\tiny},
   ybar, bar width=4pt,
   grid=major, grid style={LightGray, line width=0.3pt},
   axis line style={InkGray, line width=0.5pt},
   enlarge x limits={abs=0.8},
-  legend style={font=\scriptsize, at={(0.5,-0.30)}, anchor=north,
-                legend columns=3, draw=none, fill=none, column sep=10pt},
+  legend style={font=\scriptsize, at={(0.5,-0.26)}, anchor=north,
+                legend columns=2, draw=none, fill=none, column sep=10pt},
 ]
 \addplot[fill=AgriGreen!55, draw=AgriGreen, bar shift=-3.0pt] table[x=i, y=cash]{data/clean/profiles/fin_600201.dat};
 \addplot[fill=SoftRed!45, draw=SoftRed, bar shift=3.0pt] table[x=i, y=ibd]{data/clean/profiles/fin_600201.dat};
 \addplot[fill=AgriGreen!25, draw=AgriGreen, pattern=north east lines, bar shift=-3.0pt] table[x=x, y=cash]{data/clean/profiles/finh_600201.dat};
 \addplot[fill=SoftRed!20, draw=SoftRed, pattern=north east lines, bar shift=3.0pt] table[x=x, y=ibd]{data/clean/profiles/finh_600201.dat};
-\addplot[OilBlue, mark=*, mark size=1.1pt, line width=0.8pt] table[x=i, y=ocf]{data/clean/profiles/fin_600201.dat};
-\addplot[only marks, OilBlue, mark=*, mark size=1.8pt] table[x=x, y=ocf]{data/clean/profiles/finh_600201.dat};
-\legend{货币资金, 有息负债, 经营活动现金流净额}
+\legend{货币资金（左轴）, 有息负债（左轴）}
+\end{axis}
+\begin{axis}[
+  at={(finbot.south east)}, anchor=south east,
+  width=13.75cm, height=3.10cm, scale only axis,
+  axis y line*=right, axis x line*=none, xtick=\empty,
+  ymin=-1.39, ymax=6.93,
+  tick label style={font=\tiny},
+  yticklabel style={font=\tiny}, scaled y ticks=false,
+  legend style={font=\scriptsize, at={(0.5,-0.44)}, anchor=north,
+                legend columns=1, draw=none, fill=none},
+]
+\addplot[OilBlue, mark=*, mark size=2.2pt, line width=1.3pt] table[x=i, y=ocf]{data/clean/profiles/fin_600201.dat};
+\addplot[only marks, OilBlue, mark=*, mark size=3.2pt] table[x=x, y=ocf]{data/clean/profiles/finh_600201.dat};
+\legend{经营活动现金流净额（右轴，亿元，蓝点）}
 \end{axis}
 \end{tikzpicture}
 
-\captionof{figure}[生物股份（600201）近年主要财务指标]{生物股份（600201）近年主要财务指标（左上：营业收入与归母净利润；右上：ROE 与资产负债率；下：货币资金、有息负债与经营活动现金流净额。
+\captionof{figure}[生物股份（600201）近年主要财务指标]{生物股份（600201）近年主要财务指标（左上：营业收入与归母净利润；右上：ROE 与资产负债率；下：货币资金、有息负债为左轴柱状，经营活动现金流净额为其右轴的蓝点折线。
 2021---2025 年为年报口径，2026H1 为 2026 年半年报/半年末，与其前一年报之间留出间隔、以斜纹或空心点区分；半年报数据未年化）}
+\end{minipage}
 \end{center}
 
 \pfl{财务分析} 2026 年 6 月末资产负债率 16.5\%，较 2025 年末 上升 0.4 个百分点（样本中位数 52.2\%，所处三级行业内按由低到高排第\zhnumber{4}位）。 2026 年 6 月末货币资金 16.09 亿元、短期债务（短期借款与一年内到期非流动负债）0.01 亿元、长期债务 1.00 亿元，有息负债合计 1.01 亿元，现金短债比 1,426.53 倍——覆盖充分。 净有息负债 -15.08 亿元，相当于其 2026 年上半年营业收入的 -199\%。 流动比率 4.21、速动比率 3.82，短期指标尚可。 2026 年上半年经营活动现金流净额 0.51 亿元，经营现金流与利润同向为正，内生资金可以支撑运营。 2026 年 6 月末在建工程 3.63 亿元，较上年末减少 0.02 亿元，在建投入在收缩。 2026 年 6 月末商誉 1.39 亿元，占归母净资产的 2.5\%，是净资产中最脆弱的一块。 公司披露的财务与合规风险包括：公司披露《关于最近五年被证券监管部门和交易所采取监管措施或处罚及相关整改措施的公告》……。
@@ -153,11 +171,7 @@ ROE（\%） & 5.4 & 1.9 & 1.9 & 1.1 & 1.9 \\
 
 \pfl{未来潜在融资需求分析} 2026 年 6 月末货币资金 16.09 亿元，而短期债务 0.01 亿元（现金短债比 1,426.53 倍），2026 年上半年经营现金流净额 0.51 亿元。账面货币资金可以覆盖短期债务，缺口不体现在静态偿付层面。 公司 2026 年 6 月末资产负债率 16.5\%、2026 年上半年 ROE 1.9\%（未年化），资产负债表尚有余量，融资需求不是“补血型”的刚性需求，而是围绕并购整合、项目投入与营运资金的主动性需求。 公开披露的下一步融资线索包括：2025-07-15 原拟向控股股东方非公开发行不超过8亿元（发行价8.29元/股）的计划已于2025年7月终止……；2026-04-23 截至本次检索，公司未公告银行综合授信额度、公司债、中票或短融的发行计划，亦无新的定向增发预案；2026-06-13 公司取得兴业银行呼和浩特分行出具的股票回购专项贷款承诺函，贷款金额不超过3.6亿元（不超过回购金额的90\%），期限不超过3年……。 资金需求还要叠加在建工程：期末在建工程 3.63 亿元、2026 年上半年购建固定资产等支出 0.44 亿元（未年化），这部分支出在周期底部通常会被主动放缓。
 
-\begin{center}
-\begin{minipage}{\textwidth}\scriptsize\raggedright
-\noindent\textbf{资料来源}\quad \texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}04-\allowbreak{}23/\allowbreak{}1225154779.\allowbreak{}PDF}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}vip.\allowbreak{}stock.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}corp/\allowbreak{}go.\allowbreak{}php/\allowbreak{}vISSUE\_\allowbreak{}NewStock/\allowbreak{}stockid/\allowbreak{}600201.\allowbreak{}phtml}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2016-\allowbreak{}09-\allowbreak{}22/\allowbreak{}1202716698.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2022-\allowbreak{}04-\allowbreak{}08/\allowbreak{}1212837614.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2023-\allowbreak{}02-\allowbreak{}08/\allowbreak{}1215791129.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2024-\allowbreak{}07-\allowbreak{}24/\allowbreak{}1220710161.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2025-\allowbreak{}07-\allowbreak{}15/\allowbreak{}1224162458.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}06-\allowbreak{}13/\allowbreak{}1225368866.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2023-\allowbreak{}02-\allowbreak{}08/\allowbreak{}1215791140.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}08-\allowbreak{}04/\allowbreak{}1225455161.\allowbreak{}PDF}。
-\end{minipage}
-\end{center}
+
 
 
 \subsubsection{中牧股份（600195）}
@@ -168,6 +182,7 @@ ROE（\%） & 5.4 & 1.9 & 1.9 & 1.1 & 1.9 \\
 \pfl{历史股价} 自 2021 年 1 月至 2026 年 9 月，股价由 13.89 元变为 6.64 元，累计 -52.2\%，区间最高 15.92 元（2023 年 2 月）、最低 5.90 元（2026 年 6 月）；当前价相当于区间最高价的 41.7\%，为区间最低价的 1.13 倍。 月度收益的年化波动率 30.7\%，低于全样本中位数 37.4\%，在三级行业“动物保健Ⅲ”的 9 家公司中波动率排第\zhnumber{8}位。 从事件看，2021 年 8 月 至 2023 年 2 月的上涨（+66.7\%）与公司终止乾元浩分拆创业板上市后，公司未再公告新的资产分拆或重大资产重组方案（2022-12-30）在时间上重合——股价的拐点多数能在公司自身的资本运作与风险事件上找到对应。
 
 \begin{center}
+\begin{minipage}{\textwidth}\centering
 \begin{tikzpicture}
 \begin{axis}[
   width=12.6cm, height=3.9cm, scale only axis,
@@ -187,6 +202,7 @@ ROE（\%） & 5.4 & 1.9 & 1.9 & 1.1 & 1.9 \\
 \end{tikzpicture}
 
 \captionof{figure}[中牧股份（600195）股价与周期骨架]{中牧股份（600195）月度收盘价（元/股）与 ZigZag 周期骨架（阈值 25\%，圆点为周期转折点）}
+\end{minipage}
 \end{center}
 
 \pfl{过去周期分析} 以 25\% 的 ZigZag 阈值划分，样本区间内股价形成 2 个主升段与 3 个主跌段。 最大主跌段为 2023 年 2 月 至 2024 年 8 月，18 个月-61.5\%；最大主升段出现在 2021 年 8 月 至 2023 年 2 月，18 个月+66.7\%。 最近一次转折出现在 2026 年 6 月（下跌段自 2026 年 2 月起，4 个月-27.9\%），当前处于该段的延续之中。 公司股价与申万农林牧渔指数几乎同步见底，个股并未走出独立行情。 动保的需求由存栏量而非价格决定（第 \ref{sec:vet} 节）：猪价下行阶段龙头养殖企业的逆势扩产反而推升了疫苗与兽药需求，这正是动保股价与猪价“脱钩”的原因，公司 2026 年上半年实现盈利、半年 ROE 0.9\%（未年化），好于全样本中位数（0.75\%），下行周期对其报表的冲击小于同业。
@@ -215,17 +231,19 @@ ROE（\%） & 7.5 & 1.3 & 3.1 & 1.5 & 0.9 \\
 \end{center}
 
 \begin{center}
+\begin{minipage}{\textwidth}\centering
 \begin{tikzpicture}
 \begin{groupplot}[
-  group style={group size=2 by 1, horizontal sep=0.70cm},
-  width=6.55cm, height=4.3cm,
+  group style={group size=2 by 1, horizontal sep=0.60cm},
+  width=6.85cm, height=4.60cm,
   tick label style={font=\tiny},
   title style={font=\scriptsize\heiti},
   yticklabel style={font=\tiny},
+  ylabel style={font=\tiny},
   grid=major, grid style={LightGray, line width=0.3pt},
   axis line style={InkGray, line width=0.5pt},
   enlarge x limits={abs=0.8},
-  legend style={font=\scriptsize, at={(0.5,-0.22)}, anchor=north,
+  legend style={font=\scriptsize, at={(0.5,-0.20)}, anchor=north,
                 legend columns=2, draw=none, fill=none, column sep=6pt},
 ]
 \nextgroupplot[
@@ -255,32 +273,46 @@ ROE（\%） & 7.5 & 1.3 & 3.1 & 1.5 & 0.9 \\
 \end{tikzpicture}
 \begin{tikzpicture}
 \begin{axis}[
-  width=14.35cm, height=2.9cm, scale only axis,
-  ymin=-4.54, ymax=21.27,
+  name=finbot,
+  width=13.75cm, height=3.10cm, scale only axis,
+  ymin=-1.87, ymax=20.98,
   xtick={0,1,2,3,4,5.7},
   xticklabels={2021,2022,2023,2024,2025,2026H1},
   tick label style={font=\tiny},
   yticklabel style={font=\tiny},
-  ylabel={亿元}, ylabel style={font=\scriptsize},
+  ylabel={亿元}, ylabel style={font=\tiny},
   ybar, bar width=4pt,
   grid=major, grid style={LightGray, line width=0.3pt},
   axis line style={InkGray, line width=0.5pt},
   enlarge x limits={abs=0.8},
-  legend style={font=\scriptsize, at={(0.5,-0.30)}, anchor=north,
-                legend columns=3, draw=none, fill=none, column sep=10pt},
+  legend style={font=\scriptsize, at={(0.5,-0.26)}, anchor=north,
+                legend columns=2, draw=none, fill=none, column sep=10pt},
 ]
 \addplot[fill=AgriGreen!55, draw=AgriGreen, bar shift=-3.0pt] table[x=i, y=cash]{data/clean/profiles/fin_600195.dat};
 \addplot[fill=SoftRed!45, draw=SoftRed, bar shift=3.0pt] table[x=i, y=ibd]{data/clean/profiles/fin_600195.dat};
 \addplot[fill=AgriGreen!25, draw=AgriGreen, pattern=north east lines, bar shift=-3.0pt] table[x=x, y=cash]{data/clean/profiles/finh_600195.dat};
 \addplot[fill=SoftRed!20, draw=SoftRed, pattern=north east lines, bar shift=3.0pt] table[x=x, y=ibd]{data/clean/profiles/finh_600195.dat};
-\addplot[OilBlue, mark=*, mark size=1.1pt, line width=0.8pt] table[x=i, y=ocf]{data/clean/profiles/fin_600195.dat};
-\addplot[only marks, OilBlue, mark=*, mark size=1.8pt] table[x=x, y=ocf]{data/clean/profiles/finh_600195.dat};
-\legend{货币资金, 有息负债, 经营活动现金流净额}
+\legend{货币资金（左轴）, 有息负债（左轴）}
+\end{axis}
+\begin{axis}[
+  at={(finbot.south east)}, anchor=south east,
+  width=13.75cm, height=3.10cm, scale only axis,
+  axis y line*=right, axis x line*=none, xtick=\empty,
+  ymin=-6.06, ymax=15.77,
+  tick label style={font=\tiny},
+  yticklabel style={font=\tiny}, scaled y ticks=false,
+  legend style={font=\scriptsize, at={(0.5,-0.44)}, anchor=north,
+                legend columns=1, draw=none, fill=none},
+]
+\addplot[OilBlue, mark=*, mark size=2.2pt, line width=1.3pt] table[x=i, y=ocf]{data/clean/profiles/fin_600195.dat};
+\addplot[only marks, OilBlue, mark=*, mark size=3.2pt] table[x=x, y=ocf]{data/clean/profiles/finh_600195.dat};
+\legend{经营活动现金流净额（右轴，亿元，蓝点）}
 \end{axis}
 \end{tikzpicture}
 
-\captionof{figure}[中牧股份（600195）近年主要财务指标]{中牧股份（600195）近年主要财务指标（左上：营业收入与归母净利润；右上：ROE 与资产负债率；下：货币资金、有息负债与经营活动现金流净额。
+\captionof{figure}[中牧股份（600195）近年主要财务指标]{中牧股份（600195）近年主要财务指标（左上：营业收入与归母净利润；右上：ROE 与资产负债率；下：货币资金、有息负债为左轴柱状，经营活动现金流净额为其右轴的蓝点折线。
 2021---2025 年为年报口径，2026H1 为 2026 年半年报/半年末，与其前一年报之间留出间隔、以斜纹或空心点区分；半年报数据未年化）}
+\end{minipage}
 \end{center}
 
 \pfl{财务分析} 2026 年 6 月末资产负债率 30.2\%，较 2025 年末 上升 0.4 个百分点（样本中位数 52.2\%，所处三级行业内按由低到高排第\zhnumber{5}位）。 2026 年 6 月末货币资金 16.65 亿元、短期债务（短期借款与一年内到期非流动负债）8.44 亿元、长期债务 2.69 亿元，有息负债合计 11.12 亿元，现金短债比 1.97 倍——覆盖充分。 净有息负债 -5.52 亿元，相当于其 2026 年上半年营业收入的 -17\%。 流动比率 1.77、速动比率 1.35，短期指标尚可。 2026 年上半年经营活动现金流净额 -2.42 亿元，净利润为正但经营现金流为负，利润的现金含量偏低。 2026 年 6 月末在建工程 0.58 亿元，较上年末增加 0.03 亿元，仍有在建投入。 公司披露的财务与合规风险包括：第二大股东中国华农资产经营有限公司所持公司16,683,530股（占总股本1.63\%）处……。
@@ -310,11 +342,7 @@ ROE（\%） & 7.5 & 1.3 & 3.1 & 1.5 & 0.9 \\
 
 \pfl{未来潜在融资需求分析} 2026 年 6 月末货币资金 16.65 亿元，而短期债务 8.44 亿元（现金短债比 1.97 倍），2026 年上半年经营现金流净额 -2.42 亿元。账面货币资金可以覆盖短期债务，缺口不体现在静态偿付层面。 公司 2026 年 6 月末资产负债率 30.2\%、2026 年上半年 ROE 0.9\%（未年化），资产负债表尚有余量，融资需求不是“补血型”的刚性需求，而是围绕并购整合、项目投入与营运资金的主动性需求。 公开披露的下一步融资线索包括：2019-12-10 公司曾于2019年12月披露公司债券发行预案，拟公开发行公司债券以拓宽融资渠道、优化债务结构……；2026-08-27 截至本次检索日，公司未公告新的定向增发预案、配股、可转债或公司债发行计划，亦未公告2026年度银行综合授信额度；2026-08-27 2026年上半年公司经营活动产生的现金流量净额为 -2.316亿元，存在营运资金需求。 资金需求还要叠加在建工程：期末在建工程 0.58 亿元、2026 年上半年购建固定资产等支出 0.77 亿元（未年化），这部分支出在周期底部通常会被主动放缓。
 
-\begin{center}
-\begin{minipage}{\textwidth}\scriptsize\raggedright
-\noindent\textbf{资料来源}\quad \texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}04-\allowbreak{}24/\allowbreak{}1225162984.\allowbreak{}PDF}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}vip.\allowbreak{}stock.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}corp/\allowbreak{}go.\allowbreak{}php/\allowbreak{}vISSUE\_\allowbreak{}NewStock/\allowbreak{}stockid/\allowbreak{}600195.\allowbreak{}phtml}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2013-\allowbreak{}10-\allowbreak{}19/\allowbreak{}63169049.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2015-\allowbreak{}12-\allowbreak{}15/\allowbreak{}1201835032.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2016-\allowbreak{}02-\allowbreak{}24/\allowbreak{}1201993169.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2019-\allowbreak{}12-\allowbreak{}10/\allowbreak{}1207149655.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2022-\allowbreak{}12-\allowbreak{}31/\allowbreak{}1215495314.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}08-\allowbreak{}27/\allowbreak{}1225508390.\allowbreak{}PDF}。
-\end{minipage}
-\end{center}
+
 
 
 \subsubsection{科前生物（688526）}
@@ -325,6 +353,7 @@ ROE（\%） & 7.5 & 1.3 & 3.1 & 1.5 & 0.9 \\
 \pfl{历史股价} 以 2021 年 1 月为起点、2026 年 9 月为终点，股价由 38.08 元变为 12.18 元，累计 -68.0\%，区间最高 41.46 元（2021 年 4 月）、最低 12.10 元（2026 年 6 月）；当前价相当于区间最高价的 29.4\%，已接近区间最低价（1.01 倍）。 月度收益的年化波动率 37.0\%，低于全样本中位数 37.4\%，在三级行业“动物保健Ⅲ”的 9 家公司中波动率排第\zhnumber{6}位。 从事件看，2023 年 2 月 至 2024 年 8 月的下跌（-60.4\%）与公司公司终止首发募投项目“动物生物制品车间技改项目”……（2024-05-17）在时间上重合——股价的拐点多数能在公司自身的资本运作与风险事件上找到对应。
 
 \begin{center}
+\begin{minipage}{\textwidth}\centering
 \begin{tikzpicture}
 \begin{axis}[
   width=12.6cm, height=3.9cm, scale only axis,
@@ -344,6 +373,7 @@ ROE（\%） & 7.5 & 1.3 & 3.1 & 1.5 & 0.9 \\
 \end{tikzpicture}
 
 \captionof{figure}[科前生物（688526）股价与周期骨架]{科前生物（688526）月度收盘价（元/股）与 ZigZag 周期骨架（阈值 25\%，圆点为周期转折点）}
+\end{minipage}
 \end{center}
 
 \pfl{过去周期分析} 以 25\% 的 ZigZag 阈值划分，样本区间内股价形成 2 个主升段与 3 个主跌段。 最大主跌段为 2023 年 2 月 至 2024 年 8 月，18 个月-60.4\%；最大主升段出现在 2022 年 4 月 至 2023 年 2 月，10 个月+73.1\%。 最近一次转折出现在 2026 年 6 月（下跌段自 2025 年 8 月起，10 个月-34.2\%），当前处于该段的延续之中。 公司股价与申万农林牧渔指数几乎同步见底，个股并未走出独立行情。 动保的需求由存栏量而非价格决定（第 \ref{sec:vet} 节）：猪价下行阶段龙头养殖企业的逆势扩产反而推升了疫苗与兽药需求，这正是动保股价与猪价“脱钩”的原因，公司 2026 年上半年实现盈利、半年 ROE 2.8\%（未年化），好于全样本中位数（0.75\%），下行周期对其报表的冲击小于同业。
@@ -372,17 +402,19 @@ ROE（\%） & 10.8 & 9.9 & 10.3 & 5.4 & 2.8 \\
 \end{center}
 
 \begin{center}
+\begin{minipage}{\textwidth}\centering
 \begin{tikzpicture}
 \begin{groupplot}[
-  group style={group size=2 by 1, horizontal sep=0.70cm},
-  width=6.55cm, height=4.3cm,
+  group style={group size=2 by 1, horizontal sep=0.60cm},
+  width=6.85cm, height=4.60cm,
   tick label style={font=\tiny},
   title style={font=\scriptsize\heiti},
   yticklabel style={font=\tiny},
+  ylabel style={font=\tiny},
   grid=major, grid style={LightGray, line width=0.3pt},
   axis line style={InkGray, line width=0.5pt},
   enlarge x limits={abs=0.8},
-  legend style={font=\scriptsize, at={(0.5,-0.22)}, anchor=north,
+  legend style={font=\scriptsize, at={(0.5,-0.20)}, anchor=north,
                 legend columns=2, draw=none, fill=none, column sep=6pt},
 ]
 \nextgroupplot[
@@ -412,32 +444,46 @@ ROE（\%） & 10.8 & 9.9 & 10.3 & 5.4 & 2.8 \\
 \end{tikzpicture}
 \begin{tikzpicture}
 \begin{axis}[
-  width=14.35cm, height=2.9cm, scale only axis,
+  name=finbot,
+  width=13.75cm, height=3.10cm, scale only axis,
   ymin=-0.58, ymax=6.52,
   xtick={0,1,2,3,4,5.7},
   xticklabels={2021,2022,2023,2024,2025,2026H1},
   tick label style={font=\tiny},
   yticklabel style={font=\tiny},
-  ylabel={亿元}, ylabel style={font=\scriptsize},
+  ylabel={亿元}, ylabel style={font=\tiny},
   ybar, bar width=4pt,
   grid=major, grid style={LightGray, line width=0.3pt},
   axis line style={InkGray, line width=0.5pt},
   enlarge x limits={abs=0.8},
-  legend style={font=\scriptsize, at={(0.5,-0.30)}, anchor=north,
-                legend columns=3, draw=none, fill=none, column sep=10pt},
+  legend style={font=\scriptsize, at={(0.5,-0.26)}, anchor=north,
+                legend columns=2, draw=none, fill=none, column sep=10pt},
 ]
 \addplot[fill=AgriGreen!55, draw=AgriGreen, bar shift=-3.0pt] table[x=i, y=cash]{data/clean/profiles/fin_688526.dat};
 \addplot[fill=SoftRed!45, draw=SoftRed, bar shift=3.0pt] table[x=i, y=ibd]{data/clean/profiles/fin_688526.dat};
 \addplot[fill=AgriGreen!25, draw=AgriGreen, pattern=north east lines, bar shift=-3.0pt] table[x=x, y=cash]{data/clean/profiles/finh_688526.dat};
 \addplot[fill=SoftRed!20, draw=SoftRed, pattern=north east lines, bar shift=3.0pt] table[x=x, y=ibd]{data/clean/profiles/finh_688526.dat};
-\addplot[OilBlue, mark=*, mark size=1.1pt, line width=0.8pt] table[x=i, y=ocf]{data/clean/profiles/fin_688526.dat};
-\addplot[only marks, OilBlue, mark=*, mark size=1.8pt] table[x=x, y=ocf]{data/clean/profiles/finh_688526.dat};
-\legend{货币资金, 有息负债, 经营活动现金流净额}
+\legend{货币资金（左轴）, 有息负债（左轴）}
+\end{axis}
+\begin{axis}[
+  at={(finbot.south east)}, anchor=south east,
+  width=13.75cm, height=3.10cm, scale only axis,
+  axis y line*=right, axis x line*=none, xtick=\empty,
+  ymin=-1.40, ymax=6.99,
+  tick label style={font=\tiny},
+  yticklabel style={font=\tiny}, scaled y ticks=false,
+  legend style={font=\scriptsize, at={(0.5,-0.44)}, anchor=north,
+                legend columns=1, draw=none, fill=none},
+]
+\addplot[OilBlue, mark=*, mark size=2.2pt, line width=1.3pt] table[x=i, y=ocf]{data/clean/profiles/fin_688526.dat};
+\addplot[only marks, OilBlue, mark=*, mark size=3.2pt] table[x=x, y=ocf]{data/clean/profiles/finh_688526.dat};
+\legend{经营活动现金流净额（右轴，亿元，蓝点）}
 \end{axis}
 \end{tikzpicture}
 
-\captionof{figure}[科前生物（688526）近年主要财务指标]{科前生物（688526）近年主要财务指标（左上：营业收入与归母净利润；右上：ROE 与资产负债率；下：货币资金、有息负债与经营活动现金流净额。
+\captionof{figure}[科前生物（688526）近年主要财务指标]{科前生物（688526）近年主要财务指标（左上：营业收入与归母净利润；右上：ROE 与资产负债率；下：货币资金、有息负债为左轴柱状，经营活动现金流净额为其右轴的蓝点折线。
 2021---2025 年为年报口径，2026H1 为 2026 年半年报/半年末，与其前一年报之间留出间隔、以斜纹或空心点区分；半年报数据未年化）}
+\end{minipage}
 \end{center}
 
 \pfl{财务分析} 2026 年 6 月末资产负债率 10.7\%，较 2025 年末 下降 0.8 个百分点（样本中位数 52.2\%，所处三级行业内按由低到高排第\zhnumber{2}位）。 2026 年 6 月末货币资金 1.70 亿元、短期债务（短期借款与一年内到期非流动负债）0.02 亿元、长期债务 0.05 亿元，有息负债合计 0.07 亿元，现金短债比 96.61 倍——覆盖充分。 净有息负债 -1.63 亿元，相当于其 2026 年上半年营业收入的 -44\%。 流动比率 7.82、速动比率 7.44，短期指标尚可。 2026 年上半年经营活动现金流净额 1.16 亿元，经营现金流与利润同向为正，内生资金可以支撑运营。 公司披露的财务与合规风险包括：报告期末公司前十大股东所持股份均不存在质押、标记或冻结情形。
@@ -465,11 +511,7 @@ ROE（\%） & 10.8 & 9.9 & 10.3 & 5.4 & 2.8 \\
 
 \pfl{未来潜在融资需求分析} 2026 年 6 月末货币资金 1.70 亿元，而短期债务 0.02 亿元（现金短债比 96.61 倍），2026 年上半年经营现金流净额 1.16 亿元。账面货币资金可以覆盖短期债务，缺口不体现在静态偿付层面。 公司 2026 年 6 月末资产负债率 10.7\%、2026 年上半年 ROE 2.8\%（未年化），资产负债表尚有余量，融资需求不是“补血型”的刚性需求，而是围绕并购整合、项目投入与营运资金的主动性需求。 公开披露的下一步融资线索包括：2025-12-31 截至2025年12月31日，首发募集资金累计投入进度为84.5\%，本年度投入占净额比例9.7\%，尚有余量……；2026-08-27 截至本次检索日，公司未公告新的定向增发预案、可转债、公司债或银行综合授信额度安排；2026-08-27 2026年上半年公司加权平均净资产收益率降至2.77\%，归属于上市公司股东的净资产为40.317亿元……。
 
-\begin{center}
-\begin{minipage}{\textwidth}\scriptsize\raggedright
-\noindent\textbf{资料来源}\quad \texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}04-\allowbreak{}08/\allowbreak{}1225082868.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2022-\allowbreak{}10-\allowbreak{}29/\allowbreak{}1214965763.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2024-\allowbreak{}05-\allowbreak{}21/\allowbreak{}1220108998.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2023-\allowbreak{}09-\allowbreak{}23/\allowbreak{}1217928090.\allowbreak{}PDF}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}vip.\allowbreak{}stock.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}corp/\allowbreak{}go.\allowbreak{}php/\allowbreak{}vISSUE\_\allowbreak{}NewStock/\allowbreak{}stockid/\allowbreak{}688526.\allowbreak{}phtml}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2023-\allowbreak{}06-\allowbreak{}27/\allowbreak{}1217139122.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}08-\allowbreak{}27/\allowbreak{}1225514557.\allowbreak{}PDF}。
-\end{minipage}
-\end{center}
+
 
 
 \subsubsection{瑞普生物（300119）}
@@ -480,6 +522,7 @@ ROE（\%） & 10.8 & 9.9 & 10.3 & 5.4 & 2.8 \\
 \pfl{历史股价} 本报告样本区间（2021 年 1 月 至 2026 年 9 月）内，股价由 24.52 元变为 16.66 元，累计 -32.1\%，区间最高 38.05 元（2021 年 5 月）、最低 12.09 元（2024 年 8 月）；当前价相当于区间最高价的 43.8\%，为区间最低价的 1.38 倍。 月度收益的年化波动率 40.1\%，高于全样本中位数 37.4\%，在三级行业“动物保健Ⅲ”的 9 家公司中波动率排第\zhnumber{3}位。 从事件看，2021 年 5 月 至 2022 年 4 月的下跌（-59.9\%）与公司新增股份于2021年11月19日在深圳证券交易所上市，新增股份上市日公司股价不除权，股票交易设涨跌幅限制……（2021-11）在时间上重合——股价的拐点多数能在公司自身的资本运作与风险事件上找到对应。
 
 \begin{center}
+\begin{minipage}{\textwidth}\centering
 \begin{tikzpicture}
 \begin{axis}[
   width=12.6cm, height=3.9cm, scale only axis,
@@ -499,6 +542,7 @@ ROE（\%） & 10.8 & 9.9 & 10.3 & 5.4 & 2.8 \\
 \end{tikzpicture}
 
 \captionof{figure}[瑞普生物（300119）股价与周期骨架]{瑞普生物（300119）月度收盘价（元/股）与 ZigZag 周期骨架（阈值 25\%，圆点为周期转折点）}
+\end{minipage}
 \end{center}
 
 \pfl{过去周期分析} 以 25\% 的 ZigZag 阈值划分，样本区间内股价形成 3 个主升段与 3 个主跌段。 最大主跌段为 2021 年 5 月 至 2022 年 4 月，11 个月-59.9\%；最大主升段出现在 2024 年 8 月 至 2025 年 5 月，9 个月+103.3\%。 最近一次转折出现在 2026 年 6 月（下跌段自 2025 年 5 月起，13 个月-41.3\%），当前处于该段的延续之中。 公司股价较申万农林牧渔指数提前约 21 个月见底，是板块中较早定价周期反转的公司之一。 动保的需求由存栏量而非价格决定（第 \ref{sec:vet} 节）：猪价下行阶段龙头养殖企业的逆势扩产反而推升了疫苗与兽药需求，这正是动保股价与猪价“脱钩”的原因，公司 2026 年上半年实现盈利、半年 ROE 4.3\%（未年化），好于全样本中位数（0.75\%），下行周期对其报表的冲击小于同业。
@@ -527,17 +571,19 @@ ROE（\%） & 10.2 & 6.5 & 8.8 & 5.6 & 4.3 \\
 \end{center}
 
 \begin{center}
+\begin{minipage}{\textwidth}\centering
 \begin{tikzpicture}
 \begin{groupplot}[
-  group style={group size=2 by 1, horizontal sep=0.70cm},
-  width=6.55cm, height=4.3cm,
+  group style={group size=2 by 1, horizontal sep=0.60cm},
+  width=6.85cm, height=4.60cm,
   tick label style={font=\tiny},
   title style={font=\scriptsize\heiti},
   yticklabel style={font=\tiny},
+  ylabel style={font=\tiny},
   grid=major, grid style={LightGray, line width=0.3pt},
   axis line style={InkGray, line width=0.5pt},
   enlarge x limits={abs=0.8},
-  legend style={font=\scriptsize, at={(0.5,-0.22)}, anchor=north,
+  legend style={font=\scriptsize, at={(0.5,-0.20)}, anchor=north,
                 legend columns=2, draw=none, fill=none, column sep=6pt},
 ]
 \nextgroupplot[
@@ -567,32 +613,46 @@ ROE（\%） & 10.2 & 6.5 & 8.8 & 5.6 & 4.3 \\
 \end{tikzpicture}
 \begin{tikzpicture}
 \begin{axis}[
-  width=14.35cm, height=2.9cm, scale only axis,
+  name=finbot,
+  width=13.75cm, height=3.10cm, scale only axis,
   ymin=-1.62, ymax=18.10,
   xtick={0,1,2,3,4,5.7},
   xticklabels={2021,2022,2023,2024,2025,2026H1},
   tick label style={font=\tiny},
   yticklabel style={font=\tiny},
-  ylabel={亿元}, ylabel style={font=\scriptsize},
+  ylabel={亿元}, ylabel style={font=\tiny},
   ybar, bar width=4pt,
   grid=major, grid style={LightGray, line width=0.3pt},
   axis line style={InkGray, line width=0.5pt},
   enlarge x limits={abs=0.8},
-  legend style={font=\scriptsize, at={(0.5,-0.30)}, anchor=north,
-                legend columns=3, draw=none, fill=none, column sep=10pt},
+  legend style={font=\scriptsize, at={(0.5,-0.26)}, anchor=north,
+                legend columns=2, draw=none, fill=none, column sep=10pt},
 ]
 \addplot[fill=AgriGreen!55, draw=AgriGreen, bar shift=-3.0pt] table[x=i, y=cash]{data/clean/profiles/fin_300119.dat};
 \addplot[fill=SoftRed!45, draw=SoftRed, bar shift=3.0pt] table[x=i, y=ibd]{data/clean/profiles/fin_300119.dat};
 \addplot[fill=AgriGreen!25, draw=AgriGreen, pattern=north east lines, bar shift=-3.0pt] table[x=x, y=cash]{data/clean/profiles/finh_300119.dat};
 \addplot[fill=SoftRed!20, draw=SoftRed, pattern=north east lines, bar shift=3.0pt] table[x=x, y=ibd]{data/clean/profiles/finh_300119.dat};
-\addplot[OilBlue, mark=*, mark size=1.1pt, line width=0.8pt] table[x=i, y=ocf]{data/clean/profiles/fin_300119.dat};
-\addplot[only marks, OilBlue, mark=*, mark size=1.8pt] table[x=x, y=ocf]{data/clean/profiles/finh_300119.dat};
-\legend{货币资金, 有息负债, 经营活动现金流净额}
+\legend{货币资金（左轴）, 有息负债（左轴）}
+\end{axis}
+\begin{axis}[
+  at={(finbot.south east)}, anchor=south east,
+  width=13.75cm, height=3.10cm, scale only axis,
+  axis y line*=right, axis x line*=none, xtick=\empty,
+  ymin=-1.91, ymax=9.56,
+  tick label style={font=\tiny},
+  yticklabel style={font=\tiny}, scaled y ticks=false,
+  legend style={font=\scriptsize, at={(0.5,-0.44)}, anchor=north,
+                legend columns=1, draw=none, fill=none},
+]
+\addplot[OilBlue, mark=*, mark size=2.2pt, line width=1.3pt] table[x=i, y=ocf]{data/clean/profiles/fin_300119.dat};
+\addplot[only marks, OilBlue, mark=*, mark size=3.2pt] table[x=x, y=ocf]{data/clean/profiles/finh_300119.dat};
+\legend{经营活动现金流净额（右轴，亿元，蓝点）}
 \end{axis}
 \end{tikzpicture}
 
-\captionof{figure}[瑞普生物（300119）近年主要财务指标]{瑞普生物（300119）近年主要财务指标（左上：营业收入与归母净利润；右上：ROE 与资产负债率；下：货币资金、有息负债与经营活动现金流净额。
+\captionof{figure}[瑞普生物（300119）近年主要财务指标]{瑞普生物（300119）近年主要财务指标（左上：营业收入与归母净利润；右上：ROE 与资产负债率；下：货币资金、有息负债为左轴柱状，经营活动现金流净额为其右轴的蓝点折线。
 2021---2025 年为年报口径，2026H1 为 2026 年半年报/半年末，与其前一年报之间留出间隔、以斜纹或空心点区分；半年报数据未年化）}
+\end{minipage}
 \end{center}
 
 \pfl{财务分析} 2026 年 6 月末资产负债率 34.4\%，较 2025 年末 上升 2.1 个百分点（样本中位数 52.2\%，所处三级行业内按由低到高排第\zhnumber{7}位）。 2026 年 6 月末货币资金 5.32 亿元、短期债务（短期借款与一年内到期非流动负债）12.68 亿元、长期债务 3.49 亿元，有息负债合计 16.16 亿元，现金短债比 0.42 倍——覆盖偏紧。 净有息负债 10.85 亿元，相当于其 2026 年上半年营业收入的 63\%。 流动比率 1.62、速动比率 1.38，短期指标尚可。 2026 年上半年经营活动现金流净额 1.94 亿元，经营现金流与利润同向为正，内生资金可以支撑运营。 2026 年 6 月末在建工程 0.81 亿元，较上年末增加 0.49 亿元，仍有在建投入。 2026 年 6 月末商誉 4.46 亿元，占归母净资产的 8.7\%，是净资产中最脆弱的一块。 公司披露的财务与合规风险包括：控股股东、实际控制人李守军所持公司股份中质押47,200,000股……。
@@ -623,11 +683,7 @@ ROE（\%） & 10.2 & 6.5 & 8.8 & 5.6 & 4.3 \\
 
 \pfl{未来潜在融资需求分析} 2026 年 6 月末货币资金 5.32 亿元，而短期债务 12.68 亿元（现金短债比 0.42 倍），2026 年上半年经营现金流净额 1.94 亿元。按“短期债务减去账面货币资金”的滚动偿付口径，静态缺口约 7.36 亿元；若再计入上半年亏损的年化额（0.00 亿元），维持一年正常经营所需的外部资金约 7.36---7.36 亿元。 按第 \ref{sec:financing-need} 节的三档划分，公司属于第二档“保壳型”：近三年重大重组与并购类公告 13 条，2026 年上半年归母净利润 2.04 亿元，融资需求更多体现为“资产置换 + 维持上市地位”，而不是扩产。 公开披露的下一步融资线索包括：2025-09-28 公司变更2021年定增部分募集资金用途用于“生物制造产业化工程建设项目”，反映原有募投项目资金需求发生变化；2026-03-27 公司董事会提请股东会授权以简易程序向特定对象发行股票，融资总额不超过人民币3亿元且不超过最近一年末净资产20\%……；2026-08-26 截至本次检索日，公司未公告银行综合授信额度、公司债、中票或短融的发行计划；2026年上半年营业收入同比仅增长0.75\%……。 资金需求还要叠加在建工程：期末在建工程 0.81 亿元、2026 年上半年购建固定资产等支出 0.97 亿元（未年化），这部分支出在周期底部通常会被主动放缓。
 
-\begin{center}
-\begin{minipage}{\textwidth}\scriptsize\raggedright
-\noindent\textbf{资料来源}\quad \texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}03-\allowbreak{}31/\allowbreak{}1225054294.\allowbreak{}PDF}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}vip.\allowbreak{}stock.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}corp/\allowbreak{}go.\allowbreak{}php/\allowbreak{}vISSUE\_\allowbreak{}NewStock/\allowbreak{}stockid/\allowbreak{}300119.\allowbreak{}phtml}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2016-\allowbreak{}08-\allowbreak{}16/\allowbreak{}1202565352.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2021-\allowbreak{}11-\allowbreak{}17/\allowbreak{}1211615206.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2024-\allowbreak{}04-\allowbreak{}29/\allowbreak{}1219906857.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}03-\allowbreak{}31/\allowbreak{}1225054538.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2025-\allowbreak{}09-\allowbreak{}30/\allowbreak{}1224688302.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}08-\allowbreak{}26/\allowbreak{}1225503191.\allowbreak{}PDF}。
-\end{minipage}
-\end{center}
+
 
 
 \subsubsection{回盛生物（300871）}
@@ -638,6 +694,7 @@ ROE（\%） & 10.2 & 6.5 & 8.8 & 5.6 & 4.3 \\
 \pfl{历史股价} 以 2021 年 1 月为起点、2026 年 9 月为终点，股价由 44.00 元变为 20.89 元，累计 -52.5\%，区间最高 52.92 元（2021 年 4 月）、最低 8.47 元（2024 年 8 月）；当前价相当于区间最高价的 39.5\%，为区间最低价的 2.47 倍。 月度收益的年化波动率 54.4\%，高于全样本中位数 37.4\%，在三级行业“动物保健Ⅲ”的 9 家公司中波动率排第\zhnumber{2}位。 从事件看，2021 年 4 月 至 2022 年 4 月的下跌（-69.4\%）与公司债券于2022年1月7日起在深交所挂牌交易，期限6年（2021年12月17日至2027年12月16日）……（2021-12-17）在时间上重合——股价的拐点多数能在公司自身的资本运作与风险事件上找到对应。
 
 \begin{center}
+\begin{minipage}{\textwidth}\centering
 \begin{tikzpicture}
 \begin{axis}[
   width=12.6cm, height=3.9cm, scale only axis,
@@ -657,6 +714,7 @@ ROE（\%） & 10.2 & 6.5 & 8.8 & 5.6 & 4.3 \\
 \end{tikzpicture}
 
 \captionof{figure}[回盛生物（300871）股价与周期骨架]{回盛生物（300871）月度收盘价（元/股）与 ZigZag 周期骨架（阈值 25\%，圆点为周期转折点）}
+\end{minipage}
 \end{center}
 
 \pfl{过去周期分析} 以 25\% 的 ZigZag 阈值划分，样本区间内股价形成 4 个主升段与 4 个主跌段。 最大主跌段为 2021 年 4 月 至 2022 年 4 月，12 个月-69.4\%；最大主升段出现在 2024 年 8 月 至 2026 年 1 月，17 个月+247.8\%。 最近一次转折出现在 2026 年 7 月（下跌段自 2026 年 1 月起，6 个月-29.7\%），当前处于该段的延续之中。 公司股价较申万农林牧渔指数提前约 21 个月见底，是板块中较早定价周期反转的公司之一。 动保的需求由存栏量而非价格决定（第 \ref{sec:vet} 节）：猪价下行阶段龙头养殖企业的逆势扩产反而推升了疫苗与兽药需求，这正是动保股价与猪价“脱钩”的原因，公司 2026 年上半年实现盈利、半年 ROE 9.1\%（未年化），好于全样本中位数（0.75\%），下行周期对其报表的冲击小于同业。
@@ -685,17 +743,19 @@ ROE（\%） & 1.1 & -1.4 & 13.4 & 7.0 & 9.1 \\
 \end{center}
 
 \begin{center}
+\begin{minipage}{\textwidth}\centering
 \begin{tikzpicture}
 \begin{groupplot}[
-  group style={group size=2 by 1, horizontal sep=0.70cm},
-  width=6.55cm, height=4.3cm,
+  group style={group size=2 by 1, horizontal sep=0.60cm},
+  width=6.85cm, height=4.60cm,
   tick label style={font=\tiny},
   title style={font=\scriptsize\heiti},
   yticklabel style={font=\tiny},
+  ylabel style={font=\tiny},
   grid=major, grid style={LightGray, line width=0.3pt},
   axis line style={InkGray, line width=0.5pt},
   enlarge x limits={abs=0.8},
-  legend style={font=\scriptsize, at={(0.5,-0.22)}, anchor=north,
+  legend style={font=\scriptsize, at={(0.5,-0.20)}, anchor=north,
                 legend columns=2, draw=none, fill=none, column sep=6pt},
 ]
 \nextgroupplot[
@@ -725,32 +785,46 @@ ROE（\%） & 1.1 & -1.4 & 13.4 & 7.0 & 9.1 \\
 \end{tikzpicture}
 \begin{tikzpicture}
 \begin{axis}[
-  width=14.35cm, height=2.9cm, scale only axis,
+  name=finbot,
+  width=13.75cm, height=3.10cm, scale only axis,
   ymin=-1.07, ymax=11.96,
   xtick={0,1,2,3,4,5.7},
   xticklabels={2021,2022,2023,2024,2025,2026H1},
   tick label style={font=\tiny},
   yticklabel style={font=\tiny},
-  ylabel={亿元}, ylabel style={font=\scriptsize},
+  ylabel={亿元}, ylabel style={font=\tiny},
   ybar, bar width=4pt,
   grid=major, grid style={LightGray, line width=0.3pt},
   axis line style={InkGray, line width=0.5pt},
   enlarge x limits={abs=0.8},
-  legend style={font=\scriptsize, at={(0.5,-0.30)}, anchor=north,
-                legend columns=3, draw=none, fill=none, column sep=10pt},
+  legend style={font=\scriptsize, at={(0.5,-0.26)}, anchor=north,
+                legend columns=2, draw=none, fill=none, column sep=10pt},
 ]
 \addplot[fill=AgriGreen!55, draw=AgriGreen, bar shift=-3.0pt] table[x=i, y=cash]{data/clean/profiles/fin_300871.dat};
 \addplot[fill=SoftRed!45, draw=SoftRed, bar shift=3.0pt] table[x=i, y=ibd]{data/clean/profiles/fin_300871.dat};
 \addplot[fill=AgriGreen!25, draw=AgriGreen, pattern=north east lines, bar shift=-3.0pt] table[x=x, y=cash]{data/clean/profiles/finh_300871.dat};
 \addplot[fill=SoftRed!20, draw=SoftRed, pattern=north east lines, bar shift=3.0pt] table[x=x, y=ibd]{data/clean/profiles/finh_300871.dat};
-\addplot[OilBlue, mark=*, mark size=1.1pt, line width=0.8pt] table[x=i, y=ocf]{data/clean/profiles/fin_300871.dat};
-\addplot[only marks, OilBlue, mark=*, mark size=1.8pt] table[x=x, y=ocf]{data/clean/profiles/finh_300871.dat};
-\legend{货币资金, 有息负债, 经营活动现金流净额}
+\legend{货币资金（左轴）, 有息负债（左轴）}
+\end{axis}
+\begin{axis}[
+  at={(finbot.south east)}, anchor=south east,
+  width=13.75cm, height=3.10cm, scale only axis,
+  axis y line*=right, axis x line*=none, xtick=\empty,
+  ymin=-0.62, ymax=3.10,
+  tick label style={font=\tiny},
+  yticklabel style={font=\tiny}, scaled y ticks=false,
+  legend style={font=\scriptsize, at={(0.5,-0.44)}, anchor=north,
+                legend columns=1, draw=none, fill=none},
+]
+\addplot[OilBlue, mark=*, mark size=2.2pt, line width=1.3pt] table[x=i, y=ocf]{data/clean/profiles/fin_300871.dat};
+\addplot[only marks, OilBlue, mark=*, mark size=3.2pt] table[x=x, y=ocf]{data/clean/profiles/finh_300871.dat};
+\legend{经营活动现金流净额（右轴，亿元，蓝点）}
 \end{axis}
 \end{tikzpicture}
 
-\captionof{figure}[回盛生物（300871）近年主要财务指标]{回盛生物（300871）近年主要财务指标（左上：营业收入与归母净利润；右上：ROE 与资产负债率；下：货币资金、有息负债与经营活动现金流净额。
+\captionof{figure}[回盛生物（300871）近年主要财务指标]{回盛生物（300871）近年主要财务指标（左上：营业收入与归母净利润；右上：ROE 与资产负债率；下：货币资金、有息负债为左轴柱状，经营活动现金流净额为其右轴的蓝点折线。
 2021---2025 年为年报口径，2026H1 为 2026 年半年报/半年末，与其前一年报之间留出间隔、以斜纹或空心点区分；半年报数据未年化）}
+\end{minipage}
 \end{center}
 
 \pfl{财务分析} 2026 年 6 月末资产负债率 31.8\%，较 2025 年末 上升 4.4 个百分点（样本中位数 52.2\%，所处三级行业内按由低到高排第\zhnumber{6}位）。 2026 年 6 月末货币资金 3.59 亿元、短期债务（短期借款与一年内到期非流动负债）2.02 亿元、长期债务 2.62 亿元，有息负债合计 4.64 亿元，现金短债比 1.77 倍——覆盖充分。 净有息负债 1.05 亿元，相当于其 2026 年上半年营业收入的 12\%。 流动比率 2.05、速动比率 1.67，短期指标尚可。 2026 年上半年经营活动现金流净额 1.28 亿元，经营现金流与利润同向为正，内生资金可以支撑运营。 2026 年 6 月末在建工程 1.58 亿元，较上年末增加 1.00 亿元，仍有在建投入。 公司披露的财务与合规风险包括：控股股东武汉统盛投资有限公司所持公司股份中质押4,200,000股；公司在2024年度向特定对象发行预案中提示：实际控制人股票质押风险——本次认购对象楚盛投……。
@@ -780,11 +854,7 @@ ROE（\%） & 1.1 & -1.4 & 13.4 & 7.0 & 9.1 \\
 
 \pfl{未来潜在融资需求分析} 2026 年 6 月末货币资金 3.59 亿元，而短期债务 2.02 亿元（现金短债比 1.77 倍），2026 年上半年经营现金流净额 1.28 亿元。账面货币资金可以覆盖短期债务，缺口不体现在静态偿付层面。 按第 \ref{sec:financing-need} 节的三档划分，公司属于第三档“扩张型”：2026 年上半年 ROE 9.1\%（未年化，折合约 18.1\%）、6 月末资产负债率 31.8\%，资产负债表仍具备加杠杆空间；融资用途以产能扩张、品类并购与海外布局为主，单笔规模通常在 5---20 亿元量级，会被市场定价为成长而非补血。 公开披露的下一步融资线索包括：2026-05-22 公司2024年度向特定对象发行股票（拟募资不超过2.5亿元、全部补充流动资金）已因股东会未通过延期而失效，并被深交所终止审核……；2026-06-05 公司实际控制人、董事长提议回购股份，若正式推出回购方案将形成新的资金安排需求；2026-08-15 公司“回盛转债”（70,000.00万元）存续至2027年12月16日，截至2025年12月31日募集资金专户余额4,352.92万元……。 资金需求还要叠加在建工程：期末在建工程 1.58 亿元、2026 年上半年购建固定资产等支出 2.35 亿元（未年化），这部分支出在周期底部通常会被主动放缓。
 
-\begin{center}
-\begin{minipage}{\textwidth}\scriptsize\raggedright
-\noindent\textbf{资料来源}\quad \texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}04-\allowbreak{}17/\allowbreak{}1225109352.\allowbreak{}PDF}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}vip.\allowbreak{}stock.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}corp/\allowbreak{}go.\allowbreak{}php/\allowbreak{}vISSUE\_\allowbreak{}NewStock/\allowbreak{}stockid/\allowbreak{}300871.\allowbreak{}phtml}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2021-\allowbreak{}12-\allowbreak{}31/\allowbreak{}1212073265.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2024-\allowbreak{}04-\allowbreak{}04/\allowbreak{}1219519134.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}05-\allowbreak{}22/\allowbreak{}1225325178.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}04-\allowbreak{}20/\allowbreak{}1225125698.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2024-\allowbreak{}04-\allowbreak{}25/\allowbreak{}1219796097.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}06-\allowbreak{}08/\allowbreak{}1225356887.\allowbreak{}PDF}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}08-\allowbreak{}15/\allowbreak{}1225473772.\allowbreak{}PDF}。
-\end{minipage}
-\end{center}
+
 
 
 \subsubsection{金河生物（002688）}
@@ -795,6 +865,7 @@ ROE（\%） & 1.1 & -1.4 & 13.4 & 7.0 & 9.1 \\
 \pfl{历史股价} 以 2021 年 1 月为起点、2026 年 9 月为终点，股价由 5.05 元变为 5.15 元，累计 +2.0\%，区间最高 7.12 元（2021 年 6 月）、最低 3.63 元（2024 年 6 月）；当前价相当于区间最高价的 72.3\%，为区间最低价的 1.42 倍。 月度收益的年化波动率 30.2\%，低于全样本中位数 37.4\%，在三级行业“动物保健Ⅲ”的 9 家公司中波动率排第\zhnumber{9}位。 从事件看，2024 年 2 月 至 2025 年 8 月的上涨（+94.5\%）与公司2024 年年度报告披露商誉减值风险：公司为把握动保行业发展机遇在兽用化药和疫苗领域进行了一系列外延式并购……（2024-12-31）在时间上重合——股价的拐点多数能在公司自身的资本运作与风险事件上找到对应。
 
 \begin{center}
+\begin{minipage}{\textwidth}\centering
 \begin{tikzpicture}
 \begin{axis}[
   width=12.6cm, height=3.9cm, scale only axis,
@@ -814,6 +885,7 @@ ROE（\%） & 1.1 & -1.4 & 13.4 & 7.0 & 9.1 \\
 \end{tikzpicture}
 
 \captionof{figure}[金河生物（002688）股价与周期骨架]{金河生物（002688）月度收盘价（元/股）与 ZigZag 周期骨架（阈值 25\%，圆点为周期转折点）}
+\end{minipage}
 \end{center}
 
 \pfl{过去周期分析} 以 25\% 的 ZigZag 阈值划分，样本区间内股价形成 3 个主升段与 3 个主跌段。 最大主升段出现在 2024 年 2 月 至 2025 年 8 月，18 个月+94.5\%；最大主跌段为 2021 年 6 月 至 2022 年 4 月，10 个月-40.9\%。 最近一次转折出现在 2026 年 6 月（下跌段自 2025 年 8 月起，10 个月-34.9\%），当前处于该段的延续之中。 公司股价较申万农林牧渔指数提前约 23 个月见底，是板块中较早定价周期反转的公司之一。 动保的需求由存栏量而非价格决定（第 \ref{sec:vet} 节）：猪价下行阶段龙头养殖企业的逆势扩产反而推升了疫苗与兽药需求，这正是动保股价与猪价“脱钩”的原因，公司 2026 年上半年实现盈利、半年 ROE 5.7\%（未年化），好于全样本中位数（0.75\%），下行周期对其报表的冲击小于同业。
@@ -842,17 +914,19 @@ ROE（\%） & 3.9 & 4.5 & 1.3 & 6.0 & 5.7 \\
 \end{center}
 
 \begin{center}
+\begin{minipage}{\textwidth}\centering
 \begin{tikzpicture}
 \begin{groupplot}[
-  group style={group size=2 by 1, horizontal sep=0.70cm},
-  width=6.55cm, height=4.3cm,
+  group style={group size=2 by 1, horizontal sep=0.60cm},
+  width=6.85cm, height=4.60cm,
   tick label style={font=\tiny},
   title style={font=\scriptsize\heiti},
   yticklabel style={font=\tiny},
+  ylabel style={font=\tiny},
   grid=major, grid style={LightGray, line width=0.3pt},
   axis line style={InkGray, line width=0.5pt},
   enlarge x limits={abs=0.8},
-  legend style={font=\scriptsize, at={(0.5,-0.22)}, anchor=north,
+  legend style={font=\scriptsize, at={(0.5,-0.20)}, anchor=north,
                 legend columns=2, draw=none, fill=none, column sep=6pt},
 ]
 \nextgroupplot[
@@ -882,32 +956,46 @@ ROE（\%） & 3.9 & 4.5 & 1.3 & 6.0 & 5.7 \\
 \end{tikzpicture}
 \begin{tikzpicture}
 \begin{axis}[
-  width=14.35cm, height=2.9cm, scale only axis,
+  name=finbot,
+  width=13.75cm, height=3.10cm, scale only axis,
   ymin=-2.36, ymax=26.47,
   xtick={0,1,2,3,4,5.7},
   xticklabels={2021,2022,2023,2024,2025,2026H1},
   tick label style={font=\tiny},
   yticklabel style={font=\tiny},
-  ylabel={亿元}, ylabel style={font=\scriptsize},
+  ylabel={亿元}, ylabel style={font=\tiny},
   ybar, bar width=4pt,
   grid=major, grid style={LightGray, line width=0.3pt},
   axis line style={InkGray, line width=0.5pt},
   enlarge x limits={abs=0.8},
-  legend style={font=\scriptsize, at={(0.5,-0.30)}, anchor=north,
-                legend columns=3, draw=none, fill=none, column sep=10pt},
+  legend style={font=\scriptsize, at={(0.5,-0.26)}, anchor=north,
+                legend columns=2, draw=none, fill=none, column sep=10pt},
 ]
 \addplot[fill=AgriGreen!55, draw=AgriGreen, bar shift=-3.0pt] table[x=i, y=cash]{data/clean/profiles/fin_002688.dat};
 \addplot[fill=SoftRed!45, draw=SoftRed, bar shift=3.0pt] table[x=i, y=ibd]{data/clean/profiles/fin_002688.dat};
 \addplot[fill=AgriGreen!25, draw=AgriGreen, pattern=north east lines, bar shift=-3.0pt] table[x=x, y=cash]{data/clean/profiles/finh_002688.dat};
 \addplot[fill=SoftRed!20, draw=SoftRed, pattern=north east lines, bar shift=3.0pt] table[x=x, y=ibd]{data/clean/profiles/finh_002688.dat};
-\addplot[OilBlue, mark=*, mark size=1.1pt, line width=0.8pt] table[x=i, y=ocf]{data/clean/profiles/fin_002688.dat};
-\addplot[only marks, OilBlue, mark=*, mark size=1.8pt] table[x=x, y=ocf]{data/clean/profiles/finh_002688.dat};
-\legend{货币资金, 有息负债, 经营活动现金流净额}
+\legend{货币资金（左轴）, 有息负债（左轴）}
+\end{axis}
+\begin{axis}[
+  at={(finbot.south east)}, anchor=south east,
+  width=13.75cm, height=3.10cm, scale only axis,
+  axis y line*=right, axis x line*=none, xtick=\empty,
+  ymin=-1.30, ymax=6.48,
+  tick label style={font=\tiny},
+  yticklabel style={font=\tiny}, scaled y ticks=false,
+  legend style={font=\scriptsize, at={(0.5,-0.44)}, anchor=north,
+                legend columns=1, draw=none, fill=none},
+]
+\addplot[OilBlue, mark=*, mark size=2.2pt, line width=1.3pt] table[x=i, y=ocf]{data/clean/profiles/fin_002688.dat};
+\addplot[only marks, OilBlue, mark=*, mark size=3.2pt] table[x=x, y=ocf]{data/clean/profiles/finh_002688.dat};
+\legend{经营活动现金流净额（右轴，亿元，蓝点）}
 \end{axis}
 \end{tikzpicture}
 
-\captionof{figure}[金河生物（002688）近年主要财务指标]{金河生物（002688）近年主要财务指标（左上：营业收入与归母净利润；右上：ROE 与资产负债率；下：货币资金、有息负债与经营活动现金流净额。
+\captionof{figure}[金河生物（002688）近年主要财务指标]{金河生物（002688）近年主要财务指标（左上：营业收入与归母净利润；右上：ROE 与资产负债率；下：货币资金、有息负债为左轴柱状，经营活动现金流净额为其右轴的蓝点折线。
 2021---2025 年为年报口径，2026H1 为 2026 年半年报/半年末，与其前一年报之间留出间隔、以斜纹或空心点区分；半年报数据未年化）}
+\end{minipage}
 \end{center}
 
 \pfl{财务分析} 2026 年 6 月末资产负债率 56.1\%，较 2025 年末 上升 0.4 个百分点（样本中位数 52.2\%，所处三级行业内按由低到高排第\zhnumber{8}位）。 2026 年 6 月末货币资金 7.00 亿元、短期债务（短期借款与一年内到期非流动负债）13.82 亿元、长期债务 9.82 亿元，有息负债合计 23.64 亿元，现金短债比 0.51 倍——覆盖偏紧。 净有息负债 16.64 亿元，相当于其 2026 年上半年营业收入的 115\%。 流动比率 1.18、速动比率 0.77，短期指标尚可。 2026 年上半年经营活动现金流净额 2.54 亿元，经营现金流与利润同向为正，内生资金可以支撑运营。 2026 年 6 月末在建工程 2.83 亿元，较上年末增加 0.87 亿元，仍有在建投入。 2026 年 6 月末商誉 2.78 亿元，占归母净资产的 11.2\%，是净资产中最脆弱的一块。 公司披露的财务与合规风险包括：2026 年半年报显示公司货币资金 2,818.51 元（母公司口径列示于受限资产表）因吉林佑本供应商起诉导致账户被冻结……；2026 年一季报显示控股股东内蒙古金河控股有限公司持有 219,195,570 股（占 28.49\%）……。
@@ -937,11 +1025,7 @@ ROE（\%） & 3.9 & 4.5 & 1.3 & 6.0 & 5.7 \\
 
 \pfl{未来潜在融资需求分析} 2026 年 6 月末货币资金 7.00 亿元，而短期债务 13.82 亿元（现金短债比 0.51 倍），2026 年上半年经营现金流净额 2.54 亿元。按“短期债务减去账面货币资金”的滚动偿付口径，静态缺口约 6.82 亿元；若再计入上半年亏损的年化额（0.00 亿元），维持一年正常经营所需的外部资金约 6.82---6.82 亿元。 按第 \ref{sec:financing-need} 节的三档划分，公司属于第三档“扩张型”：2026 年上半年 ROE 5.7\%（未年化，折合约 11.5\%）、6 月末资产负债率 56.1\%，资产负债表仍具备加杠杆空间；融资用途以产能扩张、品类并购与海外布局为主，单笔规模通常在 5---20 亿元量级，会被市场定价为成长而非补血。 公开披露的下一步融资线索包括：2026-01-30 控股子公司金河佑本开展售后回租融资租赁业务、公司按 85.6071\% 持股比例提供不超过 12,070.60 万元担保并由控股股东全额担保……；2026-08-22 公司完成 2025 年度以简易程序向特定对象发行股票，募资净额 293,964,269.73 元全部投向污水处理扩容及水资源再生利用提标扩建工程……。 资金需求还要叠加在建工程：期末在建工程 2.83 亿元、2026 年上半年购建固定资产等支出 1.44 亿元（未年化），这部分支出在周期底部通常会被主动放缓。
 
-\begin{center}
-\begin{minipage}{\textwidth}\scriptsize\raggedright
-\noindent\textbf{资料来源}\quad \texttt{\tiny https:/\allowbreak{}/\allowbreak{}pdf.\allowbreak{}dfcfw.\allowbreak{}com/\allowbreak{}pdf/\allowbreak{}H2\_\allowbreak{}AN20210823\allowbreak{}1511909329\_\allowbreak{}1.\allowbreak{}pdf}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}vip.\allowbreak{}stock.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}corp/\allowbreak{}view/\allowbreak{}vISSUE\_\allowbreak{}RaiseExpla\allowbreak{}nationDeta\allowbreak{}il.\allowbreak{}php}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}file.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}211.\allowbreak{}154.\allowbreak{}219.\allowbreak{}97:9494/\allowbreak{}MRGG/\allowbreak{}CNSESZ\_\allowbreak{}STOCK/\allowbreak{}2022/\allowbreak{}2022-\allowbreak{}6/\allowbreak{}2022-\allowbreak{}06-\allowbreak{}08/\allowbreak{}827}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}money.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}corp/\allowbreak{}view/\allowbreak{}vISSUE\_\allowbreak{}MarketBull\allowbreak{}etinDetail.\allowbreak{}php}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}disc.\allowbreak{}static.\allowbreak{}szse.\allowbreak{}cn/\allowbreak{}download/\allowbreak{}disc/\allowbreak{}disk03/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}08-\allowbreak{}22/\allowbreak{}9f94ab6a-\allowbreak{}89eb-\allowbreak{}4950-\allowbreak{}aad4-\allowbreak{}a6}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}money.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}corp/\allowbreak{}view/\allowbreak{}vCB\_\allowbreak{}AllBulleti\allowbreak{}nDetail.\allowbreak{}php}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}money.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}corp/\allowbreak{}view/\allowbreak{}vCB\_\allowbreak{}AllBulleti\allowbreak{}nDetail.\allowbreak{}php}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}www.\allowbreak{}cs.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}ssgs/\allowbreak{}01/\allowbreak{}2026/\allowbreak{}09/\allowbreak{}01/\allowbreak{}detail\_\allowbreak{}2026090110\allowbreak{}036268.\allowbreak{}html}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}file.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}211.\allowbreak{}154.\allowbreak{}219.\allowbreak{}97:9494/\allowbreak{}MRGG/\allowbreak{}CNSESZ\_\allowbreak{}STOCK/\allowbreak{}2026/\allowbreak{}2026-\allowbreak{}4/\allowbreak{}2026-\allowbreak{}04-\allowbreak{}29/\allowbreak{}122}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}08-\allowbreak{}28/\allowbreak{}1225517690.\allowbreak{}PDF}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}disc.\allowbreak{}static.\allowbreak{}szse.\allowbreak{}cn/\allowbreak{}disc/\allowbreak{}disk01/\allowbreak{}finalpage/\allowbreak{}2018-\allowbreak{}01-\allowbreak{}04/\allowbreak{}826a35cc-\allowbreak{}a2a4-\allowbreak{}4661-\allowbreak{}a8a5-\allowbreak{}d9c9aa746b\allowbreak{}5}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}epaper.\allowbreak{}stcn.\allowbreak{}com/\allowbreak{}att/\allowbreak{}202601/\allowbreak{}31/\allowbreak{}ZQ31B073-\allowbreak{}CC\_\allowbreak{}eBook.\allowbreak{}pdf}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}disc.\allowbreak{}static.\allowbreak{}szse.\allowbreak{}cn/\allowbreak{}download/\allowbreak{}disc/\allowbreak{}disk03/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}08-\allowbreak{}22/\allowbreak{}57ea5590-\allowbreak{}1d00-\allowbreak{}440a-\allowbreak{}b4c1-\allowbreak{}9e}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}disc.\allowbreak{}static.\allowbreak{}szse.\allowbreak{}cn/\allowbreak{}disc/\allowbreak{}disk03/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}04-\allowbreak{}29/\allowbreak{}63ff002a-\allowbreak{}fa5e-\allowbreak{}4132-\allowbreak{}85a1-\allowbreak{}68c05b59e0\allowbreak{}5}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}xinpi.\allowbreak{}zqrb.\allowbreak{}cn/\allowbreak{}pdf/\allowbreak{}SZ/\allowbreak{}002688/\allowbreak{}2026/\allowbreak{}0429/\allowbreak{}9e0516668f\allowbreak{}eae1d74c4c\allowbreak{}e1fc398556\allowbreak{}cd.\allowbreak{}pdf}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}file.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}211.\allowbreak{}154.\allowbreak{}219.\allowbreak{}97:9494/\allowbreak{}MRGG/\allowbreak{}CNSESZ\_\allowbreak{}STOCK/\allowbreak{}2024/\allowbreak{}2024-\allowbreak{}4/\allowbreak{}2024-\allowbreak{}04-\allowbreak{}29/\allowbreak{}101}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}file.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}cn/\allowbreak{}diaoyan/\allowbreak{}jgdy/\allowbreak{}2026/\allowbreak{}2026-\allowbreak{}04/\allowbreak{}2026-\allowbreak{}04-\allowbreak{}30/\allowbreak{}10178846\_\allowbreak{}1.\allowbreak{}PDF}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}disc.\allowbreak{}static.\allowbreak{}szse.\allowbreak{}cn/\allowbreak{}download/\allowbreak{}disc/\allowbreak{}disk03/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}08-\allowbreak{}22/\allowbreak{}1ac25d92-\allowbreak{}a7ea-\allowbreak{}496c-\allowbreak{}9614-\allowbreak{}3e}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}file.\allowbreak{}finance.\allowbreak{}qq.\allowbreak{}com/\allowbreak{}finance/\allowbreak{}hs/\allowbreak{}pdf/\allowbreak{}2025/\allowbreak{}09/\allowbreak{}22/\allowbreak{}1224670721.\allowbreak{}PDF}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}pdf.\allowbreak{}dfcfw.\allowbreak{}com/\allowbreak{}pdf/\allowbreak{}H3\_\allowbreak{}AP20260507\allowbreak{}1822040531\_\allowbreak{}1.\allowbreak{}pdf}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}data.\allowbreak{}eastmoney.\allowbreak{}com/\allowbreak{}notices/\allowbreak{}stock/\allowbreak{}002688.\allowbreak{}html}。
-\end{minipage}
-\end{center}
+
 
 
 \subsubsection{普莱柯（603566）}
@@ -952,6 +1036,7 @@ ROE（\%） & 3.9 & 4.5 & 1.3 & 6.0 & 5.7 \\
 \pfl{历史股价} 本报告样本区间（2021 年 1 月 至 2026 年 9 月）内，股价由 22.31 元变为 10.19 元，累计 -54.3\%，区间最高 31.89 元（2023 年 2 月）、最低 9.79 元（2026 年 6 月）；当前价相当于区间最高价的 32.0\%，已接近区间最低价（1.04 倍）。 月度收益的年化波动率 34.9\%，低于全样本中位数 37.4\%，在三级行业“动物保健Ⅲ”的 9 家公司中波动率排第\zhnumber{7}位。 从事件看，2023 年 2 月 至 2026 年 6 月的下跌（-69.3\%）与公司2022 年非公开发行募集资金净额 885,820,523.22 元截至……（2026-06-30）在时间上重合——股价的拐点多数能在公司自身的资本运作与风险事件上找到对应。
 
 \begin{center}
+\begin{minipage}{\textwidth}\centering
 \begin{tikzpicture}
 \begin{axis}[
   width=12.6cm, height=3.9cm, scale only axis,
@@ -971,6 +1056,7 @@ ROE（\%） & 3.9 & 4.5 & 1.3 & 6.0 & 5.7 \\
 \end{tikzpicture}
 
 \captionof{figure}[普莱柯（603566）股价与周期骨架]{普莱柯（603566）月度收盘价（元/股）与 ZigZag 周期骨架（阈值 25\%，圆点为周期转折点）}
+\end{minipage}
 \end{center}
 
 \pfl{过去周期分析} 以 25\% 的 ZigZag 阈值划分，样本区间内股价形成 2 个主升段与 3 个主跌段。 最大主跌段为 2023 年 2 月 至 2026 年 6 月，40 个月-69.3\%；最大主升段出现在 2021 年 10 月 至 2022 年 2 月，4 个月+58.7\%。 最近一次转折出现在 2026 年 6 月（下跌段自 2023 年 2 月起，40 个月-69.3\%），当前处于该段的延续之中。 公司股价与申万农林牧渔指数几乎同步见底，个股并未走出独立行情。 动保的需求由存栏量而非价格决定（第 \ref{sec:vet} 节）：猪价下行阶段龙头养殖企业的逆势扩产反而推升了疫苗与兽药需求，这正是动保股价与猪价“脱钩”的原因，公司 2026 年上半年实现盈利、半年 ROE 3.0\%（未年化），好于全样本中位数（0.75\%），下行周期对其报表的冲击小于同业。
@@ -999,17 +1085,19 @@ ROE（\%） & 6.3 & 3.5 & 7.1 & 4.4 & 3.0 \\
 \end{center}
 
 \begin{center}
+\begin{minipage}{\textwidth}\centering
 \begin{tikzpicture}
 \begin{groupplot}[
-  group style={group size=2 by 1, horizontal sep=0.70cm},
-  width=6.55cm, height=4.3cm,
+  group style={group size=2 by 1, horizontal sep=0.60cm},
+  width=6.85cm, height=4.60cm,
   tick label style={font=\tiny},
   title style={font=\scriptsize\heiti},
   yticklabel style={font=\tiny},
+  ylabel style={font=\tiny},
   grid=major, grid style={LightGray, line width=0.3pt},
   axis line style={InkGray, line width=0.5pt},
   enlarge x limits={abs=0.8},
-  legend style={font=\scriptsize, at={(0.5,-0.22)}, anchor=north,
+  legend style={font=\scriptsize, at={(0.5,-0.20)}, anchor=north,
                 legend columns=2, draw=none, fill=none, column sep=6pt},
 ]
 \nextgroupplot[
@@ -1039,32 +1127,46 @@ ROE（\%） & 6.3 & 3.5 & 7.1 & 4.4 & 3.0 \\
 \end{tikzpicture}
 \begin{tikzpicture}
 \begin{axis}[
-  width=14.35cm, height=2.9cm, scale only axis,
-  ymin=-0.36, ymax=3.99,
+  name=finbot,
+  width=13.75cm, height=3.10cm, scale only axis,
+  ymin=-0.32, ymax=3.55,
   xtick={0,1,2,3,4,5.7},
   xticklabels={2021,2022,2023,2024,2025,2026H1},
   tick label style={font=\tiny},
   yticklabel style={font=\tiny},
-  ylabel={亿元}, ylabel style={font=\scriptsize},
+  ylabel={亿元}, ylabel style={font=\tiny},
   ybar, bar width=4pt,
   grid=major, grid style={LightGray, line width=0.3pt},
   axis line style={InkGray, line width=0.5pt},
   enlarge x limits={abs=0.8},
-  legend style={font=\scriptsize, at={(0.5,-0.30)}, anchor=north,
-                legend columns=3, draw=none, fill=none, column sep=10pt},
+  legend style={font=\scriptsize, at={(0.5,-0.26)}, anchor=north,
+                legend columns=2, draw=none, fill=none, column sep=10pt},
 ]
 \addplot[fill=AgriGreen!55, draw=AgriGreen, bar shift=-3.0pt] table[x=i, y=cash]{data/clean/profiles/fin_603566.dat};
 \addplot[fill=SoftRed!45, draw=SoftRed, bar shift=3.0pt] table[x=i, y=ibd]{data/clean/profiles/fin_603566.dat};
 \addplot[fill=AgriGreen!25, draw=AgriGreen, pattern=north east lines, bar shift=-3.0pt] table[x=x, y=cash]{data/clean/profiles/finh_603566.dat};
 \addplot[fill=SoftRed!20, draw=SoftRed, pattern=north east lines, bar shift=3.0pt] table[x=x, y=ibd]{data/clean/profiles/finh_603566.dat};
-\addplot[OilBlue, mark=*, mark size=1.1pt, line width=0.8pt] table[x=i, y=ocf]{data/clean/profiles/fin_603566.dat};
-\addplot[only marks, OilBlue, mark=*, mark size=1.8pt] table[x=x, y=ocf]{data/clean/profiles/finh_603566.dat};
-\legend{货币资金, 有息负债, 经营活动现金流净额}
+\legend{货币资金（左轴）, 有息负债（左轴）}
+\end{axis}
+\begin{axis}[
+  at={(finbot.south east)}, anchor=south east,
+  width=13.75cm, height=3.10cm, scale only axis,
+  axis y line*=right, axis x line*=none, xtick=\empty,
+  ymin=-0.93, ymax=4.63,
+  tick label style={font=\tiny},
+  yticklabel style={font=\tiny}, scaled y ticks=false,
+  legend style={font=\scriptsize, at={(0.5,-0.44)}, anchor=north,
+                legend columns=1, draw=none, fill=none},
+]
+\addplot[OilBlue, mark=*, mark size=2.2pt, line width=1.3pt] table[x=i, y=ocf]{data/clean/profiles/fin_603566.dat};
+\addplot[only marks, OilBlue, mark=*, mark size=3.2pt] table[x=x, y=ocf]{data/clean/profiles/finh_603566.dat};
+\legend{经营活动现金流净额（右轴，亿元，蓝点）}
 \end{axis}
 \end{tikzpicture}
 
-\captionof{figure}[普莱柯（603566）近年主要财务指标]{普莱柯（603566）近年主要财务指标（左上：营业收入与归母净利润；右上：ROE 与资产负债率；下：货币资金、有息负债与经营活动现金流净额。
+\captionof{figure}[普莱柯（603566）近年主要财务指标]{普莱柯（603566）近年主要财务指标（左上：营业收入与归母净利润；右上：ROE 与资产负债率；下：货币资金、有息负债为左轴柱状，经营活动现金流净额为其右轴的蓝点折线。
 2021---2025 年为年报口径，2026H1 为 2026 年半年报/半年末，与其前一年报之间留出间隔、以斜纹或空心点区分；半年报数据未年化）}
+\end{minipage}
 \end{center}
 
 \pfl{财务分析} 2026 年 6 月末资产负债率 15.2\%，较 2025 年末 下降 0.2 个百分点（样本中位数 52.2\%，所处三级行业内按由低到高排第\zhnumber{3}位）。 2026 年 6 月末货币资金 0.86 亿元、短期债务（短期借款与一年内到期非流动负债）0.07 亿元、长期债务 0.19 亿元，有息负债合计 0.26 亿元，现金短债比 11.86 倍——覆盖充分。 净有息负债 -0.60 亿元，相当于其 2026 年上半年营业收入的 -12\%。 流动比率 3.46、速动比率 2.86，短期指标尚可。 2026 年上半年经营活动现金流净额 0.78 亿元，经营现金流与利润同向为正，内生资金可以支撑运营。
@@ -1090,11 +1192,7 @@ ROE（\%） & 6.3 & 3.5 & 7.1 & 4.4 & 3.0 \\
 
 \pfl{未来潜在融资需求分析} 2026 年 6 月末货币资金 0.86 亿元，而短期债务 0.07 亿元（现金短债比 11.86 倍），2026 年上半年经营现金流净额 0.78 亿元。账面货币资金可以覆盖短期债务，缺口不体现在静态偿付层面。 公司 2026 年 6 月末资产负债率 15.2\%、2026 年上半年 ROE 3.0\%（未年化），资产负债表尚有余量，融资需求不是“补血型”的刚性需求，而是围绕并购整合、项目投入与营运资金的主动性需求。 公开披露的下一步融资线索包括：2025-12-31 2025 年现金分红总额 2.05 亿元（其中年度分配预案派发现金红利 136,767,749.20 元、每股派 0.4 元），并设有回购专户……；2026-06-30 2022 年非公开发行募集资金净额 885,820,523.22 元截至 2026 年 6 月末累计投入……。
 
-\begin{center}
-\begin{minipage}{\textwidth}\scriptsize\raggedright
-\noindent\textbf{资料来源}\quad \texttt{\tiny https:/\allowbreak{}/\allowbreak{}pdf.\allowbreak{}dfcfw.\allowbreak{}com/\allowbreak{}pdf/\allowbreak{}H3\_\allowbreak{}AP20170908\allowbreak{}0869285404\_\allowbreak{}1.\allowbreak{}pdf}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}vip.\allowbreak{}stock.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}corp/\allowbreak{}view/\allowbreak{}vISSUE\_\allowbreak{}MarketBull\allowbreak{}etinDetail.\allowbreak{}php}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}04-\allowbreak{}29/\allowbreak{}1225231345.\allowbreak{}PDF}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}04-\allowbreak{}29/\allowbreak{}1225231206.\allowbreak{}PDF}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}vip.\allowbreak{}stock.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}corp/\allowbreak{}view/\allowbreak{}vCB\_\allowbreak{}AllBulleti\allowbreak{}nDetail.\allowbreak{}php}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}08-\allowbreak{}25/\allowbreak{}1225497501.\allowbreak{}PDF}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}wm/\allowbreak{}2026-\allowbreak{}05-\allowbreak{}09/\allowbreak{}doc-\allowbreak{}inhxfxrr38\allowbreak{}58761.\allowbreak{}shtml}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}pdf.\allowbreak{}dfcfw.\allowbreak{}com/\allowbreak{}pdf/\allowbreak{}H3\_\allowbreak{}AP20220627\allowbreak{}1575068347\_\allowbreak{}1.\allowbreak{}pdf}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}stock/\allowbreak{}hkstock/\allowbreak{}ggscyd/\allowbreak{}2026-\allowbreak{}08-\allowbreak{}24/\allowbreak{}doc-\allowbreak{}inipmxck59\allowbreak{}16448.\allowbreak{}shtml}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}www.\allowbreak{}sse.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}disclosure/\allowbreak{}listedinfo/\allowbreak{}announceme\allowbreak{}nt/\allowbreak{}c/\allowbreak{}new/\allowbreak{}2024-\allowbreak{}10-\allowbreak{}30/\allowbreak{}603566\_\allowbreak{}20241030\_\allowbreak{}IRG9.\allowbreak{}}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}static.\allowbreak{}weeklyonst\allowbreak{}ock.\allowbreak{}com/\allowbreak{}26/\allowbreak{}0428/\allowbreak{}AB26175555\allowbreak{}81522.\allowbreak{}html}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}data.\allowbreak{}eastmoney.\allowbreak{}com/\allowbreak{}notices/\allowbreak{}detail/\allowbreak{}603566/\allowbreak{}AN20260824\allowbreak{}1828363952.\allowbreak{}html}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}stock/\allowbreak{}zqgd/\allowbreak{}2026-\allowbreak{}08-\allowbreak{}24/\allowbreak{}doc-\allowbreak{}inipmhfp00\allowbreak{}58558.\allowbreak{}shtml}。
-\end{minipage}
-\end{center}
+
 
 
 \subsubsection{申联生物（688098）}
@@ -1105,6 +1203,7 @@ ROE（\%） & 6.3 & 3.5 & 7.1 & 4.4 & 3.0 \\
 \pfl{历史股价} 以 2021 年 1 月为起点、2026 年 9 月为终点，股价由 14.49 元变为 8.37 元，累计 -42.2\%，区间最高 14.61 元（2021 年 2 月）、最低 3.92 元（2024 年 8 月）；当前价相当于区间最高价的 57.3\%，为区间最低价的 2.14 倍。 月度收益的年化波动率 38.3\%，高于全样本中位数 37.4\%，在三级行业“动物保健Ⅲ”的 9 家公司中波动率排第\zhnumber{4}位。 从事件看，2024 年 8 月 至 2025 年 8 月的上涨（+215.8\%）与公司2024 年度归属于上市公司股东的净利润 -4,474.01 万元、扣非后 -4,837.65 万元……（2024-12-31）在时间上重合；2021 年 1 月 至 2024 年 8 月的下跌（-72.9\%）与公司公司预先以自筹资金开展募投项目，募集资金到位后按规置换（2023-08-30）在时间上重合——股价的拐点多数能在公司自身的资本运作与风险事件上找到对应。
 
 \begin{center}
+\begin{minipage}{\textwidth}\centering
 \begin{tikzpicture}
 \begin{axis}[
   width=12.6cm, height=3.9cm, scale only axis,
@@ -1124,6 +1223,7 @@ ROE（\%） & 6.3 & 3.5 & 7.1 & 4.4 & 3.0 \\
 \end{tikzpicture}
 
 \captionof{figure}[申联生物（688098）股价与周期骨架]{申联生物（688098）月度收盘价（元/股）与 ZigZag 周期骨架（阈值 25\%，圆点为周期转折点）}
+\end{minipage}
 \end{center}
 
 \pfl{过去周期分析} 以 25\% 的 ZigZag 阈值划分，样本区间内股价形成 1 个主升段与 2 个主跌段。 最大主升段出现在 2024 年 8 月 至 2025 年 8 月，12 个月+215.8\%；最大主跌段为 2021 年 1 月 至 2024 年 8 月，43 个月-72.9\%。 最近一次转折出现在 2026 年 5 月（下跌段自 2025 年 8 月起，9 个月-37.2\%），当前处于该段的延续之中。 公司股价较申万农林牧渔指数提前约 21 个月见底，是板块中较早定价周期反转的公司之一。 动保的需求由存栏量而非价格决定（第 \ref{sec:vet} 节）：猪价下行阶段龙头养殖企业的逆势扩产反而推升了疫苗与兽药需求，这正是动保股价与猪价“脱钩”的原因，公司 2026 年 6 月末资产负债率 9.8\%、半年 ROE -1.4\%（未年化），在本轮下行中属于随行业同步调整的一类。
@@ -1152,17 +1252,19 @@ ROE（\%） & 2.1 & -3.1 & -1.5 & -0.9 & -1.4 \\
 \end{center}
 
 \begin{center}
+\begin{minipage}{\textwidth}\centering
 \begin{tikzpicture}
 \begin{groupplot}[
-  group style={group size=2 by 1, horizontal sep=0.70cm},
-  width=6.55cm, height=4.3cm,
+  group style={group size=2 by 1, horizontal sep=0.60cm},
+  width=6.85cm, height=4.60cm,
   tick label style={font=\tiny},
   title style={font=\scriptsize\heiti},
   yticklabel style={font=\tiny},
+  ylabel style={font=\tiny},
   grid=major, grid style={LightGray, line width=0.3pt},
   axis line style={InkGray, line width=0.5pt},
   enlarge x limits={abs=0.8},
-  legend style={font=\scriptsize, at={(0.5,-0.22)}, anchor=north,
+  legend style={font=\scriptsize, at={(0.5,-0.20)}, anchor=north,
                 legend columns=2, draw=none, fill=none, column sep=6pt},
 ]
 \nextgroupplot[
@@ -1192,32 +1294,46 @@ ROE（\%） & 2.1 & -3.1 & -1.5 & -0.9 & -1.4 \\
 \end{tikzpicture}
 \begin{tikzpicture}
 \begin{axis}[
-  width=14.35cm, height=2.9cm, scale only axis,
-  ymin=-0.86, ymax=1.72,
+  name=finbot,
+  width=13.75cm, height=3.10cm, scale only axis,
+  ymin=-0.15, ymax=1.64,
   xtick={0,1,2,3,4,5.7},
   xticklabels={2021,2022,2023,2024,2025,2026H1},
   tick label style={font=\tiny},
   yticklabel style={font=\tiny},
-  ylabel={亿元}, ylabel style={font=\scriptsize},
+  ylabel={亿元}, ylabel style={font=\tiny},
   ybar, bar width=4pt,
   grid=major, grid style={LightGray, line width=0.3pt},
   axis line style={InkGray, line width=0.5pt},
   enlarge x limits={abs=0.8},
-  legend style={font=\scriptsize, at={(0.5,-0.30)}, anchor=north,
-                legend columns=3, draw=none, fill=none, column sep=10pt},
+  legend style={font=\scriptsize, at={(0.5,-0.26)}, anchor=north,
+                legend columns=2, draw=none, fill=none, column sep=10pt},
 ]
 \addplot[fill=AgriGreen!55, draw=AgriGreen, bar shift=-3.0pt] table[x=i, y=cash]{data/clean/profiles/fin_688098.dat};
 \addplot[fill=SoftRed!45, draw=SoftRed, bar shift=3.0pt] table[x=i, y=ibd]{data/clean/profiles/fin_688098.dat};
 \addplot[fill=AgriGreen!25, draw=AgriGreen, pattern=north east lines, bar shift=-3.0pt] table[x=x, y=cash]{data/clean/profiles/finh_688098.dat};
 \addplot[fill=SoftRed!20, draw=SoftRed, pattern=north east lines, bar shift=3.0pt] table[x=x, y=ibd]{data/clean/profiles/finh_688098.dat};
-\addplot[OilBlue, mark=*, mark size=1.1pt, line width=0.8pt] table[x=i, y=ocf]{data/clean/profiles/fin_688098.dat};
-\addplot[only marks, OilBlue, mark=*, mark size=1.8pt] table[x=x, y=ocf]{data/clean/profiles/finh_688098.dat};
-\legend{货币资金, 有息负债, 经营活动现金流净额}
+\legend{货币资金（左轴）, 有息负债（左轴）}
+\end{axis}
+\begin{axis}[
+  at={(finbot.south east)}, anchor=south east,
+  width=13.75cm, height=3.10cm, scale only axis,
+  axis y line*=right, axis x line*=none, xtick=\empty,
+  ymin=-1.05, ymax=1.37,
+  tick label style={font=\tiny},
+  yticklabel style={font=\tiny}, scaled y ticks=false,
+  legend style={font=\scriptsize, at={(0.5,-0.44)}, anchor=north,
+                legend columns=1, draw=none, fill=none},
+]
+\addplot[OilBlue, mark=*, mark size=2.2pt, line width=1.3pt] table[x=i, y=ocf]{data/clean/profiles/fin_688098.dat};
+\addplot[only marks, OilBlue, mark=*, mark size=3.2pt] table[x=x, y=ocf]{data/clean/profiles/finh_688098.dat};
+\legend{经营活动现金流净额（右轴，亿元，蓝点）}
 \end{axis}
 \end{tikzpicture}
 
-\captionof{figure}[申联生物（688098）近年主要财务指标]{申联生物（688098）近年主要财务指标（左上：营业收入与归母净利润；右上：ROE 与资产负债率；下：货币资金、有息负债与经营活动现金流净额。
+\captionof{figure}[申联生物（688098）近年主要财务指标]{申联生物（688098）近年主要财务指标（左上：营业收入与归母净利润；右上：ROE 与资产负债率；下：货币资金、有息负债为左轴柱状，经营活动现金流净额为其右轴的蓝点折线。
 2021---2025 年为年报口径，2026H1 为 2026 年半年报/半年末，与其前一年报之间留出间隔、以斜纹或空心点区分；半年报数据未年化）}
+\end{minipage}
 \end{center}
 
 \pfl{财务分析} 2026 年 6 月末资产负债率 9.8\%，较 2025 年末 上升 0.5 个百分点（样本中位数 52.2\%，所处三级行业内按由低到高排第\zhnumber{1}位）。 2026 年 6 月末货币资金 0.65 亿元、短期债务（短期借款与一年内到期非流动负债）0.53 亿元、长期债务 0.01 亿元，有息负债合计 0.53 亿元，现金短债比 1.23 倍——覆盖充分。 净有息负债 -0.11 亿元，相当于其 2026 年上半年营业收入的 -10\%。 流动比率 3.54、速动比率 2.72，短期指标尚可。 2026 年上半年经营活动现金流净额 -0.65 亿元，经营现金流与利润同时为负，现金消耗较快。 公司披露的财务与合规风险包括：公司 2024 年年度报告披露本年度公司无重大诉讼、仲裁事项；2025 年半年度报告同样披露无重大诉讼……。
@@ -1243,11 +1359,7 @@ ROE（\%） & 2.1 & -3.1 & -1.5 & -0.9 & -1.4 \\
 
 \pfl{未来潜在融资需求分析} 2026 年 6 月末货币资金 0.65 亿元，而短期债务 0.53 亿元（现金短债比 1.23 倍），2026 年上半年经营现金流净额 -0.65 亿元。账面货币资金可以覆盖短期债务，缺口不体现在静态偿付层面。 公司 2026 年上半年归母净利润为负（-0.19 亿元），但 6 月末资产负债率 9.8\% 尚未进入第一档（亏损且负债率 $>$65\%）的区间，当前融资需求以补充流动资金、支撑低谷期经营性支出为主。 公开披露的下一步融资线索包括：2025-12-31 公司 2025 年度以集中竞价交易方式回购公司股份的金额为 1,679,688.43 元（不含交易费用），以回购方式实现对投资者的权益回报……；2026-02-25 公司明确收购世之源控股权的 23,744.1789 万元资金来源于自有资金及自筹资金，其中包含银行并购贷款……。
 
-\begin{center}
-\begin{minipage}{\textwidth}\scriptsize\raggedright
-\noindent\textbf{资料来源}\quad \texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}sse.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}stock/\allowbreak{}informatio\allowbreak{}n/\allowbreak{}c/\allowbreak{}201905/\allowbreak{}155b8b5552\allowbreak{}e541fb87e8\allowbreak{}4a396d5e16\allowbreak{}61.\allowbreak{}pdf}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}roll/\allowbreak{}2024-\allowbreak{}11-\allowbreak{}05/\allowbreak{}doc-\allowbreak{}incuyvnx90\allowbreak{}43935.\allowbreak{}shtml}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}vip.\allowbreak{}stock.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}corp/\allowbreak{}go.\allowbreak{}php/\allowbreak{}vISSUE\_\allowbreak{}NewStock/\allowbreak{}stockid/\allowbreak{}688098.\allowbreak{}phtml}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}paper.\allowbreak{}cnstock.\allowbreak{}com/\allowbreak{}html/\allowbreak{}2026-\allowbreak{}02/\allowbreak{}25/\allowbreak{}content\_\allowbreak{}2181927.\allowbreak{}htm}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}vip.\allowbreak{}stock.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}corp/\allowbreak{}view/\allowbreak{}vCB\_\allowbreak{}AllBulleti\allowbreak{}nDetail.\allowbreak{}php}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}pdf.\allowbreak{}dfcfw.\allowbreak{}com/\allowbreak{}pdf/\allowbreak{}H2\_\allowbreak{}AN20260428\allowbreak{}1821704033\_\allowbreak{}1.\allowbreak{}pdf}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}money.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}corp/\allowbreak{}view/\allowbreak{}vCB\_\allowbreak{}AllBulleti\allowbreak{}nDetail.\allowbreak{}php}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}stock/\allowbreak{}bxjj/\allowbreak{}2026-\allowbreak{}08-\allowbreak{}30/\allowbreak{}doc-\allowbreak{}iniqauvr50\allowbreak{}06193.\allowbreak{}shtml}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}stock/\allowbreak{}aigc/\allowbreak{}stockfs/\allowbreak{}2026-\allowbreak{}08-\allowbreak{}30/\allowbreak{}doc-\allowbreak{}iniqauvp82\allowbreak{}20372.\allowbreak{}shtml}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}www.\allowbreak{}sse.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}disclosure/\allowbreak{}listedinfo/\allowbreak{}announceme\allowbreak{}nt/\allowbreak{}c/\allowbreak{}new/\allowbreak{}2023-\allowbreak{}08-\allowbreak{}30/\allowbreak{}688098\_\allowbreak{}20230830\_\allowbreak{}PHC7.\allowbreak{}p}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}file.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}211.\allowbreak{}154.\allowbreak{}219.\allowbreak{}97:9494/\allowbreak{}MRGG/\allowbreak{}CNSESH\_\allowbreak{}STOCK/\allowbreak{}2026/\allowbreak{}2026-\allowbreak{}2/\allowbreak{}2026-\allowbreak{}02-\allowbreak{}25/\allowbreak{}119}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}www.\allowbreak{}cnfin.\allowbreak{}com/\allowbreak{}announ/\allowbreak{}detail/\allowbreak{}index.\allowbreak{}html}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}stock/\allowbreak{}aiassist/\allowbreak{}yjbg/\allowbreak{}2026-\allowbreak{}08-\allowbreak{}30/\allowbreak{}doc-\allowbreak{}iniqauvp82\allowbreak{}25513.\allowbreak{}shtml}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}www.\allowbreak{}sse.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}disclosure/\allowbreak{}listedinfo/\allowbreak{}announceme\allowbreak{}nt/\allowbreak{}c/\allowbreak{}new/\allowbreak{}2025-\allowbreak{}04-\allowbreak{}30/\allowbreak{}688098\_\allowbreak{}20250430\_\allowbreak{}NS0V.\allowbreak{}}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}stockmc.\allowbreak{}xueqiu.\allowbreak{}com/\allowbreak{}202604/\allowbreak{}688098\_\allowbreak{}20260429\_\allowbreak{}O0TE.\allowbreak{}pdf}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}www.\allowbreak{}sse.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}disclosure/\allowbreak{}listedinfo/\allowbreak{}announceme\allowbreak{}nt/\allowbreak{}c/\allowbreak{}new/\allowbreak{}2025-\allowbreak{}04-\allowbreak{}30/\allowbreak{}688098\_\allowbreak{}20250430\_\allowbreak{}E4XR.\allowbreak{}p}。
-\end{minipage}
-\end{center}
+
 
 
 \subsubsection{绿康生化（002868）}
@@ -1258,6 +1370,7 @@ ROE（\%） & 2.1 & -3.1 & -1.5 & -0.9 & -1.4 \\
 \pfl{历史股价} 自 2021 年 1 月至 2026 年 9 月，股价由 11.13 元变为 22.42 元，累计 +101.4\%，区间最高 61.22 元（2023 年 1 月）、最低 9.29 元（2021 年 10 月）；当前价相当于区间最高价的 36.6\%，为区间最低价的 2.41 倍。 月度收益的年化波动率 57.4\%，高于全样本中位数 37.4\%，在三级行业“动物保健Ⅲ”的 9 家公司中波动率排第\zhnumber{1}位。 从事件看，2021 年 1 月 至 2023 年 1 月的上涨（+450.0\%）与公司董事会审议通过以 9,500 万元受让江西纬科 100\% 股权，正式跨界光伏胶膜……（2023-01-28）在时间上重合；2025 年 3 月 至 2026 年 2 月的上涨（+189.2\%）与公司2025 年公司完成剥离胶膜业务、回归兽药业务，兽药业务市场逐步向好、原材料采购价格下降……（2025-12-31）在时间上重合——股价的拐点多数能在公司自身的资本运作与风险事件上找到对应。
 
 \begin{center}
+\begin{minipage}{\textwidth}\centering
 \begin{tikzpicture}
 \begin{axis}[
   width=12.6cm, height=3.9cm, scale only axis,
@@ -1277,6 +1390,7 @@ ROE（\%） & 2.1 & -3.1 & -1.5 & -0.9 & -1.4 \\
 \end{tikzpicture}
 
 \captionof{figure}[绿康生化（002868）股价与周期骨架]{绿康生化（002868）月度收盘价（元/股）与 ZigZag 周期骨架（阈值 25\%，圆点为周期转折点）}
+\end{minipage}
 \end{center}
 
 \pfl{过去周期分析} 以 25\% 的 ZigZag 阈值划分，样本区间内股价形成 3 个主升段与 3 个主跌段。 最大主升段出现在 2021 年 1 月 至 2023 年 1 月，24 个月+450.0\%；最大主跌段为 2023 年 1 月 至 2024 年 8 月，19 个月-79.9\%。 最近一次转折出现在 2026 年 7 月（下跌段自 2026 年 2 月起，5 个月-49.9\%），当前处于该段的延续之中。 公司股价较申万农林牧渔指数提前约 55 个月见底，是板块中较早定价周期反转的公司之一。 动保的需求由存栏量而非价格决定（第 \ref{sec:vet} 节）：猪价下行阶段龙头养殖企业的逆势扩产反而推升了疫苗与兽药需求，这正是动保股价与猪价“脱钩”的原因，公司 2026 年 6 月末资产负债率 90.1\%，高于全样本中位数 52.2\%，其股价因此更多反映资金面与信用风险，而不是价格弹性本身。
@@ -1305,17 +1419,19 @@ ROE（\%） & -45.1 & 0.0 & 170.5 & 0.0 & 10.9 \\
 \end{center}
 
 \begin{center}
+\begin{minipage}{\textwidth}\centering
 \begin{tikzpicture}
 \begin{groupplot}[
-  group style={group size=2 by 1, horizontal sep=0.70cm},
-  width=6.55cm, height=4.3cm,
+  group style={group size=2 by 1, horizontal sep=0.60cm},
+  width=6.85cm, height=4.60cm,
   tick label style={font=\tiny},
   title style={font=\scriptsize\heiti},
   yticklabel style={font=\tiny},
+  ylabel style={font=\tiny},
   grid=major, grid style={LightGray, line width=0.3pt},
   axis line style={InkGray, line width=0.5pt},
   enlarge x limits={abs=0.8},
-  legend style={font=\scriptsize, at={(0.5,-0.22)}, anchor=north,
+  legend style={font=\scriptsize, at={(0.5,-0.20)}, anchor=north,
                 legend columns=2, draw=none, fill=none, column sep=6pt},
 ]
 \nextgroupplot[
@@ -1345,32 +1461,46 @@ ROE（\%） & -45.1 & 0.0 & 170.5 & 0.0 & 10.9 \\
 \end{tikzpicture}
 \begin{tikzpicture}
 \begin{axis}[
-  width=14.35cm, height=2.9cm, scale only axis,
-  ymin=-3.02, ymax=11.01,
+  name=finbot,
+  width=13.75cm, height=3.10cm, scale only axis,
+  ymin=-0.96, ymax=10.78,
   xtick={0,1,2,3,4,5.7},
   xticklabels={2021,2022,2023,2024,2025,2026H1},
   tick label style={font=\tiny},
   yticklabel style={font=\tiny},
-  ylabel={亿元}, ylabel style={font=\scriptsize},
+  ylabel={亿元}, ylabel style={font=\tiny},
   ybar, bar width=4pt,
   grid=major, grid style={LightGray, line width=0.3pt},
   axis line style={InkGray, line width=0.5pt},
   enlarge x limits={abs=0.8},
-  legend style={font=\scriptsize, at={(0.5,-0.30)}, anchor=north,
-                legend columns=3, draw=none, fill=none, column sep=10pt},
+  legend style={font=\scriptsize, at={(0.5,-0.26)}, anchor=north,
+                legend columns=2, draw=none, fill=none, column sep=10pt},
 ]
 \addplot[fill=AgriGreen!55, draw=AgriGreen, bar shift=-3.0pt] table[x=i, y=cash]{data/clean/profiles/fin_002868.dat};
 \addplot[fill=SoftRed!45, draw=SoftRed, bar shift=3.0pt] table[x=i, y=ibd]{data/clean/profiles/fin_002868.dat};
 \addplot[fill=AgriGreen!25, draw=AgriGreen, pattern=north east lines, bar shift=-3.0pt] table[x=x, y=cash]{data/clean/profiles/finh_002868.dat};
 \addplot[fill=SoftRed!20, draw=SoftRed, pattern=north east lines, bar shift=3.0pt] table[x=x, y=ibd]{data/clean/profiles/finh_002868.dat};
-\addplot[OilBlue, mark=*, mark size=1.1pt, line width=0.8pt] table[x=i, y=ocf]{data/clean/profiles/fin_002868.dat};
-\addplot[only marks, OilBlue, mark=*, mark size=1.8pt] table[x=x, y=ocf]{data/clean/profiles/finh_002868.dat};
-\legend{货币资金, 有息负债, 经营活动现金流净额}
+\legend{货币资金（左轴）, 有息负债（左轴）}
+\end{axis}
+\begin{axis}[
+  at={(finbot.south east)}, anchor=south east,
+  width=13.75cm, height=3.10cm, scale only axis,
+  axis y line*=right, axis x line*=none, xtick=\empty,
+  ymin=-2.72, ymax=2.40,
+  tick label style={font=\tiny},
+  yticklabel style={font=\tiny}, scaled y ticks=false,
+  legend style={font=\scriptsize, at={(0.5,-0.44)}, anchor=north,
+                legend columns=1, draw=none, fill=none},
+]
+\addplot[OilBlue, mark=*, mark size=2.2pt, line width=1.3pt] table[x=i, y=ocf]{data/clean/profiles/fin_002868.dat};
+\addplot[only marks, OilBlue, mark=*, mark size=3.2pt] table[x=x, y=ocf]{data/clean/profiles/finh_002868.dat};
+\legend{经营活动现金流净额（右轴，亿元，蓝点）}
 \end{axis}
 \end{tikzpicture}
 
-\captionof{figure}[绿康生化（002868）近年主要财务指标]{绿康生化（002868）近年主要财务指标（左上：营业收入与归母净利润；右上：ROE 与资产负债率；下：货币资金、有息负债与经营活动现金流净额。
+\captionof{figure}[绿康生化（002868）近年主要财务指标]{绿康生化（002868）近年主要财务指标（左上：营业收入与归母净利润；右上：ROE 与资产负债率；下：货币资金、有息负债为左轴柱状，经营活动现金流净额为其右轴的蓝点折线。
 2021---2025 年为年报口径，2026H1 为 2026 年半年报/半年末，与其前一年报之间留出间隔、以斜纹或空心点区分；半年报数据未年化）}
+\end{minipage}
 \end{center}
 
 \pfl{财务分析} 2026 年 6 月末资产负债率 90.1\%，较 2025 年末 下降 1.3 个百分点（样本中位数 52.2\%，所处三级行业内按由低到高排第\zhnumber{9}位）。 2026 年 6 月末货币资金 0.51 亿元、短期债务（短期借款与一年内到期非流动负债）2.94 亿元、长期债务 0.25 亿元，有息负债合计 3.19 亿元，现金短债比 0.17 倍——缺口明显。 净有息负债 2.67 亿元，相当于其 2026 年上半年营业收入的 108\%。 流动比率 0.37、速动比率 0.20，短期偿付压力较大。 2026 年上半年经营活动现金流净额 0.45 亿元，经营现金流与利润同向为正，内生资金可以支撑运营。 公司披露的财务与合规风险包括：公司披露《关于股票可能被终止上市的第三次风险提示公告》，提示 2024 年经审计期末净资产为负值触及退市风险警示情形……；公司 2024 年经审计期末净资产为 -24,536,065.37 元……。
@@ -1402,10 +1532,6 @@ ROE（\%） & -45.1 & 0.0 & 170.5 & 0.0 & 10.9 \\
 
 \pfl{未来潜在融资需求分析} 2026 年 6 月末货币资金 0.51 亿元，而短期债务 2.94 亿元（现金短债比 0.17 倍），2026 年上半年经营现金流净额 0.45 亿元。按“短期债务减去账面货币资金”的滚动偿付口径，静态缺口约 2.42 亿元；若再计入上半年亏损的年化额（0.00 亿元），维持一年正常经营所需的外部资金约 2.42---2.42 亿元。 按第 \ref{sec:financing-need} 节的三档划分，公司属于第二档“保壳型”：近三年重大重组与并购类公告 23 条，2026 年上半年归母净利润 0.07 亿元，融资需求更多体现为“资产置换 + 维持上市地位”，而不是扩产。 公开披露的下一步融资线索包括：2025-11 公司向控股股东福建纵腾网络有限公司借入 15,000 万元用于日常生产经营，反映公司流动资金高度依赖控股股东支持……；2025-12 公司与浦城县土地储备中心签订浦城县国有土地使用权收购合同，南浦厂区搬迁至浦潭厂区，收储价款 18,682 万元，第一期款项 3,000 万元已收讫……；2026-04-14 公司 2026 年第一季度报告披露，公司有银行流动资金贷款将分别于 2026 年 3 月 5 日、3 月 18 日、4 月 1 日、4 月 15 日到期……。
 
-\begin{center}
-\begin{minipage}{\textwidth}\scriptsize\raggedright
-\noindent\textbf{资料来源}\quad \texttt{\tiny https:/\allowbreak{}/\allowbreak{}vip.\allowbreak{}stock.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}corp/\allowbreak{}go.\allowbreak{}php/\allowbreak{}vISSUE\_\allowbreak{}NewStock/\allowbreak{}stockid/\allowbreak{}002868.\allowbreak{}phtml}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}www.\allowbreak{}21jingji.\allowbreak{}com/\allowbreak{}article/\allowbreak{}20220805/\allowbreak{}herald/\allowbreak{}33df72bf11\allowbreak{}ef930f2d83\allowbreak{}7515a17dd7\allowbreak{}ba.\allowbreak{}html}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}file.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}211.\allowbreak{}154.\allowbreak{}219.\allowbreak{}97:9494/\allowbreak{}MRGG/\allowbreak{}CNSESZ\_\allowbreak{}STOCK/\allowbreak{}2025/\allowbreak{}2025-\allowbreak{}9/\allowbreak{}2025-\allowbreak{}09-\allowbreak{}24/\allowbreak{}114}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}vip.\allowbreak{}stock.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}corp/\allowbreak{}view/\allowbreak{}vCB\_\allowbreak{}AllBulleti\allowbreak{}nDetail.\allowbreak{}php}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}money.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}corp/\allowbreak{}view/\allowbreak{}vCB\_\allowbreak{}AllBulleti\allowbreak{}nDetail.\allowbreak{}php}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}disc.\allowbreak{}static.\allowbreak{}szse.\allowbreak{}cn/\allowbreak{}download/\allowbreak{}disc/\allowbreak{}disk03/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}03-\allowbreak{}10/\allowbreak{}60d55ef5-\allowbreak{}02ac-\allowbreak{}44a9-\allowbreak{}9929-\allowbreak{}a9}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}news.\allowbreak{}qq.\allowbreak{}com/\allowbreak{}rain/\allowbreak{}a/\allowbreak{}20251128A0\allowbreak{}29C300}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}www.\allowbreak{}bbtnews.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}2026/\allowbreak{}0514/\allowbreak{}593306.\allowbreak{}shtml}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}disc.\allowbreak{}static.\allowbreak{}szse.\allowbreak{}cn/\allowbreak{}download/\allowbreak{}disc/\allowbreak{}disk03/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}05-\allowbreak{}12/\allowbreak{}0bb72c96-\allowbreak{}b4b6-\allowbreak{}4489-\allowbreak{}bf44-\allowbreak{}9c}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}stock.\allowbreak{}stockstar.\allowbreak{}com/\allowbreak{}notice/\allowbreak{}SN20260731\allowbreak{}00000007.\allowbreak{}shtml}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}pdf.\allowbreak{}dfcfw.\allowbreak{}com/\allowbreak{}pdf/\allowbreak{}H2\_\allowbreak{}AN20260304\allowbreak{}1820265044\_\allowbreak{}1.\allowbreak{}pdf}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}pdf.\allowbreak{}dfcfw.\allowbreak{}com/\allowbreak{}pdf/\allowbreak{}H2\_\allowbreak{}AN20260414\allowbreak{}1821182397\_\allowbreak{}1.\allowbreak{}pdf}；\texttt{\tiny http:/\allowbreak{}/\allowbreak{}static.\allowbreak{}cninfo.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}finalpage/\allowbreak{}2023-\allowbreak{}06-\allowbreak{}22/\allowbreak{}1217119498.\allowbreak{}PDF}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}www.\allowbreak{}stcn.\allowbreak{}com/\allowbreak{}article/\allowbreak{}detail/\allowbreak{}1266703.\allowbreak{}html}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}disc.\allowbreak{}static.\allowbreak{}szse.\allowbreak{}cn/\allowbreak{}disc/\allowbreak{}disk03/\allowbreak{}finalpage/\allowbreak{}2024-\allowbreak{}08-\allowbreak{}28/\allowbreak{}57bf073d-\allowbreak{}0df8-\allowbreak{}4755-\allowbreak{}94fa-\allowbreak{}17ae88b65b\allowbreak{}f}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}vip.\allowbreak{}stock.\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}corp/\allowbreak{}go.\allowbreak{}php/\allowbreak{}vGP\_\allowbreak{}GetOutOfLi\allowbreak{}ne/\allowbreak{}stockid=\allowbreak{}002868.\allowbreak{}phtml}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}file.\allowbreak{}finance.\allowbreak{}qq.\allowbreak{}com/\allowbreak{}finance/\allowbreak{}hs/\allowbreak{}pdf/\allowbreak{}2025/\allowbreak{}04/\allowbreak{}29/\allowbreak{}1223387266.\allowbreak{}PDF}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}finance.\allowbreak{}sina.\allowbreak{}com.\allowbreak{}cn/\allowbreak{}jjxw/\allowbreak{}2025-\allowbreak{}09-\allowbreak{}25/\allowbreak{}doc-\allowbreak{}infrsfyt09\allowbreak{}08544.\allowbreak{}shtml}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}disc.\allowbreak{}static.\allowbreak{}szse.\allowbreak{}cn/\allowbreak{}download/\allowbreak{}disc/\allowbreak{}disk03/\allowbreak{}finalpage/\allowbreak{}2026-\allowbreak{}03-\allowbreak{}10/\allowbreak{}cc12ce88-\allowbreak{}472f-\allowbreak{}4151-\allowbreak{}967f-\allowbreak{}00}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}pdf.\allowbreak{}dfcfw.\allowbreak{}com/\allowbreak{}pdf/\allowbreak{}H2\_\allowbreak{}AN20240722\allowbreak{}1638191675\_\allowbreak{}1.\allowbreak{}pdf}；\texttt{\tiny https:/\allowbreak{}/\allowbreak{}data.\allowbreak{}eastmoney.\allowbreak{}com/\allowbreak{}notices/\allowbreak{}detail/\allowbreak{}002868/\allowbreak{}AN20250627\allowbreak{}1698717165.\allowbreak{}html}。
-\end{minipage}
-\end{center}
+
 
 

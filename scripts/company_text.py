@@ -195,7 +195,17 @@ def src_note(items) -> str:
 
 
 def src_block(urls: list[str]) -> str:
-    """小节末尾的“资料来源”清单。"""
+    """按用户要求：画像正文之后不再输出“资料来源”清单，本函数恒返回空串。
+
+    来源链接并不丢失——它们仍逐条保存在 fact dossier（data/facts/<代码>.yaml）的
+    source 字段里，需要核对时读 YAML 即可。保留函数与调用点是为了将来若恢复
+    “小节末来源清单”，只需在这里把清单重新拼出来。
+    """
+    return ""
+
+
+def _src_block_disabled(urls: list[str]) -> str:
+    """（保留实现，当前不调用）小节末尾的“资料来源”清单。"""
     seen, uniq = set(), []
     for u in urls:
         u = re.split(r"[?#]", str(u).strip())[0][:96]
@@ -212,7 +222,6 @@ def src_block(urls: list[str]) -> str:
             if k % 2 == 1:
                 out.append(r"\allowbreak{}")
             elif piece:
-                # 再按每 10 个字符兜底加断点，保证超长 token 也能折行
                 chunked = [piece[j:j + 10] for j in range(0, len(piece), 10)]
                 out[-1] = r"\allowbreak{}".join(chunked)
         return "".join(out)
@@ -224,9 +233,6 @@ def src_block(urls: list[str]) -> str:
         r"\end{minipage}",
         r"\end{center}",
     ])
-
-
-# ------------------------------------------------------------------ 1 公司基本情况
 def para_basic(r: dict, d, ctx: dict) -> str:
     R = ctx["rng"]
     name = tesc(r["名称"])

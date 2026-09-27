@@ -72,9 +72,10 @@ def price_chart(r: dict) -> str:
     nm = tex_escape(r["名称"])
     return "\n".join([
         r"\begin{center}",
+        r"\begin{minipage}{\textwidth}\centering",   # 图与题注同页
         r"\begin{tikzpicture}",
         r"\begin{axis}[",
-        r"  width=12.6cm, height=3.9cm, scale only axis,",
+        r"  width=12.6cm, height=3.9cm, scale only axis," ,
         f"  xmin={x0 - 0.12:.3f}, xmax={x1 + 0.18:.3f}, ymin={y0:.2f}, ymax={y1:.2f},",
         "  xtick={" + ",".join(str(y) for y in years) + "},",
         "  yearticks,",
@@ -93,15 +94,19 @@ def price_chart(r: dict) -> str:
         rf"\captionof{{figure}}[{nm}（{r['代码']}）股价与周期骨架]{{"
         rf"{nm}（{r['代码']}）月度收盘价（元/股）与 ZigZag 周期骨架"
         rf"（阈值 {ZZ_PCT * 100:.0f}\%，圆点为周期转折点）}}",
+        r"\end{minipage}",
         r"\end{center}",
     ])
 
 
 # ---------------------------------------------------------------- 财务双联图
 def fin_chart(r: dict) -> str:
-    """近年主要财务指标双联图（年报 2021---2025 + 2026 年半年报）。
+    """近年主要财务指标组合图（年报 2021---2025 + 2026 年半年报）。
 
-    数据文件：fin_<code>.dat（年报序列，i=0..n-1）与 finh_<code>.dat（2026 年半年报，x=5.7）。
+    布局：上排两个子图（营业收入/归母净利润；ROE/资产负债率），下方一个宽子图。
+    下方子图里 货币资金/有息负债 用左轴柱状，经营活动现金流净额 用**右轴**蓝点折线：
+    现金流与负债规模常差一个量级，若同轴会把蓝点压在零线上，看不出属于哪条序列。
+    右轴用 scale only axis + 与左轴相同的宽高、并把绘图区东南角对齐，保证两轴严格重合。
     """
     fin = r.get("fin") or {}
     ann, h1 = fin.get("annual", {}), fin.get("h1", {})
@@ -115,25 +120,29 @@ def fin_chart(r: dict) -> str:
     yB = _axis_range([ann[y].get("roe") for y in years] + [h1.get("roe")]
                      + [ann[y].get("debt") for y in years] + [h1.get("debt")],
                      pad_lo=0.08, pad_hi=0.10)
-    yC = _axis_range([ann[y].get(k) for y in years for k in ("cash", "ibd", "ocf")]
-                     + [h1.get(k) for k in ("cash", "ibd", "ocf")])
+    yC = _axis_range([ann[y].get(k) for y in years for k in ("cash", "ibd")]
+                     + [h1.get(k) for k in ("cash", "ibd")])
+    yD = _axis_range([ann[y].get("ocf") for y in years] + [h1.get("ocf")],
+                     pad_lo=0.26, pad_hi=0.30)
     xt = ",".join(str(i) for i in range(len(years))) + f",{H1_X}"
     h1_lab = "2026H1"
     xtl = ",".join(years) + "," + h1_lab
 
     L = [
         r"\begin{center}",
+        r"\begin{minipage}{\textwidth}\centering",   # 不可分页：两图与题注必须同页
         r"\begin{tikzpicture}",
         r"\begin{groupplot}[",
-        r"  group style={group size=2 by 1, horizontal sep=0.70cm},",
-        r"  width=6.55cm, height=4.3cm,",
+        r"  group style={group size=2 by 1, horizontal sep=0.60cm},",
+        r"  width=6.85cm, height=4.60cm,",
         r"  tick label style={font=\tiny},",
         r"  title style={font=\scriptsize\heiti},",
         r"  yticklabel style={font=\tiny},",
+        r"  ylabel style={font=\tiny},",
         r"  grid=major, grid style={LightGray, line width=0.3pt},",
         r"  axis line style={InkGray, line width=0.5pt},",
         r"  enlarge x limits={abs=0.8},",
-        r"  legend style={font=\scriptsize, at={(0.5,-0.22)}, anchor=north,",
+        r"  legend style={font=\scriptsize, at={(0.5,-0.20)}, anchor=north,",
         r"                legend columns=2, draw=none, fill=none, column sep=6pt},",
         r"]",
         # ---------- A：营业收入与归母净利润
@@ -166,20 +175,22 @@ def fin_chart(r: dict) -> str:
         r"\end{groupplot}",
         r"\end{tikzpicture}",
         r"\begin{tikzpicture}",
+        # ---------- C：货币资金与有息负债（左轴柱状）
         r"\begin{axis}[",
-        r"  width=14.35cm, height=2.9cm, scale only axis,",
+        r"  name=finbot,",
+        r"  width=13.75cm, height=3.10cm, scale only axis,",
         f"  ymin={yC[0]:.2f}, ymax={yC[1]:.2f},",
         f"  xtick={{{xt}}},",
         f"  xticklabels={{{xtl}}},",
         r"  tick label style={font=\tiny},",
         r"  yticklabel style={font=\tiny},",
-        r"  ylabel={亿元}, ylabel style={font=\scriptsize},",
+        r"  ylabel={亿元}, ylabel style={font=\tiny},",
         r"  ybar, bar width=4pt,",
         r"  grid=major, grid style={LightGray, line width=0.3pt},",
         r"  axis line style={InkGray, line width=0.5pt},",
         r"  enlarge x limits={abs=0.8},",
-        r"  legend style={font=\scriptsize, at={(0.5,-0.30)}, anchor=north,",
-        r"                legend columns=3, draw=none, fill=none, column sep=10pt},",
+        r"  legend style={font=\scriptsize, at={(0.5,-0.26)}, anchor=north,",
+        r"                legend columns=2, draw=none, fill=none, column sep=10pt},",
         r"]",
         rf"\addplot[fill=AgriGreen!55, draw=AgriGreen, bar shift=-3.0pt] table[x=i, y=cash]{{{fa}}};",
         rf"\addplot[fill=SoftRed!45, draw=SoftRed, bar shift=3.0pt] table[x=i, y=ibd]{{{fa}}};",
@@ -187,17 +198,31 @@ def fin_chart(r: dict) -> str:
         rf" table[x=x, y=cash]{{{fh}}};",
         rf"\addplot[fill=SoftRed!20, draw=SoftRed, pattern=north east lines, bar shift=3.0pt]"
         rf" table[x=x, y=ibd]{{{fh}}};",
-        rf"\addplot[OilBlue, mark=*, mark size=1.1pt, line width=0.8pt] table[x=i, y=ocf]{{{fa}}};",
-        rf"\addplot[only marks, OilBlue, mark=*, mark size=1.8pt] table[x=x, y=ocf]{{{fh}}};",
-        r"\legend{货币资金, 有息负债, 经营活动现金流净额}",
+        r"\legend{货币资金（左轴）, 有息负债（左轴）}",
+        r"\end{axis}",
+        # ---------- D：经营活动现金流净额（右轴蓝点折线）
+        r"\begin{axis}[",
+        r"  at={(finbot.south east)}, anchor=south east,",
+        r"  width=13.75cm, height=3.10cm, scale only axis,",
+        r"  axis y line*=right, axis x line*=none, xtick=\empty,",
+        f"  ymin={yD[0]:.2f}, ymax={yD[1]:.2f},",
+        r"  tick label style={font=\tiny},",
+        r"  yticklabel style={font=\tiny}, scaled y ticks=false,",
+        r"  legend style={font=\scriptsize, at={(0.5,-0.44)}, anchor=north,",
+        r"                legend columns=1, draw=none, fill=none},",
+        r"]",
+        rf"\addplot[OilBlue, mark=*, mark size=2.2pt, line width=1.3pt] table[x=i, y=ocf]{{{fa}}};",
+        rf"\addplot[only marks, OilBlue, mark=*, mark size=3.2pt] table[x=x, y=ocf]{{{fh}}};",
+        r"\legend{经营活动现金流净额（右轴，亿元，蓝点）}",
         r"\end{axis}",
         r"\end{tikzpicture}",
         "",
         rf"\captionof{{figure}}[{nm}（{code}）近年主要财务指标]{{"
         rf"{nm}（{code}）近年主要财务指标（左上：营业收入与归母净利润；右上：ROE 与资产负债率；"
-        rf"下：货币资金、有息负债与经营活动现金流净额。",
+        rf"下：货币资金、有息负债为左轴柱状，经营活动现金流净额为其右轴的蓝点折线。",
         rf"2021---2025 年为年报口径，2026H1 为 2026 年半年报/半年末，与其前一年报之间留出间隔、"
         rf"以斜纹或空心点区分；半年报数据未年化）}}",
+        r"\end{minipage}",
         r"\end{center}",
     ]
     return "\n".join(L)
