@@ -1,0 +1,314 @@
+\section{猪周期：中国农业的核心周期}
+\label{sec:hog}
+
+生猪是中国农业中体量最大、价格波动最剧烈、产业链最长的一条主线。它连接着种植（玉米、大豆）、
+饲料加工、兽药疫苗、屠宰与肉制品，因此\hl{猪周期不只是生猪养殖自己的周期，而是整个农业需求侧
+的节拍器}。本章先解剖猪周期自身的机制与历史，为第 \ref{sec:corr} 章的跨品种比较提供基准。
+
+\subsection{驱动机制：产能—利润—价格三角}
+\label{sec:hog-mechanism}
+
+生猪周期之所以稳定存在，是因为生产端存在一个\hl{不可逆且有时滞的产能决定变量——能繁母猪存栏}。
+其传导链条为：
+
+\begin{center}
+\begin{tikzpicture}[font=\footnotesize,
+  b/.style={rectangle, rounded corners=2pt, draw=HogPink, line width=0.9pt,
+            fill=HogPink!10, align=center, inner sep=4pt, text width=2.55cm,
+            minimum height=1.15cm},
+  e/.style={-{Stealth[length=4pt]}, line width=1pt, InkGray}]
+  \node[b] (p1) at (0,0) {\textbf{①} 猪价上涨\\养殖利润转正};
+  \node[b] (p2) at (3.55,0) {\textbf{②} 补栏：后备母猪\\转为能繁母猪};
+  \node[b] (p3) at (7.10,0) {\textbf{③} 约 10 个月后\\生猪出栏增加};
+  \node[b] (p4) at (7.10,-2.1) {\textbf{④} 供给过剩\\猪价下跌、亏损};
+  \node[b] (p5) at (3.55,-2.1) {\textbf{⑤} 去产能：淘汰\\能繁母猪、清栏};
+  \node[b] (p6) at (0,-2.1) {\textbf{⑥} 10$\sim$12 个月后\\供给收缩};
+  \draw[e] (p1) -- (p2);
+  \draw[e] (p2) -- (p3);
+  \draw[e] (p3) -- (p4);
+  \draw[e] (p4) -- (p5);
+  \draw[e] (p5) -- (p6);
+  \draw[e] (p6) -- (p1);
+  \node[font=\scriptsize, InkGray, align=center, text width=14.6cm]
+    at (3.55,-3.35)
+    {关键时滞：\textbf{母猪配种 $\to$ 商品猪出栏约 10 个月}（妊娠 114 天 + 育肥约 6 个月）；
+     \textbf{产能调整 $\to$ 价格反应 10$\sim$14 个月}。\\
+     由于退出（淘汰母猪）比进入（补栏）耗时更长，周期呈现“涨得快、跌得久”的非对称形态。};
+\end{tikzpicture}
+\end{center}
+
+在蛛网模型的框架下（第 \ref{sec:fw-framework} 节），生猪的供给价格弹性在半年内接近零（母猪的
+生物学周期刚性），需求价格弹性同样很低（猪肉是刚需蛋白），于是 $b/d$ 接近 1，价格呈现
+\hl{等幅振荡}：2021 年以来生猪期货月度价格的三次上行段平均持续 5.3 个月、平均涨幅 +41\%，
+三次下行段平均持续 15.6 个月、平均跌幅 -46\%——\emph{跌的时间比涨的时间长一倍以上}，
+这是产能退出慢于进入的直接结果。
+
+\subsection{四轮完整周期：2015---2026 年}
+\label{sec:hog-history}
+
+我们用 ZigZag 算法（波动幅度阈值 20\%）对 2015 年以来的生猪现货价格指数做周期分段，可以清晰
+识别出四轮完整周期（谷$\to$谷）。
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[agri axis, yearticks,
+  width=14.6cm, height=7.0cm,
+  xlabel={年份}, ylabel={生猪价格指数},
+  xmin=2014.8, xmax=2027.2, ymin=40, ymax=290,
+  xtick={2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026,2027},
+  ytick={50,100,150,200,250},
+  legend style={at={(0.02,0.97)}, anchor=north west, cells={anchor=west}},
+  legend entries={生猪价格指数（月度）, 周期骨架（ZigZag 20\%）},
+]
+\addplot[AgriGreen, thick] table[x index=0, y index=1]{data/clean/hog_spot_monthly.dat};
+\addplot[SoftRed, very thick, mark=*, mark size=1.5pt]
+  table[x index=0, y index=1]{data/clean/hog_zigzag_spot.dat};
+% 周期标注
+\node[font=\scriptsize, SoftRed, anchor=south] at (axis cs:2016.4,150) {第一轮顶部};
+\node[font=\scriptsize, SoftRed, anchor=south] at (axis cs:2020.1,272) {非洲猪瘟};
+\node[font=\scriptsize, SoftRed, anchor=west] at (axis cs:2021.75,252) {2021 崩塌};
+\node[font=\scriptsize, SoftRed, anchor=south west] at (axis cs:2022.8,186) {2022 反弹};
+\node[font=\scriptsize, InkGray, anchor=north] at (axis cs:2026.4,60) {2026 年 4 月新低 63.7};
+\end{axis}
+\end{tikzpicture}
+\caption{生猪现货价格指数与四轮周期（2015 年 1 月---2026 年 9 月，周度转月度）}
+\label{fig:hog-price-cycle}
+\srcfile{猪易数据生猪价格指数（akshare \texttt{index\_hog\_spot\_price}），作者按月取均值并做 ZigZag 分段。}
+\end{figure}
+
+\input{tex/gen/hog_legs_long.tex}
+
+四轮周期的特征可以概括为：
+
+\begin{keybox}[猪周期的四条经验规律]
+\normalsize
+\textbf{① 上行短、下行长}：上行段平均 8.7 个月、平均涨幅 +\hl{85\%}；下行段平均 9.2 个月、
+平均跌幅 -37\%。价格以“快涨慢跌”的方式完成一轮分配。\par\vspace{3pt}
+\textbf{② 外生冲击决定振幅}：非洲猪瘟使 2018 年 5 月至 2020 年 2 月的上行幅度达到
++\hl{278.7\%}，是常规周期（+40\%$\sim$+70\%）的四倍以上。\par\vspace{3pt}
+\textbf{③ 高利润必然导致产能过冲}：2019---2020 年的超级利润吸引了大量资本进入养殖业，
+2021 年 1 月至 9 月价格下跌 -64.4\%，是历史上最陡峭的下跌段。\par\vspace{3pt}
+\textbf{④ 本轮下行是历史最长}：2024 年 8 月至 2026 年 4 月连续下行 19.9 个月、跌幅 -54.9\%，
+价格指数 63.7 为 2015 年有数据以来最低，超过 2018 年 5 月的 70.3。
+\end{keybox}
+
+这一形态与产业界的观察一致：21 世纪以来生猪产业已经历 6 个完整周期，前 5 个周期相对规律、
+平均约 48 个月（上行 24 个月、下行 24 个月）；\hl{自第 6 个周期（2022 年）以来周期规律失灵、
+下行期显著延长}，第 7 个周期自 2024 年 2 月上行至 2024 年 8 月后进入下行，
+至 2025 年底仍未结束\cite{sun2026hog}。本报告的 ZigZag 分段给出的是同一结论的量化版本：
+价格波动的\emph{振幅}并未收敛，但\emph{时间结构}已被产能规模化与政策调控改写。
+
+\subsection{产能视角：能繁母猪存栏的四年调整}
+\label{sec:hog-capacity}
+
+价格是周期的表象，产能才是周期的本体。中国能繁母猪存栏在 2012---2013 年见顶于 5132 万头，
+此后的路径是“阶梯式下移 + 一次断裂”：
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[agri axis, yearticks,
+  width=14.4cm, height=6.8cm,
+  xlabel={年份}, ylabel={能繁母猪存栏（万头）},
+  xmin=2008.5, xmax=2026.2, ymin=2800, ymax=5400,
+  xtick={2009,2011,2013,2015,2017,2019,2021,2023,2025},
+  ytick={3000,3500,4000,4500,5000},
+  legend style={at={(0.98,0.97)}, anchor=north east},
+  legend entries={年末存栏（年度）, 2025 年季度/月度},
+]
+\addplot[AgriGreen, thick, mark=square*, mark size=1.6pt]
+  table[x index=0, y index=1]{data/clean/hog_能繁母猪存栏_y.dat};
+\addplot[SoftRed, very thick, mark=*, mark size=1.8pt, dashed]
+  table[x index=0, y index=1]{data/clean/hog_能繁母猪存栏_q.dat};
+\node[font=\scriptsize, InkGray, anchor=north east, align=right]
+  at (axis cs:2014.2,3450) {产能持续下滑\\（2015---2017）};
+\node[font=\scriptsize, SoftRed, anchor=south, align=center]
+  at (axis cs:2018.6,3120) {非洲猪瘟\\-24.5\%};
+\node[font=\scriptsize, AgriGreen, anchor=north, align=center]
+  at (axis cs:2023.2,3980) {产能再度回落\\（2023---2025）};
+% 政策目标线（3900 万头）：若能核实则由研究资料补充
+\end{axis}
+\end{tikzpicture}
+\caption{全国能繁母猪存栏：年度数据（2009---2024）与 2025 年季度/月度数据}
+\label{fig:hog-capacity}
+\srcfile{国家统计局；2025 年数据为季末与月末口径（akshare \texttt{futures\_hog\_supply}）。}
+\end{figure}
+
+\input{tex/gen/hog_capacity_recent.tex}
+
+三个关键事实：\hl{① 2018 年存栏从 4226 万头降至 3189 万头（-24.5\%）}，2019 年进一步降至
+3080 万头，这是非洲猪瘟造成的产能断裂，直接导致 2019---2020 年猪价三倍上涨；
+\hl{② 2021---2022 年补栏过冲至 4390 万头}，随后 2023、2024 年连续回落至 4142、4078 万头
+（2024 年末为 3900 万头调控目标的 104.6\%，接近绿色区间上限\cite{sun2026hog}）；
+\hl{③ 2025 年下半年起进入连续去化阶段}：2025 年末全国能繁母猪存栏 3961 万头，
+较上年末减少 117 万头（-2.9\%），2026 年一季度末降至 3904 万头（同比 -3.3\%），
+2026 年 7 月进一步调减至 \hl{3780 万头}，重新回到产能调控的绿色合理区间
+\cite{sun2026hog,caaa2026q1,jiemian2026pig}。仍然偏高的原因是
+\emph{母猪生产效率（PSY）持续提升}：2025 年全国经产母猪年均提供断奶仔猪 23.4 头、
+同比增加 2.4 头，头部企业 PSY 超过 29 头\cite{sun2026hog}；同样存栏对应更高的猪肉产出，
+猪肉产量从 2021 年 5296 万吨升至 2023 年 5794 万吨（+9.4\%），
+2024 年 5706 万吨、2025 年 \hl{5938 万吨（+4.1\%，历史新高）}\cite{sun2026hog}
+——这正是本轮猪价长期低迷的根本原因。
+
+\subsection{成本与利润：猪粮比价的信号意义}
+\label{sec:hog-cost}
+
+生猪养殖利润是产能调整的唯一信号，而利润由“猪价 $-$ 饲料成本”决定。猪粮比价（生猪出栏价与
+玉米价格之比）是官方预警指标，\hl{低于 6:1 进入三级预警、低于 5:1 进入一级预警}。
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=3 by 1, horizontal sep=0.7cm},
+  agri axis, width=4.65cm, height=4.2cm,
+  tick label style={font=\tiny}, label style={font=\scriptsize},
+  every axis plot/.append style={line width=0.9pt}]
+\nextgroupplot[yearticks, title={（a）猪粮比价（倍）},
+  xmin=2020, xmax=2027, ymin=0, ymax=20,
+  xtick={2020,2022,2024,2026}, ytick={0,5,10,15,20}]
+  \addplot[SoftRed, thick] table[x index=0, y index=1]{data/clean/hogx_猪粮比价.dat};
+  \addplot[dashed, InkGray, domain=2020:2027]{6};
+  \addplot[dashed, SoftRed, domain=2020:2027]{5};
+  \node[font=\tiny, InkGray, anchor=west] at (axis cs:2020.1,6.6) {6:1 三级预警};
+  \node[font=\tiny, SoftRed, anchor=west] at (axis cs:2020.1,3.4) {5:1 一级预警};
+\nextgroupplot[yearticks, title={（b）仔猪价格（元/公斤）},
+  xmin=2019, xmax=2027, ymin=0, ymax=160,
+  xtick={2019,2021,2023,2025}]
+  \addplot[Grain, thick] table[x index=0, y index=1]{data/clean/hogx_仔猪价格.dat};
+\nextgroupplot[yearticks, title={（c）二元母猪价格（元/公斤）},
+  xmin=2018, xmax=2027, ymin=0, ymax=90,
+  xtick={2018,2020,2022,2024,2026}]
+  \addplot[HogPink, thick] table[x index=0, y index=1]{data/clean/hogx_二元母猪价格.dat};
+\end{groupplot}
+\end{tikzpicture}
+\caption{生猪养殖成本与利润的关键指标：猪粮比价、仔猪价格与二元母猪价格}
+\label{fig:hog-cost}
+\srcfile{玄田数据（akshare \texttt{futures\_hog\_supply}、\texttt{futures\_hog\_cost}）；月度均值。}
+\end{figure}
+
+三点结论：
+
+\begin{enumerate}
+  \item \textbf{猪粮比价已连续六个月处于一级预警区间}。2026 年 3---8 月的月度均值分别为
+  4.47、4.03、4.12、\hl{3.96}、4.37、4.44，均在 5:1 以下，6 月的 3.96:1 为本轮最低；
+  作为对比，2024、2025 年的年均值分别为 7.15 与 6.27。需要说明的是，该序列自 2020 年
+  1 月起有数据，在此之前仅 2022 年 3---4 月与 2023 年 7 月短暂跌破 5:1。行业自 2026 年
+  一季度起进入\emph{全面现金亏损}状态。
+  \item \textbf{仔猪价格是本轮周期最灵敏的领先指标}。仔猪价格从 2020 年 8 月的峰值
+  108.6 元/公斤回落至 2026 年 8 月的 \hl{22.05 元/公斤}，跌幅约 80\%，已回到 2019 年
+  1 月非洲猪瘟最严重时期（21.6 元/公斤）的水平；仔猪价格反映的是\emph{补栏意愿}，
+  其持续低迷说明养殖户对未来 6 个月后的猪价预期悲观，是产能继续去化的确认信号。
+  \item \textbf{二元母猪价格同步走弱}（2026 年 6 月 26.8 元/公斤，为 2018 年该序列有数据
+  以来的最低值，2020 年峰值为 75.6 元/公斤），说明母猪更新补栏同样停滞，
+  产能去化已从“淘汰落后母猪”进入“停止正常更新”的第二阶段。
+\end{enumerate}
+
+\subsection{疫病与政策：两次外生冲击}
+\label{sec:hog-shock}
+
+猪价的三倍暴涨（2019---2020）与五年阴跌（2021---2026）分别对应两次外生冲击：
+一次是\hl{疫病冲击}，一次是\hl{政策与结构冲击}。
+
+\textbf{（1）疫病：非洲猪瘟（2018 年 8 月起）。}2018 年 8 月沈阳报告首例非洲猪瘟疫情后，
+产能以断崖方式退出——能繁母猪存栏从 2017 年的 4226 万头降至 2018 年的 3189 万头、
+2019 年的 3080 万头；由于生猪的生物学生产周期不可压缩，供给缺口无法在 12 个月内回补，
+价格上行持续了 21 个月、涨幅接近 2.8 倍。疫情同时永久改变了产业组织形态：
+全国生猪养殖规模化比重从 2018 年的 49.1\% 升至 2025 年的约 \hl{73.0\%}，
+前 10 位企业出栏量占比从 8.1\% 升至 \hl{29.7\%}，散养户数量从 2018 年末的 2706 万户
+降至 2025 年末的约 1672 万户（-38.2\%）\cite{sun2026hog}。防疫能力取代成本成为第一竞争力，
+这也是 2021 年之后供给恢复速度快于历史任何一轮周期、价格下行时间被拉长的结构性原因。
+
+\textbf{（2）政策：从“预警”到“调控”。}2021 年 6 月多部委联合印发《完善政府猪肉储备
+调节机制 做好猪肉市场保供稳价工作预案》，确立以猪粮比价、能繁母猪存栏量变化率、
+36 个大中城市精瘦肉零售价为核心的三级预警体系：猪粮比低于 6:1 发布三级预警，
+连续 3 周处于 5:1$\sim$6:1（或能繁母猪存栏单月同比降幅达 5\%）发布二级预警，
+低于 5:1（或能繁母猪存栏单月同比降幅达 10\%）发布一级预警\cite{ndrc2021reserve,nbd2025pigcorn}。
+预案的调控靶心是可量化、可备案的\emph{能繁母猪存栏}：
+
+\begin{itemize}
+  \item \textbf{2024 年修订}：全国能繁母猪正常保有量目标由 4100 万头下调至
+  \hl{3900 万头}，绿色区域下限由正常保有量的 95\% 调至 92\%
+  \cite{moa2024capacity}；
+  \item \textbf{2026 年修订}（2026 年 5 月 14 日印发）：目标进一步下调至
+  \hl{3750 万头左右}，绿色区域收窄为 92\%$\sim$103\%，上限由 105\% 下调至 103\%，
+  对应月度存栏约 3450 万$\sim$3863 万头；同时首次把能繁母猪存栏总量 10 万头以上的
+  大型集团企业纳入全国产能调控监测名单、实行年度生产备案管理\cite{stcn2026capacity}；
+  \item \textbf{“四个带头”}（2026 年 6 月 17 日，农业农村部与国家发改委联合座谈）：
+  对大型养殖企业提出带头压减产能产量、带头严控二次育肥、带头淘汰弱仔猪、
+  带头降低出栏体重的刚性要求\cite{jiemian2026pig}。
+\end{itemize}
+
+政策调控的思路可概括为“\emph{长期调母猪，中期调仔猪，短期调肥猪}”\cite{stcn2026capacity}。
+从效果看，2025 年 7 月以来全国能繁母猪存栏连续下降，2026 年 3 月新生仔猪数量
+17 个月后首次同比下降\cite{stcn2026capacity}，政策确实加快了产能去化的节奏——
+但\hl{调控的目标不是消灭周期，而是压低周期的振幅}，这一点在下文的跨品种分析中还会反复出现。
+
+\subsection{效率变量：出栏均重与二次育肥}
+\label{sec:hog-weight}
+
+同样的存栏可以对应不同的猪肉供给量，\hl{出栏体重是产能之外的第二个供给调节阀}。
+当价格预期上行时，养殖户倾向于压栏（二次育肥），体重上升会短期减少出栏、推高价格，
+但在 2---3 个月后转化为更大的集中出栏压力；价格预期下行时则加速出栏、体重快速回落。
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[agri axis, yearticks,
+  width=13.6cm, height=5.6cm,
+  xlabel={年份}, ylabel={生猪出栏平均体重（公斤）},
+  xmin=2015, xmax=2027, ymin=95, ymax=150,
+  xtick={2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026,2027},
+  ytick={100,110,120,130,140,150},
+  legend pos=south west, legend entries={出栏平均体重（月度）},
+]
+\addplot[AquaTeal, thick] table[x index=0, y index=1]{data/clean/hog_spot_均重.dat};
+\addplot[dashed, InkGray, domain=2015:2027]{120};
+\node[font=\scriptsize, InkGray, anchor=south west] at (axis cs:2015.1,120.5) {120 公斤};
+\node[font=\scriptsize, SoftRed, anchor=south west] at (axis cs:2021.1,146.0) {2021 年压栏峰值 146.2};
+\node[font=\scriptsize, SoftRed, anchor=north east, align=right]
+  at (axis cs:2026.5,138) {2026 年 6---7 月\\回升至 139.2};
+\node[font=\scriptsize, AgriGreen, anchor=west, align=left]
+  at (axis cs:2026.55,124) {8---9 月\\骤降至 125.3};
+\end{axis}
+\end{tikzpicture}
+\caption{生猪出栏平均体重（2015 年 8 月---2026 年 9 月）}
+\label{fig:hog-weight}
+\srcfile{猪易数据成交均重（akshare \texttt{index\_hog\_spot\_price}），月度均值；2015 年早期观测缺失。}
+\end{figure}
+
+体重数据的三个要点：\hl{① 2021 年中的 146.2 公斤}是压栏行为的极端值，出现在猪价崩塌前，
+随后成为价格加速下跌的助推器；\hl{② 年均值从 2023 年的 109.5 公斤逐级抬升至 2025 年 127.3
+公斤、2026 年 127.4 公斤}，说明行业平均出栏体重在周期下行期反而上升（成本压力下以体重摊薄
+固定成本）；\hl{③ 2026 年 6---7 月再度回升至 139.2 公斤后，8---9 月骤降至 125.3 公斤}
+（两个月下降约 14 公斤），这是年内最剧烈的降重，对应的是养殖户在深度亏损下的集中抛售——
+它意味着\emph{短期供给仍在被强制出清}，但同时也在为 2027 年的供给缺口创造条件。
+
+\subsection{当前周期定位}
+\label{sec:hog-position}
+
+综合产能、价格、成本三个维度，2026 年 9 月的生猪产业处于\hl{四阶段时钟的 Q1（产能去化）末段、
+接近 Q2（产能底部）}：
+
+\begin{itemize}
+  \item 价格维度：价格指数 63.7（2026 年 4 月）为本轮最低，2026 年 9 月小幅回升至 75.8
+  （月度均值）；2026 年 4 月全国活猪均价 10.07 元/公斤，
+  2026 年 7 月回升至 11.50 元/公斤，仍低于 2025 年全国平均养殖成本
+  14.1 元/公斤\cite{dxzq2026pig,jiemian2026pig,sun2026hog}；
+  \item 产能维度：能繁母猪存栏从 2022 年的 4390 万头降至 2026 年 7 月的
+  \hl{3780 万头}（-13.9\%），已回到 3750 万头新调控目标的绿色区间\cite{jiemian2026pig}；
+  \item 效率维度：2025 年样本出栏均重约 127.13 公斤、为近几年最高，
+  2026 年 8---9 月骤降至 125.3 公斤，说明政策要求下的降重已经落地
+  \cite{stcn2026profit}；
+  \item 行为维度：仔猪价格与二元母猪价格处于历史低位，补栏意愿尚未恢复。
+\end{itemize}
+
+历史规律是：\emph{价格在产能去化完成前 6---9 个月见底}。本轮的特殊性在于三点：
+一是产能去化由\hl{政策推动而非亏损自发出清}（2026 年修订方案的目标下调与“四个带头”），
+去化速度比历史周期更快；二是能繁母猪存栏的绝对水平已回到绿色区间，
+但 PSY 提升与规模化企业的成本优势使\emph{有效供给}仍高于名义存栏所隐含的水平；
+三是需求端偏弱——2025 年居民家庭人均猪肉消费量 26.6 公斤、同比下降 5.4\%，
+连续两年下跌\cite{sun2026hog}。因此 2026 年下半年的判断是：
+\hl{价格底部大概率已在 2026 年上半年出现，但回升力度受制于需求，
+“长期磨底”而非“快速反转”是基准情形}。农业农村部 2026 年 7 月的官方研判亦为
+“供需关系逐步改善、但供强需弱格局尚未根本改变”\cite{jiemian2026pig}。

@@ -1,0 +1,282 @@
+\section{研究框架、行业分类与数据基础}
+\label{sec:framework}
+
+\subsection{研究背景与目标}
+\label{sec:fw-background}
+
+农业是典型的\hl{供给滞后型周期性行业}：生产决策依赖于上一期的价格信号，而生物生长周期、
+自然条件与政策干预使供给调整存在刚性时滞，价格因此呈现周期性波动。这一特征在生猪上表现
+得最为典型（“猪周期”），但并非生猪独有——糖料、棉花、苹果、红枣、天然橡胶等经济作物同样
+存在 3$\sim$7 年的产能周期，蛋鸡、肉禽、水产则存在更短的 1$\sim$3 年周期。
+
+本报告要回答两个层面的问题：
+
+\begin{keybox}[报告的两个核心问题]
+\normalsize
+\textbf{问题一（周期与相关性）}\quad 中国农业各子行业各自遵循什么样的周期？这些周期之间的
+供需联系与价格传导关系如何？以猪周期为基准，其他养殖品种（肉牛、肉羊、禽、水产）与经济
+作物是同步、领先还是滞后？\par\vspace{4pt}
+\textbf{问题二（上市公司画像）}\quad 近三年农业上市公司的经营与财务状况如何？哪些公司完成
+了战略转型？历史融资与未来潜在融资需求有多大？
+\end{keybox}
+
+选择以\hl{猪周期为基准}的理由有三：其一，生猪是农业中产值最高、价格波动最剧烈的单一品种，
+猪肉产量约占肉类总产量的六成，其价格波动直接决定 CPI 食品项的方向；其二，生猪同时是
+\textbf{饲料端传导链条最长}的品种——玉米、豆粕需求的三成以上来自生猪养殖，因此猪周期是
+整个农业产业链的需求锚；其三，生猪期货 2021 年 1 月上市后，中国农业终于拥有了一个连续、
+高频、可比的生猪价格序列，使得跨品种的定量周期比较成为可能。
+
+\subsection{行业分类口径：申万行业分类（2021 版）}
+\label{sec:fw-classification}
+
+本报告统一采用\hl{申万行业分类（2021 版）}。农林牧渔为一级行业（指数代码 801010，共 104 家
+A 股上市公司），下设 8 个二级行业、17 个三级行业。选择申万分类而非证监会门类或东财行业，
+是因为申万分类对农业内部的养殖与加工链做了更细的切分（例如把“生猪养殖”与“肉鸡养殖”分列），
+且自 2021 年起配备了连续的行业指数，便于把\emph{产业周期}与\emph{资本市场表现}对齐研究。
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  font=\footnotesize,
+  lv1/.style={rectangle, rounded corners=2pt, draw=AgriGreen, line width=1pt,
+              fill=AgriGreen, text=white, font=\small\heiti, inner sep=5pt, align=center},
+  lv2/.style={rectangle, rounded corners=1.5pt, draw=AgriGreen, line width=0.7pt,
+              fill=AgriPale, text=InkGray, font=\footnotesize\heiti, inner sep=3.6pt,
+              align=center, text width=1.85cm},
+  lv3/.style={rectangle, rounded corners=1pt, draw=AgriLight, line width=0.5pt,
+              fill=white, text=InkGray!90, font=\scriptsize, inner sep=2.4pt,
+              align=left, text width=1.78cm},
+  ed/.style={draw=AgriLight, line width=0.5pt, rounded corners=1pt},
+]
+\node[lv1] (root) at (0,0) {农林牧渔\\\scriptsize 801010};
+\foreach \i/\nm/\cd in {1/种植业/801016, 2/养殖业/801017, 3/饲料/801014,
+                        4/农产品加工/801012, 5/动物保健/801018, 6/渔业/801015,
+                        7/林业/801011, 8/农业综合/801019}{
+  \node[lv2] (L2-\i) at ({(\i-4.5)*2.05}, -1.85) {\nm\\\scriptsize\cd};
+  \draw[ed, AgriGreen!70] (root) -- (L2-\i);
+}
+\node[lv3, anchor=north] (a1) at ([yshift=-0.95cm]L2-1.north) {种子 850111\\粮食种植 850112\\其他种植业 850113\\食用菌 850114};
+\node[lv3, anchor=north] (a2) at ([yshift=-0.95cm]L2-2.north) {生猪养殖 850172\\肉鸡养殖 850173\\其他养殖 850174};
+\node[lv3, anchor=north] (a3) at ([yshift=-0.95cm]L2-3.north) {畜禽饲料 850142\\水产饲料 850143\\宠物食品 850144};
+\node[lv3, anchor=north] (a4) at ([yshift=-0.95cm]L2-4.north) {果蔬加工 850151\\粮油加工 850152\\其他农产品加工 850154};
+\node[lv3, anchor=north] (a5) at ([yshift=-0.95cm]L2-5.north) {动物保健 850181};
+\node[lv3, anchor=north] (a6) at ([yshift=-0.95cm]L2-6.north) {海洋捕捞 850121\\水产养殖 850122};
+\node[lv3, anchor=north] (a7) at ([yshift=-0.95cm]L2-7.north) {林业 850131};
+\node[lv3, anchor=north] (a8) at ([yshift=-0.95cm]L2-8.north) {农业综合\\（综合类）};
+\foreach \i in {1,...,8}{\draw[ed, AgriLight] (L2-\i) -- (a\i);}
+\node[draw=AgriGold, dashed, rounded corners=2pt, fill=AgriGold!8,
+      text width=13.8cm, align=left, font=\scriptsize, inner sep=5pt]
+  (map) at (0,-6.1)
+  {\heiti 第一部分品种映射\quad\rmfamily
+   种植业 $\to$ 玉米、强麦、稻米\qquad
+   养殖业 $\to$ 生猪、鸡蛋（兼论肉禽、牛羊、水产）\qquad
+   饲料 $\to$ 豆粕、菜粕、玉米\\
+   农产品加工 $\to$ 豆油、菜油、棕榈油、白糖、棉纱\qquad
+   渔业 $\to$ 水产料与鱼粉（无期货，用现货与行业指数）\\
+   林业 $\to$ 天然橡胶、纸浆\qquad
+   另列林果与油料：苹果、红枣、花生（归入种植业与农产品加工）};
+\draw[-{Stealth[length=4pt]}, AgriGold, dashed] (a4.south) to[out=-90,in=90] (map.north);
+\end{tikzpicture}
+\caption{申万行业分类（2021 版）农林牧渔行业树与本报告品种映射}
+\label{fig:sw-tree}
+\srcfile{申万宏源研究《申万行业分类标准（2021 版）》；行业代码与成份股数量取自 akshare \texttt{sw\_index\_second\_info} 与 \texttt{sw\_index\_third\_info}。}
+\end{figure}
+
+\subsection{周期分析框架：供需、产能与价格}
+\label{sec:fw-framework}
+
+\subsubsection{蛛网模型：农业周期的理论内核}
+
+农产品市场的供给对价格的反应存在时滞：\emph{本期的产量由上一期的价格决定}。设第 $t$ 期的
+供给与需求分别为
+\begin{equation}
+Q_t^{s} = a + b\,P_{t-1}, \qquad Q_t^{d} = c - d\,P_t, \qquad b, d > 0,
+\label{eq:cobweb}
+\end{equation}
+市场出清 $Q_t^{s}=Q_t^{d}$ 得价格递推式
+\begin{equation}
+P_t = \frac{c-a}{d} - \frac{b}{d}\,P_{t-1}.
+\end{equation}
+其收敛条件为 $\left| -b/d \right| < 1$，即\hl{供给价格弹性小于需求价格弹性时价格收敛}。
+农产品恰恰相反：产能一旦建成（母猪、果树、胶园、糖厂压榨能力）难以退出，短期供给弹性极小，
+而食品消费的收入弹性低、需求价格弹性同样很小，于是 $b/d$ 接近甚至大于 1，价格以\emph{等幅
+或发散振荡}的形式在盈亏线两侧摆动——这正是周期存在的数学根源。
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\footnotesize]
+\begin{axis}[
+  name=cob,
+  width=6.0cm, height=4.9cm,
+  xmin=0, xmax=10, ymin=0, ymax=10,
+  xtick=\empty, ytick=\empty, axis lines=middle,
+  axis line style={InkGray, -{Stealth[length=4pt]}},
+  label style={font=\scriptsize},
+  clip=false,
+]
+  \addplot[OilBlue, thick, domain=0.5:9.5]{9.5-0.85*x};
+  \node[OilBlue, font=\scriptsize, anchor=west] at (axis cs:8.5,2.6) {$Q^d$};
+  \addplot[SoftRed, thick, domain=0.5:9.0]{1.0+0.85*x};
+  \node[SoftRed, font=\scriptsize, anchor=west] at (axis cs:8.3,8.4) {$Q^s(P_{t-1})$};
+  \draw[InkGray, thick, -{Stealth[length=3pt]}] (axis cs:5.0,5.0) -- (axis cs:5.0,5.25);
+  \draw[InkGray, thick, -{Stealth[length=3pt]}] (axis cs:5.0,5.25) -- (axis cs:4.4,5.25);
+  \draw[InkGray, thick, -{Stealth[length=3pt]}] (axis cs:4.4,5.25) -- (axis cs:4.4,5.76);
+  \draw[InkGray, thick, -{Stealth[length=3pt]}] (axis cs:4.4,5.76) -- (axis cs:5.7,5.76);
+  \draw[InkGray, thick, -{Stealth[length=3pt]}] (axis cs:5.7,5.76) -- (axis cs:5.7,4.65);
+  \draw[InkGray, thick, -{Stealth[length=3pt]}] (axis cs:5.7,4.65) -- (axis cs:3.5,4.65);
+  \draw[InkGray, thick, -{Stealth[length=3pt]}] (axis cs:3.5,4.65) -- (axis cs:3.5,6.5);
+  \draw[InkGray, thick, -{Stealth[length=3pt]}] (axis cs:3.5,6.5) -- (axis cs:7.2,6.5);
+  \draw[InkGray, thick, -{Stealth[length=3pt]}] (axis cs:7.2,6.5) -- (axis cs:7.2,3.35);
+  \node[InkGray, font=\scriptsize, anchor=south east, rotate=90]
+    at (axis cs:-0.45,9.9) {价格 $P$};
+  \node[InkGray, font=\scriptsize, anchor=west] at (axis cs:9.9,-0.55) {数量 $Q$};
+  \node[font=\scriptsize, InkGray, anchor=north east, align=right]
+    at (axis cs:9.6,7.2) {蛛网路径：\\等幅振荡};
+\end{axis}
+\begin{axis}[
+  at={(cob.right of south east)}, anchor=left of south west, xshift=14pt,
+  width=6.4cm, height=4.9cm, xlabel={时间 $t$}, ylabel={价格 $P_t$},
+  xmin=0, xmax=12, ymin=0, ymax=10,
+  xtick=\empty, ytick=\empty, axis lines=left,
+  axis line style={InkGray},
+  label style={font=\scriptsize},
+]
+  \addplot[AgriGreen, thick, domain=0:12, samples=150]{5+3.4*cos(deg(0.52*x))};
+  \node[font=\scriptsize, anchor=west, AgriGreen] at (axis cs:0.2,9.4) {$|b/d|<1$ 收敛};
+  \addplot[SoftRed, thick, domain=0:11.4, samples=250]{5+2.8*cos(deg(0.52*x))*1.045^x};
+  \node[font=\scriptsize, anchor=west, SoftRed] at (axis cs:5.6,8.9) {$|b/d|\geq1$ 等幅/发散};
+  \addplot[dashed, InkGray] coordinates {(0,5) (12,5)};
+  \node[font=\scriptsize, anchor=west, InkGray] at (axis cs:9.0,4.4) {长期均衡};
+\end{axis}
+\end{tikzpicture}
+\caption{蛛网模型：供给时滞下的价格振荡（左）与振荡幅度演化（右）}
+\label{fig:cobweb}
+\srcfile{作者根据式 \eqref{eq:cobweb} 自绘；参数 $b/d$ 分别取 0.7 与 1.045。}
+\end{figure}
+
+\subsubsection{四阶段周期划分与产能时钟}
+
+本报告统一用\hl{“产能—价格”双指标}刻画周期阶段，以缓解单一价格指标滞后的问题：价格决定
+当期盈利，产能决定未来 6$\sim$18 个月的供给，二者组合即可定位周期位置。
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\footnotesize]
+  \draw[AgriLight, line width=0.9pt] (0,0) circle (2.45cm);
+  \draw[AgriLight!70, line width=0.5pt, dashed] (-2.45,0) -- (2.45,0);
+  \draw[AgriLight!70, line width=0.5pt, dashed] (0,-2.45) -- (0,2.45);
+  \foreach \a/\nm/\col in {45/产能去化/AgriGreen, 135/产能底部/AgriGold,
+                           225/产能扩张/HogPink, 315/产能顶部/SoftRed}{
+    \pgfmathsetmacro\rx{1.55*cos(\a)}
+    \pgfmathsetmacro\ry{1.55*sin(\a)}
+    \node[circle, draw=\col, fill=\col!12, inner sep=2.8pt, font=\scriptsize\heiti,
+          text=\col!75!black] at (\rx,\ry) {\nm};
+  }
+  \node[font=\scriptsize, align=center] at (0,0) {产能\\时钟};
+  \node[font=\scriptsize, align=left, anchor=west] at (3.0,0.9)
+    {\heiti 阶段判据\\[3pt]
+     \textcolor{AgriGreen}{Q1 产能去化}：价格 $<$ 完全成本，产能指标同比为负\\
+     \textcolor{AgriGold}{Q2 产能底部}：价格触底，产能降幅收窄，亏损收窄\\
+     \textcolor{HogPink}{Q3 产能扩张}：价格 $>$ 成本，补栏/扩产启动\\
+     \textcolor{SoftRed}{Q4 产能顶部}：价格见顶，供给同比高增\\[3pt]
+     \textit{产能代理指标}：能繁母猪存栏（生猪）、在产蛋鸡存栏（鸡蛋）、\\
+     \textit{植棉/糖料种植面积、胶园开割率、冷库库存（苹果/红枣）}};
+\end{tikzpicture}
+\caption{以“产能—价格”构建的四阶段周期时钟（猪周期基准模板）}
+\label{fig:cycle-clock}
+\srcfile{作者根据蛛网模型与各品种产业逻辑自绘。}
+\end{figure}
+
+\subsubsection{需求结构与传导链条}
+
+本报告把农产品需求拆为三条链：\textbf{①居民直接消费}（口粮、果蔬与肉类蛋白，受人口、收入
+与消费习惯驱动，收入弹性低）；\textbf{②工业原料}（玉米$\to$淀粉与酒精、甘蔗甜菜$\to$制糖、
+棉花$\to$纺服、橡胶$\to$轮胎、油脂$\to$生柴与食品加工）；\textbf{③饲料原料}（玉米、豆粕、
+菜粕、鱼粉$\to$生猪、禽、水产养殖）。三条链的价格传导速度不同，是理解跨品种周期同步性的
+关键。
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  font=\scriptsize,
+  box/.style={rectangle, rounded corners=1.5pt, draw=InkGray!55, line width=0.6pt,
+              fill=LightGray, align=center, inner sep=3.4pt, text width=2.0cm},
+  core/.style={rectangle, rounded corners=2pt, draw=HogPink, line width=1.1pt,
+               fill=HogPink!12, align=center, inner sep=4pt, text width=2.15cm,
+               font=\footnotesize\heiti},
+  ar/.style={-{Stealth[length=4pt]}, line width=0.8pt, InkGray},
+]
+\node[box, fill=OilBlue!10, draw=OilBlue] (cons) at (-5.3,2.4) {居民消费\\收入/人口/替代品};
+\node[box, fill=AgriGold!12, draw=AgriGold] (ind) at (0,3.5) {工业原料\\淀粉/制糖/纺服/轮胎};
+\node[box, fill=AgriGreen!12, draw=AgriGreen] (feed) at (5.3,2.4) {饲料原料\\玉米/豆粕/菜粕/鱼粉};
+\node[core] (hog) at (0,0.3) {生猪养殖\\\textbf{需求锚}};
+\node[box, fill=HogPink!8] (poultry) at (4.7,-1.3) {禽：肉鸡/蛋鸡};
+\node[box, fill=AquaTeal!12, draw=AquaTeal] (aqua) at (5.0,-3.4) {水产养殖};
+\node[box] (ruminant) at (-4.7,-1.3) {肉牛/肉羊};
+\node[box] (crop) at (-5.0,-3.4) {种植：玉米/大豆};
+\draw[ar] (cons) -- (hog);
+\draw[ar] (feed) -- (hog);
+\draw[ar] (feed) -- (poultry);
+\draw[ar] (poultry) -- (aqua);
+\draw[ar] (ind) -- (crop);
+\draw[ar, SoftRed, line width=1pt] (hog) -- node[above, font=\tiny, SoftRed] {\ 补栏} (poultry);
+\draw[ar] (hog) -- (ruminant);
+\draw[ar] (ruminant) -- (crop);
+\draw[ar, SoftRed, line width=1pt] (hog) -- (aqua);
+\node[draw=SoftRed, dashed, rounded corners=1pt, fill=SoftRed!6, font=\tiny,
+      align=left, inner sep=3.5pt, text width=8.6cm] at (0,-4.9)
+  {\heiti 关键传导（时滞由第 \ref{sec:corr} 章领先滞后检验校准）\\[1.5pt]
+   牛市：猪价$\uparrow$ $\to$ 补栏 $\to$ 玉米/豆粕需求$\uparrow$ $\to$ 饲料涨价 $\to$ 养殖成本$\uparrow$（6$\sim$12 个月）\\
+   熊市：猪价$\downarrow$ $\to$ 禽、水产与牛羊肉的替代性需求$\uparrow$（3$\sim$6 个月），同时饲料成本下行改善禽类利润};
+\end{tikzpicture}
+\caption{农业需求三条链与跨品种周期传导路径}
+\label{fig:demand-chain}
+\srcfile{作者根据产业链逻辑自绘；箭头粗细表示传导强度，红色箭头为猪周期主导的传导。}
+\end{figure}
+
+\subsection{数据来源与处理方法}
+\label{sec:fw-data}
+
+\subsubsection{数据来源}
+
+本报告全部数据来自公开渠道，通过 \texttt{akshare} 开源财经数据接口获取并本地留痕。
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{主要数据来源与接口}
+\label{tab:data-source}
+\begin{tabularx}{\textwidth}{@{}l l X l@{}}
+\toprule
+\textbf{数据类别} & \textbf{来源} & \textbf{接口} & \textbf{频率} \\
+\midrule
+期货主力连续行情 & 新浪财经 & \texttt{futures\_main\_sina}（26 个农产品相关品种） & 日 \\
+生猪价格指数 & 猪易数据 & \texttt{index\_hog\_spot\_price}（含成交均重） & 日 \\
+生猪产业指标 & 大连商品交易所 & \texttt{futures\_hog\_core/cost/supply} & 周/月 \\
+期货库存与仓单 & 东方财富、99 期货 & \texttt{futures\_inventory\_em/99} & 周 \\
+行业指数与成份股 & 申万宏源 & \texttt{index\_hist\_sw}、\texttt{index\_component\_sw} & 日 \\
+公司概况与股本 & 巨潮资讯网 & \texttt{stock\_profile\_cninfo}、\texttt{stock\_share\_change\_cninfo} & 事件 \\
+财务报表与指标 & 新浪财经、东方财富 & \texttt{stock\_financial\_abstract}、\texttt{stock\_financial\_analysis\_indicator} & 季 \\
+公告全文检索 & 巨潮资讯网 & \texttt{stock\_zh\_a\_disclosure\_report\_cninfo} & 事件 \\
+宏观与价格指数 & 国家统计局、中价指数 & \texttt{macro\_china\_cpi\_yearly}、\texttt{macro\_china\_qyspjg} & 月 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+\srcfile{akshare 版本 1.18.97；数据抓取脚本见 \texttt{scripts/fetch\_*.py}，抓取时间戳、行列数与接口名记录于 \texttt{data/raw/\_manifest.json}。}
+
+\subsubsection{处理方法}
+
+\begin{enumerate}
+  \item \textbf{主力连续价格}的拼接会在换月处产生跳空，本报告对\emph{收益率}类统计
+  （波动率、相关系数）使用月度对数收益率，并剔除换月跳空异常值（$|\ln$ 收益$|>35\%$
+  视为换月跳空）；对\emph{价格水平}类图形使用月度均价。
+  \item \textbf{归一化}：跨品种比较统一以 2021 年 1 月$=100$（生猪期货上市月）为基期；
+  数据长度不足的品种以其首个完整月份为基期并在图中注明。
+  \item \textbf{相关性}采用皮尔逊相关系数，样本为月度对数收益率；月频 60 个观测下
+  5\% 显著性水平对应 $|\rho|\approx0.25$，故低于该阈值的相关性不作因果解读。
+  \item \textbf{领先滞后}检验：以生猪期货月收益率与各品种月收益率在 $-12\sim+12$ 个月
+  滞后阶上做互相关，取 $|\rho|$ 最大的滞后阶作为“领先 / 同步 / 滞后”判据。
+  \item \textbf{财务口径}：报表数据以合并报表为准，2026 年数据为半年度（截至 2026 年
+  6 月 30 日）；“近三年”的统计口径为 2023、2024、2025 三个完整会计年度加 2026 年
+  半年度。股本变动、分红与公告数据的时间窗口为 2023 年 9 月至 2026 年 9 月。
+\end{enumerate}

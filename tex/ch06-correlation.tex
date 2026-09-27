@@ -1,0 +1,394 @@
+\section{跨品种周期相关性与传导：以猪周期为基准}
+\label{sec:corr}
+
+本章回答本报告第一部分的核心问题：\hl{以猪周期为基准，农业各子行业之间到底有多强的
+周期性关联？}为了回答这个问题，我们先固定方法口径，再分四个层次递进：
+\emph{同期相关}（相关矩阵）$\to$ \emph{周期同步}（周期分量）$\to$
+\emph{领先滞后}（互相关）$\to$ \emph{传导检验}（HAC 回归），
+最后把结论落到\emph{股票市场}（申万子行业指数）与\emph{其他养殖品种}（牛羊、禽、水产）上。
+
+\subsection{方法：为什么不能简单看相关系数}
+\label{sec:corr-method}
+
+农产品价格序列有很强的趋势性与结构性断点（例如 2018 年非洲猪瘟、2024 年玉米进口政策转向），
+如果直接用价格\emph{水平}做相关，得到的往往是“共同的趋势”而不是“共同的周期”。
+因此本章的所有计算遵循四条纪律：
+
+\begin{enumerate}
+  \item \textbf{同频率、同窗口}。所有相关系数在\emph{同一时间窗口}、\emph{同一频率}上计算，
+  绝不在不同样本期上比较。主窗口取 \hl{2021 年 2 月---2026 年 8 月}
+  （生猪期货 2021 年 1 月上市后的完整月份，共 67 个月度点），
+  长窗口取 2015 年 2 月---2026 年 8 月（用于以生猪\emph{现货}价格指数为基准的检验）。
+  \item \textbf{收益率口径为主}。基准口径是月度对数收益率
+  $r_t=\ln(P_t/P_{t-1})$，并剔除换月造成的异常跳空（$|r|>35\%$ 视为拼接跳空）。
+  \item \textbf{周期分量口径为辅}。用价格对 12 个月移动均线的偏离率刻画“周期位置”，
+  该口径能捕捉同步性，但序列的持续性会使有效样本数远小于名义样本数，
+  因此\hl{只作为定性参照，不用于显著性判断}。
+  \item \textbf{显著性阈值}。主窗口 $n=67$ 时 5\% 显著性的临界值为 $|\rho|>0.24$；
+  季度（3 个月）收益率口径 $n\approx 20$，临界值 $|\rho|>0.46$。
+  传导回归使用 \hl{Newey--West (1987) HAC 稳健标准误，滞后阶 6}，
+  以应对月度数据的自相关与异方差。
+\end{enumerate}
+
+\subsection{第一层：同期相关矩阵}
+\label{sec:corr-matrix}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=11.2cm, height=10.6cm,
+  xtick={0,1,...,21}, ytick={0,1,...,21},
+  xticklabels={生猪,鸡蛋,玉米,淀粉,粳米,豆一,豆二,菜籽,花生,豆粕,菜粕,豆油,
+               菜油,棕油,白糖,棉花,棉纱,橡胶,20号胶,苹果,红枣,纸浆},
+  yticklabels={生猪,鸡蛋,玉米,淀粉,粳米,豆一,豆二,菜籽,花生,豆粕,菜粕,豆油,
+               菜油,棕油,白糖,棉花,棉纱,橡胶,20号胶,苹果,红枣,纸浆},
+  xticklabel style={rotate=90, anchor=east, font=\tiny},
+  yticklabel style={font=\tiny},
+  y dir=reverse,
+  colormap={agriheat}{rgb255=(150,45,40) rgb255=(252,250,245) rgb255=(28,88,58)},
+  colorbar horizontal,
+  colorbar style={width=7.5cm, height=0.32cm, at={(0.5,-0.13)},
+    anchor=north, xtick={-1,-0.5,0,0.5,1}, xticklabel style={font=\tiny},
+    xlabel={\scriptsize 相关系数 $\rho$}, xlabel style={font=\scriptsize}},
+  point meta min=-1, point meta max=1,
+  axis on top, tick align=outside,
+]
+\addplot[matrix plot*, mesh/cols=22, point meta=explicit, shader=flat]
+  table[x=i, y=j, z=rho]{data/clean/corr_m_short.dat};
+\end{axis}
+\end{tikzpicture}
+\caption{农产品期货月度对数收益率相关矩阵（2021 年 2 月---2026 年 8 月，67 个月度观测）}
+\label{fig:corr-heat}
+\srcfile{新浪财经期货主力连续合约；作者计算。绿色为正相关、红色为负相关；
+$|\rho|>0.24$ 为 5\% 显著性水平。}
+\end{figure}
+
+图 \ref{fig:corr-heat} 是最重要的单张图，它给出三条清晰的结论：
+
+\begin{keybox}[相关性的三个层级]
+\normalsize
+\textbf{① 强相关只存在于“同一条产业链”内部。}深绿色的区块集中在两处：
+\emph{油脂压榨链}（豆油---棕榈油---菜油---豆粕---豆二，$\rho$ 普遍在 $0.5\sim0.8$）
+与\emph{棉花---棉纱}（同原料上下游，$\rho$ 接近 1）、\emph{玉米---玉米淀粉}
+（$\rho\approx0.6$）、\emph{天然橡胶---20 号胶}。这些品种共享同一个供给来源或同一个加工链条，
+因此相关性是“结构性”的、跨周期稳定的。\par\vspace{3pt}
+\textbf{② 跨链条相关性普遍很弱。}养殖（生猪、鸡蛋）与粮食（玉米、粳米）之间、
+养殖与软商品（白糖、棉花、橡胶）之间，$\rho$ 大多落在 $|0.1|$ 以内。\par\vspace{3pt}
+\textbf{③ 与生猪相关性最高的不是玉米或豆粕，而是花生与粳米。}
+这提示“同属农产品”并不构成相关性的理由，\emph{共同的驱动因子}才是。
+\end{keybox}
+
+\input{tex/gen/corr_group.tex}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[agri axis, catbar,
+  width=12.6cm, height=7.6cm,
+  xlabel={与生猪期货月度收益的相关系数 $\rho$}, xmin=-0.3, xmax=0.55,
+  yticklabels from table={data/clean/corr_with_hog.dat}{label},
+  ytick=data,
+  axis y line*=left,
+]
+\addplot[xbar, bar width=4.5pt, fill=AgriGreen!70, draw=AgriGreen]
+  table[x=rho, y expr=\coordindex]{data/clean/corr_with_hog.dat};
+\addplot[SoftRed, dashed, line width=0.8pt, domain=-0.3:0.55] {0};
+\addplot[InkGray, dotted, line width=0.8pt, domain=-0.3:0.55] {0.24};
+\addplot[InkGray, dotted, line width=0.8pt, domain=-0.3:0.55] {-0.24};
+\end{axis}
+\end{tikzpicture}
+\caption{各期货品种与生猪期货的月度收益率相关系数（排序）}
+\label{fig:corr-with-hog}
+\srcfile{虚线为 0，点线为 5\% 显著性阈值 $\pm0.24$（$n=67$）。}
+\end{figure}
+
+\input{tex/gen/corr_hog.tex}
+
+图 \ref{fig:corr-with-hog} 与表 \ref{tab:corr-hog} 给出了“以猪周期为基准”的直接答案：
+\hl{没有任何一个农产品期货品种与生猪期货的月度收益率相关性达到 5\% 显著水平}。
+最高的花生（$+0.48$）与粳米（$+0.29$）分别是小品种与政策定价品种，
+其相关性更可能来自共同的宏观流动性因素而非产业传导；豆一（$+0.26$）
+与鸡蛋（$+0.23$）处在临界值附近；而玉米（$+0.09$）、豆粕（$+0.13$）
+——\emph{理论上与猪周期关联最强的两个饲料原料品种}——都不显著。
+
+\subsection{第二层：周期同步性（周期分量口径）}
+\label{sec:corr-cycle}
+
+把价格换成“对 12 个月均线的偏离率”后，相关性结构发生了变化（图 \ref{fig:corr-cyc}）：
+\hl{棉花（$-0.59$）与棉纱（$-0.66$）与猪周期呈现明显的反向同步}，
+花生（$+0.52$）、纸浆（$+0.40$）同向，白糖（$-0.30$）反向，豆粕（$+0.28$）弱同向。
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[agri axis, catbar,
+  width=12.6cm, height=7.0cm,
+  xlabel={与生猪价格周期分量的相关系数 $\rho$}, xmin=-0.75, xmax=0.6,
+  yticklabels from table={data/clean/corr_cyc_hog.dat}{label},
+  ytick=data,
+]
+\addplot[xbar, bar width=4.5pt, fill=OilBlue!70, draw=OilBlue]
+  table[x=rho, y expr=\coordindex]{data/clean/corr_cyc_hog.dat};
+\addplot[SoftRed, dashed, line width=0.8pt, domain=-0.75:0.6] {0};
+\end{axis}
+\end{tikzpicture}
+\caption{各品种与生猪（现货价格指数）周期分量的相关系数}
+\label{fig:corr-cyc}
+\srcfile{周期分量 $=$ 月度价格 / 12 个月移动均线 $-1$；主窗口同前。
+该口径序列持续性强，\emph{不用于显著性判断}。}
+\end{figure}
+
+棉花与生猪的\emph{反向}关系有清晰的经济解释：2021---2022 年是棉花大牛市
+（新疆减产与全球补库）而猪价崩塌，2023---2024 年棉花回落而猪价反弹，
+两者的周期错位来自完全不同的驱动因素（棉花看全球纺织需求与新疆天气，
+生猪看国内产能）。
+这恰恰强化了第 \ref{sec:corr-matrix} 节的结论：\hl{跨品种相关性的方向本身不稳定}，
+不能作为交易或风险管理的稳定依据。
+
+\subsection{第三层：领先滞后结构}
+\label{sec:corr-leadlag}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 2, horizontal sep=1.1cm, vertical sep=1.25cm},
+  agri axis, width=6.4cm, height=4.5cm,
+  xlabel style={font=\scriptsize}, ylabel style={font=\scriptsize},
+  tick label style={font=\tiny},
+  xmin=-12, xmax=12, xtick={-12,-6,0,6,12},
+  ymin=-0.9, ymax=0.9, ytick={-0.8,-0.4,0,0.4,0.8}, ylabel={$\rho$}]
+\nextgroupplot[title={（a）豆粕}, xlabel={滞后月数 $k$}]
+  \addplot[OilBlue, thick] table[x=lag, y=rho]{data/clean/leadlag2_M.dat};
+  \addplot[SoftRed, dashed, line width=0.7pt, domain=-12:12] {0};
+  \addplot[InkGray, dotted, line width=0.7pt, domain=-12:12] {0.24};
+  \addplot[InkGray, dotted, line width=0.7pt, domain=-12:12] {-0.24};
+\nextgroupplot[title={（b）鸡蛋}]
+  \addplot[AgriGold, thick] table[x=lag, y=rho]{data/clean/leadlag2_JD.dat};
+  \addplot[SoftRed, dashed, line width=0.7pt, domain=-12:12] {0};
+  \addplot[InkGray, dotted, line width=0.7pt, domain=-12:12] {0.24};
+  \addplot[InkGray, dotted, line width=0.7pt, domain=-12:12] {-0.24};
+\nextgroupplot[title={（c）玉米淀粉}, xlabel={滞后月数 $k$}]
+  \addplot[Grain, thick] table[x=lag, y=rho]{data/clean/leadlag2_CS.dat};
+  \addplot[SoftRed, dashed, line width=0.7pt, domain=-12:12] {0};
+  \addplot[InkGray, dotted, line width=0.7pt, domain=-12:12] {0.24};
+  \addplot[InkGray, dotted, line width=0.7pt, domain=-12:12] {-0.24};
+\nextgroupplot[title={（d）白糖}]
+  \addplot[SoftRed, thick] table[x=lag, y=rho]{data/clean/leadlag2_SR.dat};
+  \addplot[SoftRed, dashed, line width=0.7pt, domain=-12:12] {0};
+  \addplot[InkGray, dotted, line width=0.7pt, domain=-12:12] {0.24};
+  \addplot[InkGray, dotted, line width=0.7pt, domain=-12:12] {-0.24};
+\end{groupplot}
+\end{tikzpicture}
+\caption{与生猪周期分量的领先滞后互相关（$k>0$ 表示该品种滞后猪周期 $k$ 个月）}
+\label{fig:leadlag}
+\srcfile{周期分量口径，$\pm12$ 个月，点线为 5\% 显著性阈值；仅展示相关系数绝对值较大的品种。}
+\end{figure}
+
+\input{tex/gen/leadlag.tex}
+
+图 \ref{fig:leadlag} 的形状比数值更有信息量：四条互相关曲线都在
+$k\in[-2,3]$ 的窄区间内出现主峰，随后迅速衰减到噪声水平。
+这说明\hl{农产品价格之间的“领先滞后”关系基本上在季度以内}，
+不存在可利用的、跨越半年以上的稳定传导链。对报告的结论而言，
+这意味着：\emph{不能用猪价的拐点去推断 6 个月后玉米或豆粕的拐点}。
+
+\subsection{第四层：传导检验（HAC 回归）}
+\label{sec:corr-transmission}
+
+把“相关性”升级为“条件传导”，检验模型为
+
+\begin{equation}
+  r^{i}_{t} = \alpha + \beta_{k}\, r^{\text{LH}}_{t-k} + \varepsilon_{t},
+  \qquad k = 0,1,\dots,12 ,
+  \label{eq:transmission}
+\end{equation}
+
+其中 $r^{\text{LH}}$ 为生猪期货月度收益率，$r^{i}$ 为目标品种收益率，
+标准误为 Newey--West HAC（滞后 6 阶）。表 \ref{tab:transmission} 报告显著滞后阶数与最优滞后阶。
+
+\input{tex/gen/transmission.tex}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1, horizontal sep=1.3cm},
+  agri axis, width=6.6cm, height=4.6cm,
+  xlabel style={font=\scriptsize}, ylabel style={font=\scriptsize},
+  tick label style={font=\tiny},
+  xmin=-0.5, xmax=12.5, xtick={0,3,6,9,12},
+  ymin=-5, ymax=5, ytick={-4,-2,0,2,4}, ylabel={$t$ 值},
+  legend style={font=\tiny, at={(0.02,0.03)}, anchor=south west}]
+\nextgroupplot[title={（a）豆粕}]
+  \addplot[OilBlue, thick, mark=*, mark size=1.2pt]
+    table[x=k, y=t]{data/clean/trans_M.dat};
+  \addplot[SoftRed, dashed, line width=0.7pt, domain=-0.5:12.5] {1.96};
+  \addplot[SoftRed, dashed, line width=0.7pt, domain=-0.5:12.5] {-1.96};
+\nextgroupplot[title={（b）鸡蛋}]
+  \addplot[AgriGold, thick, mark=*, mark size=1.2pt]
+    table[x=k, y=t]{data/clean/trans_JD.dat};
+  \addplot[SoftRed, dashed, line width=0.7pt, domain=-0.5:12.5] {1.96};
+  \addplot[SoftRed, dashed, line width=0.7pt, domain=-0.5:12.5] {-1.96};
+\end{groupplot}
+\end{tikzpicture}
+\caption{生猪收益率对目标品种收益率的滞后传导：HAC $t$ 值随滞后阶的变化}
+\label{fig:transmission}
+\srcfile{模型 \eqref{eq:transmission}；虚线为 $\pm1.96$（5\% 显著性）。}
+\end{figure}
+
+结果具有高度的规律性：\hl{21 个目标品种中有 17 个至少存在一个显著滞后阶，
+但显著系数都很小（$|\beta|<0.3$）且符号不一致}。
+对饲料原料而言，豆粕在 $k=6,8,12$ 显著但系数为 \emph{负}（$k=8$ 时 $\beta=-0.25$，$t=-3.38$），
+菜粕在 $k=12$ 显著为 \emph{正}（$\beta=+0.19$），二者方向相反、逻辑上无法同时成立，
+说明这些显著性更可能来自样本内的偶然共动而非稳定的经济机制
+（\emph{21 个品种 $\times$ 13 个滞后阶 $=273$ 次检验，纯随机下也会有约 14 次“显著”}）。
+
+这一多重检验问题必须显式处理，否则会得出“存在传导”的错误结论。
+本报告的处理是把显著性当作\emph{筛选}而非\emph{证明}：
+只有同时满足“系数方向符合产业链逻辑”、“在季度收益率口径下仍然显著”、
+“在分样本（2021---2023 / 2024---2026）中符号一致”三个条件的传导关系才被认定为稳健。
+按此标准，稳健的候选只剩三个：\hl{鸡蛋（$+0.28$ / $+0.26$）}、
+豆一（$+0.30$ / $+0.18$）与花生（$+0.56$ / $+0.17$），
+其中只有鸡蛋有明确的产业逻辑——它与生猪同属“养殖产能周期”驱动的品种，
+且是唯一在 HAC 同期回归中显著的品种（$\beta=0.19$，$t=2.39$）。
+这正是第 \ref{sec:other-livestock} 节把养殖业作为独立周期组来处理的原因。
+
+\subsection{第五层：阶段收益对比}
+\label{sec:corr-phase}
+
+相关性度量的是“同时变动”，而下文更关心“在猪价上涨/下跌阶段，其他品种表现如何”。
+以生猪价格的 ZigZag 分段为状态变量，计算各品种在猪价上行段与下行段的
+月均收益率，结果见图 \ref{fig:phase-scatter} 与表 \ref{tab:phase-futures}。
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[agri axis,
+  width=12.4cm, height=7.4cm,
+  xlabel={猪价上行段：品种月均收益（\%）},
+  ylabel={猪价下行段：品种月均收益（\%）},
+  xmin=-4.2, xmax=2.6, ymin=-1.8, ymax=2.2,
+  xtick={-4,-3,-2,-1,0,1,2}, ytick={-1.5,-1,-0.5,0,0.5,1,1.5,2},
+  legend style={at={(0.99,0.03)}, anchor=south east, cells={anchor=west}},
+  legend entries={各品种, 45$^\circ$ 线（两阶段同收益）},
+]
+\addplot[SoftRed, dashed, line width=0.9pt, domain=-4.2:2.6] {x};
+\addplot[only marks, mark=*, mark size=2.2pt, AgriGreen,
+  nodes near coords, point meta=explicit symbolic,
+  every node near coord/.append style={font=\tiny, InkGray, anchor=west}]
+  table[x=up, y=down, meta=label]{data/clean/phase_scatter.dat};
+\end{axis}
+\end{tikzpicture}
+\caption{生猪价格上行段与下行段中，各期货品种的月均收益率}
+\label{fig:phase-scatter}
+\srcfile{横轴为猪价上行段（共 15 个月）内的品种月均收益，纵轴为下行段（共 47 个月）内的月均收益；
+点位于 45$^\circ$ 线上方说明该品种在猪价下跌时表现更好。}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[agri axis, catbar,
+  width=12.4cm, height=8.2cm,
+  xlabel={与猪价同向的月份占比（\%）}, xmin=35, xmax=72,
+  yticklabels from table={data/clean/phase_same_fut.dat}{label},
+  ytick=data,
+]
+\addplot[xbar, bar width=4.5pt, fill=AgriGold!75, draw=AgriGold]
+  table[x=pct, y expr=\coordindex]{data/clean/phase_same_fut.dat};
+\addplot[SoftRed, dashed, line width=0.8pt, domain=35:72] {50};
+\end{axis}
+\end{tikzpicture}
+\caption{与猪价同向的月份占比（50\% 为无关系基准）}
+\label{fig:phase-same}
+\srcfile{同向 $=$ 品种月度收益率与生猪价格指数变动方向一致。}
+\end{figure}
+
+\input{tex/gen/phase_futures.tex}
+
+散点图给出了一个反直觉但极其重要的事实：\hl{大多数品种位于 45$^\circ$ 线上方}，
+即\emph{它们在猪价下跌阶段的表现好于猪价上涨阶段}。
+这再次印证了第 \ref{sec:grain-cycle} 节的“量与价分离”：猪价上行往往对应
+养殖产能扩张（利多饲料原料的\emph{数量}），但当猪价上行由供给冲击驱动时
+（如非洲猪瘟），饲料需求反而是下降的；而猪价下跌阶段常伴随成本端的原料上涨
+（2021---2022 年的玉米、豆粕牛市）。同向占比最高的花生（67.2\%）与鸡蛋（64.5\%）
+也印证了显著性检验的结果。
+
+\subsection{股票市场：申万农业子行业指数}
+\label{sec:corr-sw}
+
+对第一部分而言，股票市场提供了一个额外维度的验证。用申万一级（801010 农林牧渔）
+与全部二级、三级农业行业指数的月度收益率与生猪期货收益率做相关，结果见图 \ref{fig:sw-corr}。
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[agri axis, catbar,
+  width=12.0cm, height=6.6cm,
+  xlabel={与生猪期货月度收益的相关系数 $\rho$}, xmin=-0.25, xmax=0.06,
+  yticklabels from table={data/clean/sw_corr_hog.dat}{label},
+  ytick=data,
+]
+\addplot[xbar, bar width=4.5pt, fill=HogPink!75, draw=HogPink]
+  table[x=rho, y expr=\coordindex]{data/clean/sw_corr_hog.dat};
+\addplot[SoftRed, dashed, line width=0.8pt, domain=-0.25:0.06] {0};
+\addplot[InkGray, dotted, line width=0.8pt, domain=-0.25:0.06] {-0.24};
+\end{axis}
+\end{tikzpicture}
+\caption{申万农业子行业指数与生猪期货的月度收益率相关系数}
+\label{fig:sw-corr}
+\srcfile{申万行业指数（2021 版分类）月度收益率，主窗口 67 个月度点；未达 5\% 显著性。}
+\end{figure}
+
+\input{tex/gen/phase_sw.tex}
+
+结论非常明确：\hl{申万农业各子行业指数与猪价的月度相关性全部在 $[-0.20,+0.03]$ 之间，
+无一显著}，包括理论上关联最紧密的生猪养殖（$-0.15$）与畜禽饲料（$-0.13$）。
+原因是股票价格交易的是\emph{预期}\emph{与估值}，而猪价是\emph{当期实现}的价格：
+在猪价上行期，市场往往已经在交易产能扩张带来的未来供给过剩（股价见顶）；
+在猪价下行期，市场又开始交易产能出清带来的反转预期。
+表 \ref{tab:phase-sw} 的阶段收益对比印证了这一点，并给出一个清晰的分组：
+
+\begin{itemize}
+  \item \textbf{顺周期组（仅养殖）}：\emph{养殖业指数在猪价上行段月均 $+0.50\%$、
+  下行段 $-0.96\%$（差值 $+1.47$ 个百分点）}，生猪养殖指数差值 $+0.35$ 个百分点；
+  这是全部申万农业行业中唯一呈现“猪价涨则强、猪价跌则弱”的行业。
+  \item \textbf{反周期组（幅度最大）}：水产养殖（$-5.55$ 个百分点）、
+  动物保健（$-5.22$）、渔业（$-5.03$）、粮油加工（$-3.69$）。
+  这些行业在猪价下跌阶段显著跑赢——水产养殖与渔业的需求由\emph{鱼类}
+  而非生猪决定，动物保健则受益于猪价低迷期的防疫投入与出栏量增长。
+  \item \textbf{中性组}：饲料（$+0.10$）、农林牧渔整体（$-0.59$）、
+  其他农产品加工（$-3.07$）介于两者之间。
+\end{itemize}
+
+这一分组对第二部分有一个直接含义：\hl{上市公司画像不能按“农业”整体来做，
+必须按产业链位置分别处理}——同为养殖业，生猪养殖与水产养殖的收益驱动完全相反。
+
+\subsection{本章结论}
+\label{sec:corr-conclusion}
+
+\begin{keybox}[六个可检验的结论]
+\normalsize
+\textbf{① 相关性有层级，没有“农业整体周期”。}强相关只存在于同一产业链内部
+（压榨链、棉纺链、玉米---淀粉、橡胶双品种）；跨链条相关性几乎全部不显著。
+\par\vspace{3pt}
+\textbf{② 与猪周期相关性最高的品种是花生与粳米，而非玉米、豆粕。}
+理论上的“饲料传导链”在价格数据上不可见。
+\par\vspace{3pt}
+\textbf{③ 周期分量口径下才出现的强相关（棉花 $-0.59$、棉纱 $-0.66$）方向不稳定，}
+只能作为定性参考。
+\par\vspace{3pt}
+\textbf{④ 领先滞后关系集中在 $\pm3$ 个月以内}，不存在可用的半年以上传导链。
+\par\vspace{3pt}
+\textbf{⑤ 传导回归的显著性大量来自多重检验；筛选后唯一稳健的候选是鸡蛋}
+（养殖产能周期同源）。
+\par\vspace{3pt}
+\textbf{⑥ 股票市场对猪周期几乎没有线性定价}（全部 $|\rho|<0.20$），
+只有养殖业指数显示出顺周期特征。
+\end{keybox}
+
+这些结论共同指向一个判断：\hl{中国农业的周期性是“分品种的、局部的”，
+而不是“整体的、同一节拍”的}。种植业、养殖业、软商品各自的周期由不同的
+外生变量驱动——养殖业看产能与疫病，粮食看政策与进口，软商品看全球供需与天气，
+林业果业看产地气候与库存。因此，任何“农业整体周期”的叙述都必须先说明
+它指的是哪一条链、哪一个环节。

@@ -1,0 +1,243 @@
+\section{粮食与油料：玉米、小麦、稻米、大豆及压榨链}
+\label{sec:grain}
+
+如果说猪周期是农业需求侧的节拍器，那么\hl{粮食与油料就是被这个节拍器驱动、但有自己的旋律}的
+另一条主线。中国农业的“粮食—饲料—养殖”链条中，玉米与大豆是两个枢纽品种：前者是国内唯一
+能够横跨饲料与深加工两大需求的大宗粮食品种，后者则以超过 1 亿吨的年进口量把中国农业与
+南美、北美的天气和贸易政策直接绑定。
+
+\subsection{产业链结构：两类枢纽品种}
+\label{sec:grain-structure}
+
+\begin{center}
+\begin{tikzpicture}[font=\footnotesize,
+  n/.style={rectangle, rounded corners=2pt, draw=Grain!80!black, line width=0.8pt,
+            fill=Grain!12, align=center, inner sep=3.5pt, minimum height=1.05cm},
+  e/.style={-{Stealth[length=3.5pt]}, line width=0.9pt, InkGray},
+  lab/.style={font=\scriptsize, InkGray, align=center}]
+  % 玉米链
+  \node[n, text width=1.5cm] (cg) at (0,2.6) {玉米\\30123 万吨};
+  \node[n, text width=1.9cm] (cf) at (2.9,2.6) {饲料用\\65\%$\sim$70\%};
+  \node[n, text width=1.7cm] (ci) at (5.9,2.6) {深加工\\25\%$\sim$30\%};
+  \node[n, text width=1.7cm] (cl) at (8.9,2.6) {生猪养殖\\饲用中约 50\%};
+  \draw[e] (cg) -- (cf);
+  \draw[e] (cg) -- (ci);
+  \draw[e] (cf) -- (cl);
+  % 大豆链
+  \node[n, text width=1.9cm] (sg) at (0,0.4) {大豆\\进口 11183 + 国产 2091};
+  \node[n, text width=1.6cm] (sp) at (3.1,0.4) {压榨\\10150 万吨};
+  \node[n, text width=1.5cm] (sm) at (6.2,0.4) {豆粕\\约 80\%};
+  \node[n, text width=1.5cm] (so) at (8.6,0.4) {豆油\\约 18\%};
+  \node[n, text width=1.7cm] (sj) at (6.2,-1.8) {生猪、家禽\\饲料（刚性需求）};
+  \draw[e] (sg) -- (sp);
+  \draw[e] (sp) -- (sm);
+  \draw[e] (sp) -- (so);
+  \draw[e] (sm) -- (sj);
+  \node[lab, anchor=west] at (-1.6,3.5) {（a）玉米：两条需求腿};
+  \node[lab, anchor=west] at (-1.6,1.3) {（b）大豆：压榨链};
+\end{tikzpicture}
+\end{center}
+
+\textbf{玉米的两条需求腿。}玉米饲用消费占总消费量的 \hl{65\%$\sim$70\%}，其中生猪养殖消耗
+约占饲用消费的 50\%、禽料约 40\%；深加工年耗玉米约 7800 万吨、占 25\%$\sim$30\%，
+全国深加工产能已超过 1.25 亿吨\cite{lswz2025corn}。这一结构决定了玉米价格同时受
+\emph{养殖产能周期}与\emph{深加工开工率}影响，而两者的周期长度完全不同：
+养殖产能是 3$\sim$4 年的长周期，深加工利润则是 1 年以内的短周期。
+
+\textbf{大豆的压榨链。}大豆压榨产出约 80\% 的豆粕与 18\% 的豆油，豆粕几乎全部用于饲料。
+2025/26 年度中国大豆压榨量约 10150 万吨\cite{casde123}，压榨产能 18963 万吨、近五年
+复合增长率 2.33\%\cite{zhuochuang2026soy}。由于豆粕需求来自生猪与家禽存栏，
+\hl{压榨量与猪周期同向}，但豆粕的\emph{价格}由进口成本（CBOT + 升贴水 + 汇率）决定，
+这是理解“量与价背离”的关键。
+
+\subsection{供给端：产量、进口与政策}
+\label{sec:grain-supply}
+
+\subsubsection{玉米：连续丰产与进口政策转向}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}llr@{}}\toprule
+指标 & 最新值 & 备注 \\
+\midrule
+播种面积 & 44960.8 千公顷 & 2025 年（玉米） \\
+产量 & 30123.5 万吨 & 2025 年，单产 6700.0 公斤/公顷 \\
+进口量 & 264.77 万吨 & 2025 年日历年，同比 -80.8\% \\
+进口量 & 182.4 万吨 & 2024/25 年度（2024 年 10 月---2025 年 9 月），同比 -92\% \\
+进口配额 & 720 万吨 & 2004 年至今未变，配额内关税 1\%、配额外 65\% \\
+替代品进口 & 2301 万吨 & 2024/25 年度高粱、大麦、DDGS、木薯干合计，同比 -54\% \\
+\bottomrule
+\end{tabular}
+\caption{中国玉米供给端关键指标（2024---2025）}
+\label{tab:corn-supply}
+\srcfile{国家统计局《关于 2025 年粮食产量数据的公告》\cite{stats2025grain}；
+海关总署数据经新湖期货整理\cite{xinhu2025corn}。}
+\end{table}
+
+玉米供给端最重要的事件是\hl{进口的断崖式退出}：在 2021---2023 年连续三年进口超过
+2000 万吨之后，2024 年进口回落至 1364 万吨（-49.7\%），
+2024/25 年度仅 182.4 万吨（-92\%，近十四年最低），其中美玉米仅 3.9 万吨（-98.7\%）、
+巴西玉米 72.5 万吨（-95.2\%）\cite{xinhu2025corn}。其直接原因是
+2024 年 4 月前后进口政策收紧，月度进口量从百万吨级降至 20 万吨以下\cite{xinhu2025corn}。
+
+这一转变的政策含义是：\hl{国内玉米价格的政策底由“进口成本”变成了“国内种植成本 + 补贴”}。
+进口配额 20 余年稳定在 720 万吨、配额外 65\% 的关税，意味着只要进口量被行政性压低，
+国内玉米价格就失去了外部的天花板与地板，\emph{价格更多由国内产量与库存决定}。
+2026/27 年度预测产量 30600 万吨（+1.6\%）\cite{casde119}，
+叠加饲用消费上调至 21090 万吨、工业消费下调至 8100 万吨\cite{casde119}，
+供需处于紧平衡状态。
+
+\subsubsection{大豆：创纪录进口与来源结构重构}
+
+2025 年中国大豆进口 \hl{11183 万吨}（同比 +6.47\%，历史新高），
+其中巴西 8232 万吨（占 73.61\%，同比提升 2.54 个百分点）、
+美国 1682 万吨（占 15.04\%，同比下滑 6.03 个百分点，为 2015 年有数据以来最低）、
+阿根廷 789 万吨（+92.4\%）；进口均价 450 美元/吨、同比下降 10.35\%\cite{zhuochuang2026soy,smm2026soy}。
+2025 年 12 月自美国进口大豆为零，为连续第四个月零进口\cite{smm2026soy}。
+国产大豆 2025 年产量 2091 万吨（+1.3\%）\cite{casde119}，仅相当于进口量的 19\%，
+\hl{大豆是农业领域进口依赖度最高、也最容易被贸易政策扰动的品种}。
+
+\begin{keybox}[供给端的三种冲击类型]
+\normalsize
+\textbf{① 气候冲击（产量）}：玉米、大豆的国内产量由播种面积与单产决定，单产受生长期
+（东北 7---8 月）降水与积温影响；大豆、玉米的主产区高度重合，因此\emph{同一场天气会同时影响两个品种}，
+但它们对价格的影响并不同步（大豆国内产量占比低，气候对价格的影响远弱于进口政策）。\par\vspace{3pt}
+\textbf{② 政策冲击（进口与种植结构）}：玉米进口政策收紧、大豆扩种政策、玉米大豆生产者补贴、
+三大主粮完全成本保险与种植收入保险全国覆盖\cite{cccp2024doc1}，
+构成“国内价格地板”；而中央一号文件“深入推进粮油作物大面积单产提升行动”
+与“种业振兴”\cite{cccp2025doc1}则决定长期的供给斜率。\par\vspace{3pt}
+\textbf{③ 外生冲击（贸易与疫情）}：中美贸易摩擦对美豆份额的影响（2025 年美豆占比降至 15\%）、
+以及非洲猪瘟这类疫情对\emph{下游需求}的冲击，是价格短期剧烈波动的主要来源。
+\end{keybox}
+
+\subsection{需求端：饲料工业的规模与结构}
+\label{sec:grain-demand}
+
+粮食与油料的需求侧可以用一个数字概括：\hl{2025 年全国工业饲料总产量 34225.3 万吨，
+同比增长 8.6\%，创历史新高}\cite{chinafeed2025}。分品种看，
+猪饲料 16639.4 万吨（+15.6\%，占总量的 48.6\%）、肉禽料 10097.7 万吨（+3.5\%，首次突破 1 亿吨）、
+蛋禽料 3282.0 万吨（+1.4\%）、水产料 2323.1 万吨（+2.7\%）、反刍料 1475.8 万吨（+1.8\%）、
+宠物料 188.4 万吨（+17.9\%）\cite{chinafeed2025}。
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[agri axis, yearticks,
+  width=13.6cm, height=5.8cm,
+  xlabel={年份}, ylabel={全国工业饲料产量（万吨）},
+  xmin=2022.6, xmax=2026.2, ymin=28000, ymax=35000,
+  xtick={2023,2024,2025}, ytick={29000,31000,33000,35000},
+  legend style={at={(0.02,0.03)}, anchor=south west, cells={anchor=west}},
+  legend entries={工业饲料总产量, 其中：猪饲料},
+]
+\addplot[AgriGreen, thick, mark=*, mark size=2pt] coordinates {
+  (2023,32162.7) (2024,31503.1) (2025,34225.3)};
+\addplot[HogPink, thick, mark=square*, mark size=2pt] coordinates {
+  (2023,14975.2) (2024,14391.3) (2025,16639.4)};
+\node[font=\scriptsize, InkGray, anchor=south] at (axis cs:2024,31700) {-2.1\%（近十年首降）};
+\node[font=\scriptsize, AgriGreen, anchor=south] at (axis cs:2025,34350) {+8.6\%};
+\end{axis}
+\end{tikzpicture}
+\caption{全国工业饲料产量与猪饲料产量（2023---2025）}
+\label{fig:feed-output}
+\srcfile{中国饲料工业协会《2023---2025 年全国饲料工业发展概况》\cite{chinafeed2025,chinafeed2024}。}
+\end{figure}
+
+饲料产量的波动本身就是一次“需求侧周期”的完整案例：2024 年受养殖业深度亏损影响，
+全国饲料产量出现近十年首次下降（-2.1\%，其中猪料 -3.9\%、反刍料 -13.3\%、水产料 -3.5\%）\cite{chinafeed2024}；
+2025 年在能繁母猪与家禽存栏高位的支撑下，猪料大幅回升 15.6\%，带动总量创新高\cite{chinafeed2025}。
+需求侧的第二个结构性变化是\hl{豆粕减量替代}：2025 年饲料企业中豆粕在配合饲料和浓缩饲料中的
+占比为 13.4\%、与上年持平，菜粕与棉籽粕等杂粕用量增加 3.0\%\cite{chinafeed2025}；
+2023 年豆粕用量曾下降 11.8\%、2024 年再降 4.7\%\cite{chinafeed2024}。
+这一趋势直接削弱了“生猪存栏$\to$豆粕需求$\to$豆粕价格”的传导强度。
+
+\subsection{价格周期：玉米与豆粕的不同驱动}
+\label{sec:grain-cycle}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[agri axis, yearticks,
+  width=14.2cm, height=6.8cm,
+  xlabel={年份（2021 年 2 月 $=100$）}, ylabel={归一化价格指数},
+  xmin=2021.0, xmax=2026.9, ymin=35, ymax=185,
+  xtick={2021,2022,2023,2024,2025,2026},
+  legend style={at={(0.99,0.03)}, anchor=south east, legend columns=3,
+                cells={anchor=west}, font=\tiny},
+  legend entries={生猪, 鸡蛋, 玉米, 豆粕, 豆油, 棕榈油, 白糖, 棉花, 天然橡胶},
+]
+\addplot[HogPink, very thick] table[x=x, y=LH]{data/clean/fut_norm_grain.dat};
+\addplot[AgriGold, thick] table[x=x, y=JD]{data/clean/fut_norm_grain.dat};
+\addplot[Grain, thick] table[x=x, y=C]{data/clean/fut_norm_grain.dat};
+\addplot[OilBlue, thick] table[x=x, y=M]{data/clean/fut_norm_grain.dat};
+\addplot[AgriGreen, thick] table[x=x, y=Y]{data/clean/fut_norm_grain.dat};
+\addplot[violet, thick] table[x=x, y=P]{data/clean/fut_norm_grain.dat};
+\addplot[SoftRed, thick] table[x=x, y=SR]{data/clean/fut_norm_grain.dat};
+\addplot[AquaTeal, thick] table[x=x, y=CF]{data/clean/fut_norm_grain.dat};
+\addplot[InkGray, thick] table[x=x, y=RU]{data/clean/fut_norm_grain.dat};
+\node[font=\scriptsize, HogPink, anchor=west] at (axis cs:2026.02,43) {生猪 41.8};
+\node[font=\scriptsize, Grain, anchor=west] at (axis cs:2026.02,78) {玉米 80.3};
+\end{axis}
+\end{tikzpicture}
+\caption{主要农产品期货价格归一化走势（2021 年 2 月 $=100$，月度均价）}
+\label{fig:fut-norm}
+\srcfile{新浪财经期货主力连续合约日行情（经 akshare 抓取，本报告计算）。}
+\end{figure}
+
+图 \ref{fig:fut-norm} 呈现了本轮周期最关键的\hl{分化}：2021 年 2 月至 2026 年 9 月，
+生猪期货价格下跌 58.3\%（指数 41.8），而玉米仅下跌 19.7\%、豆粕下跌 2.5\%、
+豆油上涨 11.6\%、棕榈油上涨 43.8\%、天然橡胶上涨 24.8\%。
+\emph{下游养殖品价格腰斩，而上游原料价格基本持平甚至上涨}——这直接说明
+猪价下跌并未通过饲料需求传导为原料价格下跌，原因有三：一是生猪存栏的绝对水平并未崩塌
+（2025 年生猪出栏 71973 万头、同比 +2.4\%），饲料需求仍在增长；
+二是原料价格由国际供给与政策主导；三是豆粕减量替代降低了单位生猪的豆粕消耗。
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[agri axis, catbar,
+  width=13.0cm, height=6.4cm,
+  xlabel={年化波动率（\%）}, xmin=0, xmax=30,
+  yticklabels from table={data/clean/vol_bar.dat}{label},
+  ytick=data,
+  legend style={at={(0.97,0.03)}, anchor=south east},
+  legend entries={主窗口 2021-02\textasciitilde2026-08, 全样本},
+]
+\addplot[xbar, bar width=5pt, fill=AgriGreen!75, draw=AgriGreen]
+  table[x=vol, y expr=\coordindex]{data/clean/vol_bar.dat};
+\addplot[xbar, bar width=5pt, fill=AgriGold!80, draw=AgriGold]
+  table[x=full, y expr=\coordindex]{data/clean/vol_bar.dat};
+\end{axis}
+\end{tikzpicture}
+\caption{农产品期货年化波动率：主窗口与全样本对比}
+\label{fig:vol-bar}
+\srcfile{按日对数收益率年化（252 个交易日）计算；主窗口为生猪期货上市后的完整月份。}
+\end{figure}
+
+波动率的分层同样值得注意（图 \ref{fig:vol-bar}）：生猪（27.1\%）、红枣（25.9\%）、
+棕榈油（23.7\%）、鸡蛋（22.9\%）构成本轮周期的高波动组，
+而粳米（4.0\%）、白糖（8.7\%）、玉米（9.2\%）波动率最低。
+\hl{玉米的低波动是“政策定价”的直接结果}——进口受配额约束、国储与地方储备调节库存，
+价格被限制在种植成本与替代品价格之间；而生猪、鸡蛋、红枣完全由市场供需定价，
+且供给调整存在刚性，因此波动率是玉米的三倍以上。
+
+\subsection{与猪周期的连接：量与价的分离}
+\label{sec:grain-hog-link}
+
+把上述供给与需求拼起来，可以得到本章的核心判断：
+
+\begin{keybox}[粮食油料与猪周期的连接方式]
+\normalsize
+\textbf{（1）需求侧同向、价格侧弱相关。}饲料产量（尤其是猪料）与生猪存栏高度同向，
+2025 年猪料增长 15.6\% 就是生猪存栏高位的直接结果；但玉米、豆粕的\emph{价格}
+与生猪价格的相关性很弱（第 \ref{sec:corr} 章的月度收益率相关系数分别为
+玉米 $+0.09$、豆粕 $+0.13$，均未达到 $|\rho|>0.24$ 的 5\% 显著性阈值），
+因为原料价格由国际供给与政策决定。\par\vspace{3pt}
+\textbf{（2）成本传导是非对称的。}原料价格上涨会立即压缩养殖利润（玉米与豆粕占饲料成本
+超过 70\%）\cite{sun2026hog}，但养殖亏损压缩产能后，原料需求的下降幅度有限
+（存栏的下行慢于利润的下行）。这构成养殖业“利润周期”比“价格周期”更剧烈的原因。\par\vspace{3pt}
+\textbf{（3）政策是两条链的共同外生变量。}同一份中央一号文件既规定粮食产能目标
+（“确保粮食产量保持在 1.3 万亿斤以上”）\cite{cccp2024doc1}，又规定生猪产能调控机制，
+使粮食与养殖在\emph{数量}上被同时锁定、在\emph{价格}上被各自隔离。
+\end{keybox}
