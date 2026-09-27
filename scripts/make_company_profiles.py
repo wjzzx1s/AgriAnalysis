@@ -1054,8 +1054,9 @@ def main() -> None:
     frows.sort(key=lambda t: (np.inf if not np.isfinite(t[4]) else t[4]))
     fcols = ["代码", "公司简称", "申万三级行业", "货币资金", "短期债务", "有息负债",
              "现金短债比", "静态缺口", "融资需求档"]
+    assert len(fcols) == 9, f"附录债务压力表列数应为 9，实际 {len(fcols)}"
     fout = [r"\begingroup\scriptsize\setlength{\tabcolsep}{1.5pt}",
-            r"\begin{longtable}{@{}llp{1.9cm}rrrrl@{}}",
+            r"\begin{longtable}{@{}llp{1.9cm}rrrrrl@{}}",
             r"\caption{农业上市公司债务结构与滚动偿付压力（2026 年 6 月末；按现金短债比升序；"
             r"单位：亿元，现金短债比为倍）}\label{tab:company-financing}\\",
             r"\toprule", " & ".join(fcols) + r" \\", r"\midrule", r"\endfirsthead",
@@ -1066,7 +1067,7 @@ def main() -> None:
         cells = [r["代码"], tex_escape(r["名称"]), tex_escape(r.get("三级") or "---"),
                  _s(cash), _s(sd), _s(ibd),
                  "---" if not np.isfinite(csr) else f"{csr:,.2f}",
-                 "---" if not np.isfinite(gap) else f"{gap:,.0f}", tier]
+                 "---" if not np.isfinite(gap) else f"{gap:,.2f}", tier]
         fout.append(" & ".join(cells) + r" \\")
     fout += [r"\end{longtable}", r"\endgroup"]
     # 注意：GEN 指向 tex/gen/profiles（逐公司片段），这张汇总表要放在 tex/gen/ 下
