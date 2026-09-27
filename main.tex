@@ -1,0 +1,69 @@
+% ============================================================================
+%  中国农业周期性分析报告
+%  行业分类：申万行业分类（2021 版）
+%  编译：xelatex main.tex （两遍）
+% ============================================================================
+\documentclass[11pt, a4paper, fontset=none, zihao=-4]{ctexart}
+\input{tex/preamble.tex}
+
+\title{中国农业周期性分析报告}
+\author{农业行业研究}
+\date{2026 年 9 月}
+
+\begin{document}
+
+% ---------------------------------------------------------------- 封面
+\input{tex/cover.tex}
+\newpage
+
+% ---------------------------------------------------------------- 摘要与目录
+\pagenumbering{Roman}
+\input{tex/abstract.tex}
+\newpage
+\tableofcontents
+\newpage
+\listoffigures
+\listoftables
+\newpage
+
+% ---------------------------------------------------------------- 正文
+\pagenumbering{arabic}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\color{AgriGreen} 中国农业周期性分析报告}
+\fancyhead[R]{\small\sffamily\color{InkGray}\leftmark}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{AgriLight}\leaders\hrule height \headrulewidth\hfill}}
+
+\part{农业子行业周期性分析}
+\input{tex/part1-intro.tex}
+\input{tex/ch01-framework.tex}
+\input{tex/ch02-hog-cycle.tex}
+\input{tex/ch03-grain-oilseed.tex}
+\input{tex/ch04-soft-crops.tex}
+\input{tex/ch05-other-livestock.tex}
+\input{tex/ch06-correlation.tex}
+
+\part{农业上市公司画像（近三年）}
+\input{tex/ch07-listed-overview.tex}
+\input{tex/ch08-planting.tex}
+\input{tex/ch09-breeding.tex}
+\input{tex/ch10-feed.tex}
+\input{tex/ch11-animal-health.tex}
+\input{tex/ch12-processing.tex}
+\input{tex/ch13-fishery-forestry.tex}
+\input{tex/ch14-strategy-financing.tex}
+\input{tex/ch15-conclusion.tex}
+
+% ---------------------------------------------------------------- 参考文献
+\newpage
+\printbibliography[heading=bibintoc, title={参考文献}]
+
+% ---------------------------------------------------------------- 附录
+\appendix
+\input{tex/appendix-a-sources.tex}
+\input{tex/appendix-b-companies.tex}
+\input{tex/appendix-c-contracts.tex}
+
+\end{document}

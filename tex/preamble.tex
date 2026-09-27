@@ -1,0 +1,195 @@
+% ============================================================================
+%  preamble.tex —— 中国农业周期性分析报告 导言区
+%  编译：xelatex（需 ctex + tikz/pgfplots + Source Han 字体）
+% ============================================================================
+
+% ---------- 中文与字体 ----------
+% 注意：ctexart 类已加载 ctex，此处不可重复 \usepackage{ctex}
+% （重复加载会触发 ctexhook Warning 并破坏 fontspec 参数解析）
+\usepackage{fontspec}
+\setmainfont[AutoFakeBold=2.5]{Source Han Serif CN}
+\setsansfont[AutoFakeBold=2.5]{Source Han Sans CN}
+\setmonofont{WenQuanYi Zen Hei Mono}
+\setCJKmainfont[AutoFakeBold=2.5]{Source Han Serif CN}
+\setCJKsansfont[AutoFakeBold=2.5]{Source Han Sans CN}
+\setCJKmonofont{WenQuanYi Zen Hei Mono}
+\newCJKfontfamily\heiti{Source Han Sans CN}
+\newCJKfontfamily\songti{Source Han Serif CN}
+\newCJKfontfamily\heiB[AutoFakeBold=5]{Source Han Sans CN}
+
+% ---------- 版面 ----------
+\usepackage[top=2.6cm, bottom=2.6cm, left=2.6cm, right=2.6cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+\sloppy
+\setlength{\parskip}{2pt plus 1pt}
+\setlength{\parindent}{2em}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+% ---------- 数学与符号 ----------
+\usepackage{amsmath, amssymb, amsfonts, mathtools}
+\usepackage{bm}
+
+% ---------- 表格 ----------
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{threeparttable}
+\usepackage{siunitx}
+\sisetup{group-separator={,}, group-minimum-digits=4, detect-weight=true}
+
+% ---------- 图形 ----------
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{fillbetween, groupplots, statistics, patchplots}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, calc, fit,
+                backgrounds, patterns, decorations.pathreplacing, shadows.blur,
+                matrix, chains, fadings, intersections}
+% TikZ 外部库（如未安装 external 依赖则自动忽略，不影响编译）
+\usetikzlibrary{external}
+
+% ---------- 参考文献（gb7714-2015 国标，biber 后端） ----------
+\usepackage[backend=biber, style=gb7714-2015, sorting=none,
+            url=true, doi=false, isbn=false, eprint=false]{biblatex}
+\addbibresource{refs.bib}
+\setlength{\bibitemsep}{2pt}
+\renewcommand*{\bibfont}{\footnotesize}
+
+% ---------- 颜色主题（农本绿） ----------
+\definecolor{AgriGreen}{HTML}{2E6E4E}
+\definecolor{AgriLight}{HTML}{6FA287}
+\definecolor{AgriPale}{HTML}{E4EFE8}
+\definecolor{AgriGold}{HTML}{C7A252}
+\definecolor{HogPink}{HTML}{C97B84}
+\definecolor{Grain}{HTML}{D9A441}
+\definecolor{OilBlue}{HTML}{3B6E9E}
+\definecolor{SoftRed}{HTML}{B5533C}
+\definecolor{AquaTeal}{HTML}{2C8C87}
+\definecolor{InkGray}{HTML}{3A3F44}
+\definecolor{LightGray}{HTML}{F2F3F4}
+
+% 供 pgfplots 循环使用的品种配色
+\pgfplotscreateplotcyclelist{agri}{
+  {AgriGreen, thick},
+  {HogPink, thick},
+  {Grain, thick},
+  {OilBlue, thick},
+  {SoftRed, thick},
+  {AquaTeal, thick},
+  {AgriGold, thick},
+  {InkGray, thick},
+  {AgriLight, thick},
+  {violet, thick},
+}
+
+% 通用折线图样式
+\pgfplotsset{
+  % 年份坐标轴：x 为十进制年份，刻度标签取整
+  yearticks/.style={
+    xticklabel style={/pgf/number format/fixed,
+                      /pgf/number format/precision=0,
+                      /pgf/number format/1000 sep={},
+                      font=\footnotesize},
+    x tick label as interval=false,
+  },
+  % 相关系数条形图（y 轴为类别编号）
+  catbar/.style={
+    ytick=data, y dir=reverse,
+    yticklabel style={font=\scriptsize},
+    xlabel style={font=\small},
+    tick label style={font=\footnotesize},
+    axis line style={InkGray, line width=0.5pt},
+    grid=major, grid style={LightGray, line width=0.3pt},
+    enlarge y limits=0.03,
+  },
+  agri axis/.style={
+    width=13.2cm, height=6.2cm,
+    tick label style={font=\footnotesize},
+    label style={font=\small},
+    title style={font=\small\heiti},
+    legend style={font=\scriptsize, fill=white, fill opacity=0.85,
+                  text opacity=1, draw=AgriLight!50, rounded corners=1pt},
+    grid=major, grid style={LightGray, line width=0.3pt},
+    axis line style={InkGray, line width=0.5pt},
+    every axis plot/.append style={line width=1pt},
+  },
+}
+
+% ---------- 列表、盒子 ----------
+\usepackage{enumitem}
+\setlist[itemize]{itemsep=2pt, topsep=3pt, parsep=0pt, leftmargin=1.6em}
+\setlist[enumerate]{itemsep=2pt, topsep=3pt, parsep=0pt, leftmargin=1.8em}
+\usepackage[most]{tcolorbox}
+
+\newtcolorbox{keybox}[1][核心结论]{
+  enhanced, breakable, colback=AgriPale, colframe=AgriGreen,
+  boxrule=0.4pt, left=6pt, right=6pt, top=4pt, bottom=4pt,
+  fonttitle=\sffamily\bfseries\small, title={#1},
+  attach boxed title to top left={xshift=6pt, yshift=-2.4pt},
+  boxed title style={colback=AgriGreen, colframe=AgriGreen, size=small},
+  arc=1.5pt, before skip=6pt, after skip=6pt}
+
+\newtcolorbox{noteh}[1][数据说明]{
+  enhanced, breakable, colback=LightGray, colframe=InkGray!40,
+  boxrule=0.3pt, left=6pt, right=6pt, top=4pt, bottom=4pt,
+  fonttitle=\sffamily\bfseries\scriptsize, title={#1},
+  arc=1pt, before skip=5pt, after skip=5pt}
+
+% ---------- 标题格式 ----------
+\ctexset{
+  section/format = {\heiti\zihao{4}\color{AgriGreen}},
+  subsection/format = {\heiti\zihao{-4}\color{InkGray}},
+  subsubsection/format = {\heiti\zihao{-4}\color{InkGray!80!black}},
+  section/aftername = \quad,
+  subsection/aftername = \quad,
+}
+% 部（Part）样式：ctexart 无 chapter，故用 titlesec 定制 \part
+\titleclass{\part}{straight}[\section]
+\titleformat{\part}[display]
+  {\centering\heiti\zihao{2}\color{AgriGreen}}
+  {\zihao{5}\sffamily\color{AgriGold} 第\,\zhnumber{\thepart}\,部分}
+  {12pt}
+  {}
+  [\vspace{-8pt}\textcolor{AgriLight}{\rule{0.6\textwidth}{0.8pt}}]
+\titlespacing*{\part}{0pt}{0pt}{28pt}
+\usepackage{zhnumber}
+\titleformat{\paragraph}[runin]{\heiti\zihao{-4}}{}{0pt}{}[：]
+
+% ---------- 代码与超链接 ----------
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\scriptsize, breaklines=true,
+        frame=single, rulecolor=\color{InkGray!40},
+        backgroundcolor=\color{LightGray}, columns=fullflexible}
+\usepackage[colorlinks=true, linkcolor=AgriGreen, citecolor=AgriGreen,
+            urlcolor=OilBlue, bookmarksnumbered=true,
+            CJKbookmarks=true]{hyperref}
+\usepackage{footmisc}
+\usepackage{caption}
+\captionsetup{font={small,sf}, labelfont={bf,color=AgriGreen},
+              labelsep=quad, skip=4pt}
+\captionsetup[table]{position=top}
+
+% ---------- 自定义宏 ----------
+% 图表数据来源脚注（放在图表正下方）
+\newcommand{\srcfile}[1]{\par\vspace{-2pt}%
+  {\footnotesize\sffamily\color{InkGray!85}资料来源：#1\par}}
+% 数据口径说明
+\newcommand{\datacal}[1]{{\footnotesize\sffamily\color{InkGray!75}（#1）}}
+% 周期阶段标记
+\newcommand{\phase}[1]{\textcolor{AgriGreen}{\textbf{【#1】}}}
+% 关键数字高亮
+\newcommand{\hl}[1]{\textcolor{SoftRed}{\textbf{#1}}}
+\newcommand{\up}{\textcolor{SoftRed}{$\blacktriangle$}}
+\newcommand{\down}{\textcolor{AgriGreen}{$\blacktriangledown$}}
+% 公司代码
+\newcommand{\stk}[1]{\texttt{#1}}
+% 缺失数据标记
+\newcommand{\nadata}{\textcolor{InkGray!60}{---}}

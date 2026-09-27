@@ -1,0 +1,66 @@
+% ---------------------------------------------------------------- 封面
+\begin{titlepage}
+\begin{tikzpicture}[remember picture, overlay]
+  % 顶部色带
+  \fill[AgriGreen] (current page.north west)
+    rectangle ([yshift=-4.2cm]current page.north east);
+  \fill[AgriLight!55] ([yshift=-4.2cm]current page.north west)
+    rectangle ([yshift=-4.45cm]current page.north east);
+  \fill[AgriGold] ([yshift=-4.45cm]current page.north west)
+    rectangle ([yshift=-4.62cm]current page.north east);
+  % 底部色带
+  \fill[AgriPale] (current page.south west)
+    rectangle ([yshift=2.6cm]current page.south east);
+  \fill[AgriGreen] ([yshift=2.6cm]current page.south west)
+    rectangle ([yshift=2.72cm]current page.south east);
+  % 稻穗装饰（右下水印）
+  \begin{scope}[shift={([xshift=-3.4cm, yshift=8.2cm]current page.south east)},
+                scale=1.05, opacity=0.18]
+    \foreach \a in {-58,-48,-38,-28,-18,-8}{
+      \fill[AgriGreen] (0,0) .. controls (0.35,1.0) and (0.55,1.8) .. (0.18,2.5)
+        .. controls (-0.05,1.9) and (-0.2,1.0) .. (0,0);
+      \draw[AgriGreen, line width=0.7pt] (0,0) -- ({1.4*cos(\a)},{1.4*sin(\a)});
+    }
+    \draw[AgriGreen, line width=1.6pt] (0,-0.4) -- (0,2.7);
+    \foreach \a in {-52,-40,-28}{
+      \draw[AgriGreen, line width=0.9pt] ({-0.15},{1.0+0.55*\a/50}) -- ({1.1*cos(\a)},{1.0+0.55*\a/50+1.1*sin(\a)});
+    }
+  \end{scope}
+  % 标题文字
+  \node[anchor=west, text=white, align=left]
+    at ([xshift=2.2cm, yshift=-2.05cm]current page.north west)
+    {\heiti\fontsize{26}{32}\selectfont 中国农业周期性分析报告};
+  \node[anchor=west, text=AgriPale, align=left]
+    at ([xshift=2.2cm, yshift=-3.35cm]current page.north west)
+    {\heiti\fontsize{12.5}{16}\selectfont 基于申万行业分类的品种周期机制与上市公司画像};
+  \node[anchor=west, text=AgriPale!85, align=left]
+    at ([xshift=2.25cm, yshift=-3.95cm]current page.north west)
+    {\sffamily\fontsize{9.5}{12}\selectfont
+     China Agriculture: Cycle Analysis and Listed-Company Profiles};
+\end{tikzpicture}
+
+\vspace*{4.2cm}
+
+\begin{center}
+\begin{tikzpicture}
+  \node[draw=AgriGreen, line width=0.8pt, fill=AgriPale, rounded corners=2pt,
+        inner sep=12pt, text width=12.6cm, align=left]
+  {\small\sffamily
+   \textbf{研究范围}\quad 申万行业分类（2021 版）农林牧渔一级行业及其下属
+   二级、三级子行业（种植业、养殖业、饲料、动物保健、农产品加工、渔业、林业）。\par\vspace{4pt}
+   \textbf{第一部分}\quad 主要农产品品种的供需周期机制分析；以猪周期为基准，
+   考察其他养殖品种（肉牛、肉羊、禽、水产）与经济作物的周期相关性与传导路径。\par\vspace{4pt}
+   \textbf{第二部分}\quad 近三年农业全部 A 股上市公司的公司画像：基本情况、
+   周期敏感度、盈利能力、财务结构、战略转型、历史融投资与未来潜在融资需求。\par\vspace{4pt}
+   \textbf{数据来源}\quad akshare 开源数据库、巨潮资讯网、新浪财经、东方财富、
+   农业农村部及国家统计局公开数据，截至 2026 年 9 月。};
+\end{tikzpicture}
+\end{center}
+
+\vfill
+\begin{center}
+  {\heiti\zihao{4}\color{AgriGreen} 农业行业研究}\\[4pt]
+  {\sffamily\small\color{InkGray} 2026 年 9 月}
+\end{center}
+\vspace{3.0cm}
+\end{titlepage}

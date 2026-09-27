@@ -329,3 +329,17 @@ TSWLatexianTemp*
 # option is specified. Footnotes are the stored in a file with suffix Notes.bib.
 # Uncomment the next line to have this generated file ignored.
 #*Notes.bib
+
+# ==== 项目新增（AgriAnalysis） ====
+.venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+notes/tmp/
+
+# 原始抓取数据（约 50MB，可由 scripts/fetch_*.py 完全重跑生成）
+data/raw/
+# 巨潮/新浪的临时与备份文件
+*.tmp*
+_manifest.json.bad*
+
