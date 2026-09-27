@@ -1,65 +1,47 @@
-\section{数据口径与来源清单}
+\section{数据来源与口径说明}
 \label{app:sources}
 
-\subsection{数据接口清单}
+\subsection{数据来源}
 
-本报告的全部数据经 akshare 接口抓取并落盘到 \texttt{data/raw/}，
-再由脚本清洗为 \texttt{data/clean/} 下的分析表与 pgfplots 数据文件。
-接口探测结果（成功 \num{65} 项、失败 \num{7} 项）记录在
-\texttt{notes/akshare\_probe.md}，以下为核心接口：
+本报告使用的数据分为四类，全部来自公开渠道：
 
-\begin{table}[htbp]
-\centering
-\footnotesize
-\begin{tabular}{@{}p{3.6cm}p{4.4cm}p{6.6cm}@{}}
-\toprule
-类别 & akshare 接口 & 说明 \\
-\midrule
-期货行情 & \texttt{futures\_main\_sina} & 主力连续合约日线，\num{25} 个农产品及关联品种 \\
-期货库存 & \texttt{futures\_inventory\_em} & 东方财富口径仓单数据（部分品种不支持） \\
-生猪现货 & \texttt{futures\_hog\_core/cost/supply} & 玄田数据：外三元/内三元/土杂猪价、成本、产能 \\
-生猪现货 & \texttt{futures\_hog\_spot\_price} 等（猪易） & 生猪价格指数、仔猪与二元母猪价格、猪粮比价 \\
-期现对照 & \texttt{spot\_price\_table\_qh} & 期现价格与基差 \\
-宏观 & \texttt{cpi/\_yearly}、\texttt{macro\_china\_*} & CPI 食品及分项、产量与进出口 \\
-行业分类 & \texttt{sw\_index\_*}、\texttt{sw\_index\_cons} & 申万一级/二级/三级行业与成分股 \\
-公司数据 & \texttt{stock\_zh\_a\_daily}（新浪） & 日行情（收盘价、流通股本） \\
-公司数据 & \texttt{stock\_profile\_cninfo}、\texttt{stock\_dividend\_cninfo} & 巨潮公司概况、分红送配 \\
-公司数据 & \texttt{stock\_share\_change\_cninfo} & 巨潮股本变动 \\
-公司数据 & \texttt{stock\_zh\_a\_disclosure\_}\allowbreak\texttt{report\_cninfo} & 巨潮公告全文检索（近三年 \num{41006} 条） \\
-财务数据 & \texttt{stock\_financial\_abstract}（新浪） & 三年财务摘要（营收、净利、ROE、负债率） \\
-\bottomrule
-\end{tabular}
-\caption{本报告使用的核心数据接口清单}
-\label{tab:app-interfaces}
-\srcfile{接口探测日期为 2026 年 9 月；\texttt{futures\_inventory\_99} 系列对豆粕、玉米、白糖、棉花、苹果等品种返回空数据，
-\texttt{futures\_inventory\_em} 不支持油菜籽与强麦，故本报告的库存分析以可获取品种为限。}
-\end{table}
+\begin{enumerate}[leftmargin=1.5em, itemsep=2pt]
+  \item \textbf{价格数据}：期货交易所公开的农产品期货主力连续合约行情；
+        生猪现货价格与产业指标（猪易数据、玄田数据）；
+        国家统计局的生猪存栏、出栏与猪肉产量统计。
+  \item \textbf{行业数据}：申万宏源《申万行业分类标准（2021 版）》的一级、二级、三级行业
+        及其成分股名单。
+  \item \textbf{公司数据}：上市公司定期报告（合并报表口径）与公司公告（巨潮资讯网），
+        含公司概况、股本变动、分红送配与公告全文检索。
+  \item \textbf{宏观数据}：国家统计局的 CPI、产量与进出口数据；中价指数的价格指数。
+\end{enumerate}
+
+原始数据与清洗、计算脚本随报告一并保存，全部图表均可由脚本重跑复现。
 
 \subsection{已知的数据缺口}
 
 为使结论可追溯，报告在使用数据时明确标注了以下缺口：
 
 \begin{enumerate}[leftmargin=1.5em, itemsep=2pt]
-  \item \textbf{养殖品种缺少连续现货价格序列}：akshare 无肉牛、肉羊、白羽肉鸡、
-        蛋鸡、水产品的连续现货价接口，这些品种的周期判断依赖
-        农业农村部与产业技术体系的定期统计（存栏、出栏、产量、均价），
-        无法参与月度频率的相关性检验。
-  \item \textbf{期货库存数据不完整}：\texttt{futures\_inventory\_99} 对主要农产品期货
-        返回空值，\texttt{futures\_inventory\_em} 覆盖品种有限，
+  \item \textbf{养殖品种缺少连续现货价格序列}：公开数据源没有肉牛、肉羊、白羽肉鸡、
+        蛋鸡与水产品的连续现货价，这些品种的周期判断依赖农业农村部与产业技术体系的
+        定期统计（存栏、出栏、产量、均价），无法参与月度频率的相关性检验。
+  \item \textbf{期货库存数据不完整}：部分农产品期货的库存与仓单数据缺失，
         故正文未将库存作为周期的核心判据。
   \item \textbf{公司公告分类为关键词口径}：\num{41006} 条公告按标题关键词归入七类事件，
-        存在同一公告命中多类的情况，各类计数用于公司间比较而非加总。
+        存在同一公告命中多类的情况，各类计数用于公司之间的比较而非加总。
   \item \textbf{流通市值为估算值}：以“最新收盘价 $\times$ 流通股本”计算，
         不含限售股，因此低于总市值口径。
   \item \textbf{榨季与市场年度口径}：白糖按榨季（当年 10 月至次年 9 月）、
         棉花与油脂按市场年度，与日历年不一致，正文在引用时已注明。
+  \item \textbf{公司画像中的财务分析以公开披露信息为限}：2026 年数据为半年报口径（未年化），
+        融资需求的分析基于财务约束与公告行为的推断，不含债券到期结构与银行贷款条款等
+        非公开信息。
 \end{enumerate}
 
 \subsection{外部资料的核实原则}
 
-除接口数据外，报告引用的产业事实（产量、存栏、政策文件、进口数据）
+除价格与财务数据外，报告引用的产业事实（产量、存栏、政策文件、进口数据）
 均来自政府统计公报、部委公告与产业协会报告，
-在 \texttt{notes/research/} 下按主题保存了带 URL 与逐字引文的事实清单，
-其中无法在原始来源核实的内容被单独列入“未能证实”条目，
-未写入正文。例如：\hl{“能繁母猪调控目标下调至 3650 万头”一说
+其中无法在原始来源核实的内容未写入正文。例如：\hl{“能繁母猪调控目标下调至 3650 万头”一说
 未能在农业农村部原始文件中核实，报告统一采用已核实的 3750 万头}。

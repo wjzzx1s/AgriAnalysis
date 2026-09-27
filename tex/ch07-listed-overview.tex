@@ -2,9 +2,8 @@
 \label{sec:comp-overview}
 
 第二部分的目标不是评价个股，而是回答一个问题：\hl{在 2023---2025 年这一轮农业下行周期中，
-农业上市公司的经营与融资行为呈现出什么共性}？为此本章先建立样本与口径，
-再用四个分布（行业分布、市值分布、盈利分布、成长分布）刻画整体面貌，
-后续各章按申万三级行业分组逐一展开。
+农业上市公司的经营与融资行为呈现出什么共性}？本部分的样本为申万行业分类（2021 版）
+一级行业“农林牧渔”下属的全部 A 股上市公司，共 \num{104} 家。
 
 \subsection{样本与数据口径}
 \label{sec:comp-sample}
@@ -17,28 +16,30 @@
 \begin{table}[htbp]
 \centering
 \footnotesize
-\begin{tabular}{@{}p{3.0cm}p{4.2cm}p{7.4cm}@{}}
+\begin{tabular}{@{}p{2.8cm}p{4.0cm}p{7.8cm}@{}}
 \toprule
-数据类别 & 来源接口（口径） & 用途 \\
+数据类别 & 来源 & 用途 \\
 \midrule
-公司概况 & 巨潮资讯网（公司概况） & 上市日期、所属市场、注册地、主营业务、注册资本 \\
-行情与市值 & 新浪财经日行情 $\times$ 流通股本 & 最新收盘价、流通市值、近一年涨跌幅 \\
-财务摘要 & 新浪财经财务摘要（合并报表） & 2023---2025 营业收入、归母净利润、ROE、毛利率、净利率、资产负债率 \\
-股本变动 & 巨潮资讯网（股本变动） & 总股本、近三年股本变动次数与原因（稀释线索） \\
-分红 & 巨潮资讯网（分红送配） & 近三年现金分红次数与每股分红 \\
-公告 & 巨潮资讯网（公告全文检索） & 近三年 \num{41006} 条公告标题，按关键词分类为七类事件 \\
-行业归属 & 申万行业分类（2021 版，三级） & 一级/二级/三级行业归属 \\
+公司概况 & 上市公司公告 & 上市日期、所属市场、注册地、主营业务、注册资本 \\
+行情与市值 & 公开行情数据与流通股本 & 最新收盘价、流通市值、近一年涨跌幅、月度股价序列 \\
+财务数据 & 上市公司定期报告（合并报表） & 2023---2025 年营业收入、归母净利润、ROE、毛利率、净利率、资产负债率 \\
+股本变动 & 上市公司公告 & 总股本、近三年股本变动次数与原因 \\
+分红 & 上市公司公告 & 近三年现金分红次数与每股分红 \\
+公告 & 上市公司公告 & 近三年 \num{41006} 条公告标题，按关键词分类为七类事件 \\
+行业归属 & 申万行业分类（2021 版） & 一级/二级/三级行业归属 \\
 \bottomrule
 \end{tabular}
-\caption{农业上市公司画像的数据来源与口径}
+\caption{农业上市公司画像的数据来源与用途}
 \label{tab:comp-source}
-\srcfile{所有接口经 akshare 调用，抓取脚本与原始数据随报告一并保存；\num{41006} 条公告的统计窗口为 2023 年 9 月---2026 年 9 月。}
 \end{table}
 
 需要说明两点口径限制：其一，流通市值以“最新收盘价 $\times$ 流通股本”估算，
 不含限售部分，因此小于总市值；其二，公告分类基于标题关键词，
 \hl{同一个事件可能被计入多个类别}（例如“关于向特定对象发行股票募集说明书”同时命中“再融资”），
 故各类计数只用于横向比较公司之间的活跃度，不能相加为事件总数。
+此外，本章的“近三年”在\emph{财务}口径下指 2023---2025 会计年度，
+在\emph{公告与股本}口径下指 2023 年 9 月至 2026 年 9 月；
+“两年营收 CAGR”指 2023$\to$2025 年营业收入的年均复合增速。
 
 \subsection{行业分布：三个行业的公司数占了三分之一}
 \label{sec:comp-industry}
@@ -64,14 +65,13 @@
 \end{tikzpicture}
 \caption{申万农林牧渔行业上市公司的三级行业分布（共 \num{104} 家）}
 \label{fig:comp-ind-count}
-\srcfile{作者根据申万行业分类（2021 版）成分股名单统计，截至 2026 年 9 月。}
 \end{figure}
 
 三级行业分布呈现明显的\hl{“长尾 + 三个中等集群”}特征：生猪养殖、其他农产品加工、
 畜禽饲料各 \num{11} 家，合计占全部公司的 31.7\%；动物保健 \num{9} 家、
 肉鸡养殖与种子各 \num{8} 家。分布的另一端是海洋捕捞与粮食种植，各仅 \num{2} 家。
 \emph{公司数量的结构本身就是周期结构的反映}——生猪产业链（养殖 + 饲料 + 动保）
-合计 \num{40} 家，占 \num{38.5}\%，\hl{农业上市公司的资本回报
+合计 \num{35} 家，占 \num{33.7}\%，\hl{农业上市公司的资本回报
 在很大程度上由猪周期决定}。
 
 \subsection{市值分布：中间大、两头小}
@@ -85,7 +85,9 @@
   agri axis, width=6.3cm, height=5.0cm,
 ]
 \nextgroupplot[
-  ybar, bar width=9pt, ymin=0, ymax=32,
+  % ymax 必须大于数据最大值（流通市值分布最大 52 家、ROE 分布最大 36 家），
+  % 否则最高的一根柱子被截断、数值标签会压到子图标题上
+  ybar, bar width=9pt, ymin=0, ymax=58,
   xtick={0,1,2,3,4,5,6},
   xticklabels from table={data/clean/comp_mktcap.dat}{label},
   xticklabel style={rotate=25, anchor=east, font=\tiny},
@@ -95,7 +97,7 @@
 ]
 \addplot[fill=OilBlue!70, draw=OilBlue] table[x=i, y=n]{data/clean/comp_mktcap.dat};
 \nextgroupplot[
-  ybar, bar width=9pt, ymin=0, ymax=28,
+  ybar, bar width=9pt, ymin=0, ymax=58,
   xtick={0,1,2,3,4,5,6,7},
   xticklabels from table={data/clean/comp_roe.dat}{label},
   xticklabel style={rotate=30, anchor=east, font=\tiny},
@@ -106,10 +108,8 @@
 \addplot[fill=SoftRed!70, draw=SoftRed] table[x=i, y=n]{data/clean/comp_roe.dat};
 \end{groupplot}
 \end{tikzpicture}
-\caption{农业上市公司的流通市值分布（左，亿元）与 2025 年净资产收益率分布（右，\%）}
+\caption{农业上市公司的流通市值分布（左，亿元；\num{104} 家全部可估）与 2025 年净资产收益率分布（右，\%；\num{101} 家可算）}
 \label{fig:comp-dist}
-\srcfile{左图市值 $=$ 最新收盘价 $\times$ 流通股本，\num{104} 家全部可估；
-右图 ROE 为 2025 年年报数据，\num{101} 家可算（其余 3 家接口缺 ROE 值）。}
 \end{figure}
 
 市值分布是典型的\hl{“中间大、两头小”}：\num{104} 家公司中，
@@ -117,7 +117,7 @@
 而低于 \num{20} 亿元的仅 \num{7} 家、\num{100} 亿元以上的 \num{20} 家
 （其中 \num{500} 亿元以上 \num{3} 家、\num{1000} 亿元以上 \num{1} 家）。
 最大的一家是牧原股份，流通市值 \num{1327.9} 亿元，
-\hl{相当于排名后 \num{90} 余家公司的市值之和}；温氏股份 \num{862.7} 亿元、
+\hl{相当于市值排名后 50 家左右公司的市值之和}；温氏股份 \num{862.7} 亿元、
 海大集团 \num{680.4} 亿元，前三家合计 \num{2871} 亿元，
 占全部 \num{104} 家公司合计流通市值（\num{9400} 亿元）的 \num{30.5}\%。
 
@@ -135,10 +135,10 @@ ROE 中位数仅 \num{2.64}\%，\num{29} 家公司 ROE 为负，
 \centering
 \begin{tikzpicture}
 \begin{axis}[
-  width=14.0cm, height=7.6cm,
+  width=15.4cm, height=7.6cm,
   xlabel={2023---2025 年营业收入年均复合增速（\%）},
   ylabel={2025 年销售净利率（\%）},
-  xmin=-45, xmax=60, ymin=-60, ymax=40,
+  xmin=-45, xmax=90, ymin=-60, ymax=40,
   xlabel style={font=\scriptsize}, ylabel style={font=\scriptsize},
   tick label style={font=\scriptsize},
   grid=both, grid style={InkGray!18},
@@ -155,9 +155,8 @@ ROE 中位数仅 \num{2.64}\%，\num{29} 家公司 ROE 为负，
 \node[font=\tiny, SoftRed, anchor=south east] at (axis cs:-2,-40) {收缩 + 亏损};
 \end{axis}
 \end{tikzpicture}
-\caption{农业上市公司的成长与盈利组合（2025 年年报；每点为一家公司）}
+\caption{农业上市公司的成长与盈利组合（2025 年年报；每点为一家公司；已剔除增速超出 $[-60,120]\%$、净利率超出 $[-80,40]\%$ 的极端值）}
 \label{fig:comp-scatter}
-\srcfile{营收 CAGR 由 2023 与 2025 年营业收入计算，已剔除增速超出 $[-60,120]\%$ 与净利率超出 $[-80,40]\%$ 的极端值。}
 \end{figure}
 
 图上呈现出一条清晰的负相关带：\hl{靠规模扩张换取增长的公司，净利率被压到 0 附近甚至为负}。
@@ -165,21 +164,73 @@ ROE 中位数仅 \num{2.64}\%，\num{29} 家公司 ROE 为负，
 海大集团（\num{1284.7} 亿元）、新希望（\num{1068.6} 亿元）、温氏股份（\num{1038.6} 亿元）
 ——恰好代表两种结局：\textbf{牧原}以 \num{14.03}\% 的两年营收 CAGR 换来 \num{154.9} 亿元归母净利润
 与 \num{20.57}\% 的 ROE；\textbf{新希望}则录得 \num{13.16}\% 的营收收缩、
-\num{17.8} 亿元亏损与 \num{291.2} 亿元营收对应的规模。
+\num{17.8} 亿元亏损。
 两者的差别不在于规模，而在于\hl{在周期高点是否保留了加杠杆扩张的能力}：
-新希望 2025 年末的资产负债率为 \num{58.1}\% 附近的行业高位，
+新希望 2025 年末的资产负债率为 69.9\% 附近的行业高位，
 而有 \num{21} 家农业上市公司的资产负债率超过 \num{65}\%，
 \emph{这些公司在本轮周期底部几乎没有再融资以外的选择}。
 
-\begin{keybox}[第二部分的三条主线]
+\subsection{最新的周期读数：2026 年半年报亏损面由 27.9\% 扩大至 44.2\%}
+\label{sec:comp-h1}
+
+第一部分的周期判断截至 2026 年 9 月，公司层面的最新财务数据则是 2026 年半年报。
+把 2026 年半年报与 2025 年半年报放在同一口径下比较，可以得到本轮周期最新的读数：
+
+\begin{itemize}[leftmargin=1.4em, itemsep=2pt]
+  \item 亏损公司由 \num{29} 家增至 \hl{\num{46} 家}，占比由 \num{27.9}\% 升至 \num{44.2}\%；
+  \item 归母净利润合计由 \num{270.9} 亿元转为 \hl{\num{-126.1} 亿元}，
+        亏损公司的亏损额合计由 \num{24.8} 亿元扩大到 \num{226.9} 亿元；
+  \item 亏损超过 \num{5} 亿元的公司由 \num{1} 家增至 \num{11} 家；生猪养殖 \num{11} 家公司的
+        利润由上年同期的合计 \num{154.1} 亿元转为合计亏损 \num{163.8} 亿元；
+  \item 2026 年 6 月末资产负债率超过 \num{65}\% 的公司为 \num{23} 家（2025 年末 \num{21} 家），
+        其中同时处于亏损状态的 \num{14} 家；
+  \item 营业收入合计 \num{6085} 亿元，需求端并未出现与利润同等幅度的收缩，
+        与第一部分“\hl{本轮下行源于供给而非需求}”的判断一致。
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  agri axis, width=15.4cm, height=7.0cm,
+  ybar, bar width=8pt,
+  xmin=-0.6, xmax=5.6, ymin=0, ymax=42,
+  xtick={0,1,2,3,4,5},
+  xticklabels from table={data/clean/comp_h1_dist.dat}{label},
+  xticklabel style={font=\footnotesize},
+  xlabel={归母净利润区间（亿元）}, xlabel style={font=\scriptsize},
+  ylabel={公司数量（家）}, ylabel style={font=\scriptsize},
+  legend style={font=\scriptsize, at={(0.5,1.02)}, anchor=south, legend columns=2, draw=none},
+]
+\addplot[fill=AgriLight!70, draw=AgriLight] table[x=i, y=a]{data/clean/comp_h1_dist.dat};
+\addplot[fill=SoftRed!70, draw=SoftRed] table[x=i, y=b]{data/clean/comp_h1_dist.dat};
+\legend{2025 年半年报, 2026 年半年报}
+\end{axis}
+\end{tikzpicture}
+\caption{农业上市公司 2025 年与 2026 年半年报的归母净利润分布对比（横轴为归母净利润区间；两期均为半年度数据，口径可比）}
+\label{fig:comp-h1-dist}
+\end{figure}
+
+结构上的分化同样明确：\num{28} 家公司在 2026 年上半年实现盈利且同比改善，
+\num{26} 家公司由盈转亏、\num{9} 家扭亏。
+分行业看，水产饲料（\num{15.9} 亿元）、粮油加工（\num{25.5} 亿元）、动物保健（\num{8.8} 亿元）
+与宠物食品（\num{3.4} 亿元）四个子行业的盈利总额合计 \num{53.5} 亿元；
+需要说明的是，这四个数字是\emph{子行业口径}的盈利总额，与前一句 \num{28} 家的
+\emph{公司口径}盈利改善数不是同一统计对象。
+\hl{利润的分布比 2025 年更集中、也更极端}，这直接决定了各公司融资需求的紧迫程度——
+第 \ref{sec:planting} 章至第 \ref{sec:fishery} 章的逐公司画像小节给出了具体判断。
+
+\begin{keybox}[第二部分的四条主线]
 \normalsize
 \textbf{① 结构的两个“三分之一”}：生猪产业链公司数与农牧加工+饲料公司数各占约三分之一，
-前者决定行业整体的盈利波动，后者决定行业整体的规模。
-\hl{集中度}：前三家市值占全部公司合计市值的 
-um{30.5}\%。\par\vspace{3pt}
+前者决定行业整体的盈利波动，后者决定行业整体的规模。前三家市值合计
+\hl{占全部 \num{104} 家公司合计流通市值的 \num{30.5}\%}。\par\vspace{3pt}
 \textbf{② 盈利的三分之一在亏损}：\num{34} 家 2025 年亏损、\num{29} 家 ROE 为负，
 ROE 中位数 \num{2.64}\%。这不是个别公司的问题，而是周期底部的\emph{分布特征}。\par\vspace{3pt}
 \textbf{③ 资本结构的硬约束}：\num{21} 家资产负债率超 \num{65}\%，
 \hl{本轮周期中“活下去”取决于资产负债表，而不是成本控制}——
-这构成了第 \ref{sec:financing} 节讨论未来融资需求的起点。
+这构成了第 \ref{sec:financing} 节讨论未来融资需求的起点。\par\vspace{3pt}
+\textbf{④ 最新的边际变化}：2026 年半年报的亏损面扩大到 \num{46} 家（\num{44.2}\%），
+生猪养殖板块由盈利 \num{154.1} 亿元转为亏损 \num{163.8} 亿元，
+\hl{报表层面的周期底部比 2025 年年报时更晚、更深}。
 \end{keybox}

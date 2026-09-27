@@ -22,22 +22,21 @@
 \newpage
 \tableofcontents
 \newpage
-\listoffigures
-\listoftables
-\newpage
+% 图表索引：公司画像逐家配图后条数过多，故不再单独列出
+% \listoffigures
+% \listoftables
 
 % ---------------------------------------------------------------- 正文
 \pagenumbering{arabic}
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small\sffamily\color{AgriGreen} 中国农业周期性分析报告}
-\fancyhead[R]{\small\sffamily\color{InkGray}\leftmark}
+\fancyhead[L]{\small\sffamily 中国农业周期性分析报告}
+\fancyhead[R]{\small\sffamily\leftmark}
 \fancyfoot[C]{\small\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
-\renewcommand{\headrule}{\hbox to\headwidth{\color{AgriLight}\leaders\hrule height \headrulewidth\hfill}}
+\renewcommand{\headrule}{\hbox to\headwidth{\leaders\hrule height \headrulewidth\hfill}}
 
 \part{农业子行业周期性分析}
-\input{tex/part1-intro.tex}
 \input{tex/ch01-framework.tex}
 \input{tex/ch02-hog-cycle.tex}
 \input{tex/ch03-grain-oilseed.tex}
@@ -45,6 +44,8 @@
 \input{tex/ch05-other-livestock.tex}
 \input{tex/ch06-correlation.tex}
 
+% 第二部分：逐公司画像已并入各行业章（ch08---ch13）末尾的“上市公司画像”小节，
+% 不再单独成章。
 \part{农业上市公司画像（近三年）}
 \input{tex/ch07-listed-overview.tex}
 \input{tex/ch08-planting.tex}
@@ -54,6 +55,7 @@
 \input{tex/ch12-processing.tex}
 \input{tex/ch13-fishery-forestry.tex}
 \input{tex/ch14-strategy-financing.tex}
+
 \input{tex/ch15-conclusion.tex}
 
 % ---------------------------------------------------------------- 参考文献

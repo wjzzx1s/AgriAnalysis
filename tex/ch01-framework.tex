@@ -39,47 +39,50 @@ A 股上市公司），下设 8 个二级行业、17 个三级行业。选择申
 \begin{tikzpicture}[
   font=\footnotesize,
   lv1/.style={rectangle, rounded corners=2pt, draw=AgriGreen, line width=1pt,
-              fill=AgriGreen, text=white, font=\small\heiti, inner sep=5pt, align=center},
+              fill=AgriGreen, text=white, font=\small\heiti, inner sep=4pt, align=center},
   lv2/.style={rectangle, rounded corners=1.5pt, draw=AgriGreen, line width=0.7pt,
-              fill=AgriPale, text=InkGray, font=\footnotesize\heiti, inner sep=3.6pt,
-              align=center, text width=1.85cm},
+              fill=AgriPale, text=InkGray, font=\footnotesize\heiti, inner sep=3.2pt,
+              align=center, text width=2.0cm},
   lv3/.style={rectangle, rounded corners=1pt, draw=AgriLight, line width=0.5pt,
               fill=white, text=InkGray!90, font=\scriptsize, inner sep=2.4pt,
-              align=left, text width=1.78cm},
+              align=left, text width=2.85cm},
   ed/.style={draw=AgriLight, line width=0.5pt, rounded corners=1pt},
 ]
-\node[lv1] (root) at (0,0) {农林牧渔\\\scriptsize 801010};
+% 行业树用「两行四列」布局：单行八列时整图宽于版心，会溢出右边距
+\node[lv1] (root) at (-6.6,0.9) {农林牧渔\\\scriptsize 801010};
+\draw[ed, AgriGreen!70] (root.south) -- (-6.6,-4.6);
 \foreach \i/\nm/\cd in {1/种植业/801016, 2/养殖业/801017, 3/饲料/801014,
                         4/农产品加工/801012, 5/动物保健/801018, 6/渔业/801015,
                         7/林业/801011, 8/农业综合/801019}{
-  \node[lv2] (L2-\i) at ({(\i-4.5)*2.05}, -1.85) {\nm\\\scriptsize\cd};
-  \draw[ed, AgriGreen!70] (root) -- (L2-\i);
+  \pgfmathsetmacro{\col}{int(mod(\i-1,4))}
+  \pgfmathsetmacro{\row}{int((\i-1)/4)}
+  \node[lv2] (L2-\i) at ({(\col-1.5)*3.15}, {-1.5-3.1*\row}) {\nm\\\scriptsize\cd};
+  \draw[ed, AgriGreen!70] (-6.6,{-1.5-3.1*\row}) -- (L2-\i.west);
 }
-\node[lv3, anchor=north] (a1) at ([yshift=-0.95cm]L2-1.north) {种子 850111\\粮食种植 850112\\其他种植业 850113\\食用菌 850114};
-\node[lv3, anchor=north] (a2) at ([yshift=-0.95cm]L2-2.north) {生猪养殖 850172\\肉鸡养殖 850173\\其他养殖 850174};
-\node[lv3, anchor=north] (a3) at ([yshift=-0.95cm]L2-3.north) {畜禽饲料 850142\\水产饲料 850143\\宠物食品 850144};
-\node[lv3, anchor=north] (a4) at ([yshift=-0.95cm]L2-4.north) {果蔬加工 850151\\粮油加工 850152\\其他农产品加工 850154};
-\node[lv3, anchor=north] (a5) at ([yshift=-0.95cm]L2-5.north) {动物保健 850181};
-\node[lv3, anchor=north] (a6) at ([yshift=-0.95cm]L2-6.north) {海洋捕捞 850121\\水产养殖 850122};
-\node[lv3, anchor=north] (a7) at ([yshift=-0.95cm]L2-7.north) {林业 850131};
-\node[lv3, anchor=north] (a8) at ([yshift=-0.95cm]L2-8.north) {农业综合\\（综合类）};
+\node[lv3, anchor=north] (a1) at ([yshift=-0.25cm]L2-1.south) {种子 850111\\粮食种植 850112\\其他种植业 850113\\食用菌 850114};
+\node[lv3, anchor=north] (a2) at ([yshift=-0.25cm]L2-2.south) {生猪养殖 850172\\肉鸡养殖 850173\\其他养殖 850174};
+\node[lv3, anchor=north] (a3) at ([yshift=-0.25cm]L2-3.south) {畜禽饲料 850142\\水产饲料 850143\\宠物食品 850144};
+\node[lv3, anchor=north] (a4) at ([yshift=-0.25cm]L2-4.south) {果蔬加工 850151\\粮油加工 850152\\其他农产品加工 850154};
+\node[lv3, anchor=north] (a5) at ([yshift=-0.25cm]L2-5.south) {动物保健 850181};
+\node[lv3, anchor=north] (a6) at ([yshift=-0.25cm]L2-6.south) {海洋捕捞 850121\\水产养殖 850122};
+\node[lv3, anchor=north] (a7) at ([yshift=-0.25cm]L2-7.south) {林业 850131};
+\node[lv3, anchor=north] (a8) at ([yshift=-0.25cm]L2-8.south) {农业综合\\（综合类）};
 \foreach \i in {1,...,8}{\draw[ed, AgriLight] (L2-\i) -- (a\i);}
 \node[draw=AgriGold, dashed, rounded corners=2pt, fill=AgriGold!8,
-      text width=13.8cm, align=left, font=\scriptsize, inner sep=5pt]
-  (map) at (0,-6.1)
+      text width=13.0cm, align=left, font=\scriptsize, inner sep=5pt]
+  (map) at (-0.7,-8.2)
   {\heiti 第一部分品种映射\quad\rmfamily
-   种植业 $\to$ 玉米、强麦、稻米\qquad
-   养殖业 $\to$ 生猪、鸡蛋（兼论肉禽、牛羊、水产）\qquad
-   饲料 $\to$ 豆粕、菜粕、玉米\\
-   农产品加工 $\to$ 豆油、菜油、棕榈油、白糖、棉纱\qquad
+   种植业 $\to$ 玉米、强麦、稻米\quad
+   养殖业 $\to$ 生猪、鸡蛋（兼论肉禽、牛羊、水产）\\
+   饲料 $\to$ 豆粕、菜粕、玉米\quad
+   农产品加工 $\to$ 豆油、菜油、棕榈油、白糖、棉纱\\
    渔业 $\to$ 水产料与鱼粉（无期货，用现货与行业指数）\\
-   林业 $\to$ 天然橡胶、纸浆\qquad
+   林业 $\to$ 天然橡胶、纸浆\quad
    另列林果与油料：苹果、红枣、花生（归入种植业与农产品加工）};
 \draw[-{Stealth[length=4pt]}, AgriGold, dashed] (a4.south) to[out=-90,in=90] (map.north);
 \end{tikzpicture}
 \caption{申万行业分类（2021 版）农林牧渔行业树与本报告品种映射}
 \label{fig:sw-tree}
-\srcfile{申万宏源研究《申万行业分类标准（2021 版）》；行业代码与成份股数量取自 akshare \texttt{sw\_index\_second\_info} 与 \texttt{sw\_index\_third\_info}。}
 \end{figure}
 
 \subsection{周期分析框架：供需、产能与价格}
@@ -97,10 +100,12 @@ Q_t^{s} = a + b\,P_{t-1}, \qquad Q_t^{d} = c - d\,P_t, \qquad b, d > 0,
 \begin{equation}
 P_t = \frac{c-a}{d} - \frac{b}{d}\,P_{t-1}.
 \end{equation}
-其收敛条件为 $\left| -b/d \right| < 1$，即\hl{供给价格弹性小于需求价格弹性时价格收敛}。
-农产品恰恰相反：产能一旦建成（母猪、果树、胶园、糖厂压榨能力）难以退出，短期供给弹性极小，
-而食品消费的收入弹性低、需求价格弹性同样很小，于是 $b/d$ 接近甚至大于 1，价格以\emph{等幅
-或发散振荡}的形式在盈亏线两侧摆动——这正是周期存在的数学根源。
+其收敛条件为 $\left| -b/d \right| < 1$：只有当供给对滞后价格的反应弱于需求时，价格才会收敛
+到长期均衡水平。农产品的两个特征都指向更大幅度的波动：一是产能一旦建成（母猪、果树、胶园、
+糖厂压榨能力）难以退出，供给无法在一个生产周期内对价格信号作出调整，价格与产量之间的时滞被
+拉长；二是食品消费的需求价格弹性极低，需求曲线很陡，同样幅度的供给变化需要更大的价格变动才
+能出清。二者叠加的结果是\emph{价格振幅被放大}——价格必须大幅越过盈亏线，才能推动产能进入或
+退出，这正是周期存在的数学根源。
 
 \begin{figure}[htbp]
 \centering
@@ -131,7 +136,7 @@ P_t = \frac{c-a}{d} - \frac{b}{d}\,P_{t-1}.
     at (axis cs:-0.45,9.9) {价格 $P$};
   \node[InkGray, font=\scriptsize, anchor=west] at (axis cs:9.9,-0.55) {数量 $Q$};
   \node[font=\scriptsize, InkGray, anchor=north east, align=right]
-    at (axis cs:9.6,7.2) {蛛网路径：\\等幅振荡};
+    at (axis cs:9.8,9.7) {蛛网路径：\\等幅振荡};
 \end{axis}
 \begin{axis}[
   at={(cob.right of south east)}, anchor=left of south west, xshift=14pt,
@@ -144,14 +149,13 @@ P_t = \frac{c-a}{d} - \frac{b}{d}\,P_{t-1}.
   \addplot[AgriGreen, thick, domain=0:12, samples=150]{5+3.4*cos(deg(0.52*x))};
   \node[font=\scriptsize, anchor=west, AgriGreen] at (axis cs:0.2,9.4) {$|b/d|<1$ 收敛};
   \addplot[SoftRed, thick, domain=0:11.4, samples=250]{5+2.8*cos(deg(0.52*x))*1.045^x};
-  \node[font=\scriptsize, anchor=west, SoftRed] at (axis cs:5.6,8.9) {$|b/d|\geq1$ 等幅/发散};
+  \node[font=\scriptsize, anchor=west, SoftRed] at (axis cs:5.6,9.6) {$|b/d|\geq1$ 等幅/发散};
   \addplot[dashed, InkGray] coordinates {(0,5) (12,5)};
   \node[font=\scriptsize, anchor=west, InkGray] at (axis cs:9.0,4.4) {长期均衡};
 \end{axis}
 \end{tikzpicture}
-\caption{蛛网模型：供给时滞下的价格振荡（左）与振荡幅度演化（右）}
+\caption{蛛网模型：供给时滞下的价格振荡（左）与振荡幅度演化（右；参数 $b/d$ 取 0.7 与 1.045）}
 \label{fig:cobweb}
-\srcfile{作者根据式 \eqref{eq:cobweb} 自绘；参数 $b/d$ 分别取 0.7 与 1.045。}
 \end{figure}
 
 \subsubsection{四阶段周期划分与产能时钟}
@@ -184,7 +188,6 @@ P_t = \frac{c-a}{d} - \frac{b}{d}\,P_{t-1}.
 \end{tikzpicture}
 \caption{以“产能—价格”构建的四阶段周期时钟（猪周期基准模板）}
 \label{fig:cycle-clock}
-\srcfile{作者根据蛛网模型与各品种产业逻辑自绘。}
 \end{figure}
 
 \subsubsection{需求结构与传导链条}
@@ -200,7 +203,7 @@ P_t = \frac{c-a}{d} - \frac{b}{d}\,P_{t-1}.
 \begin{tikzpicture}[
   font=\scriptsize,
   box/.style={rectangle, rounded corners=1.5pt, draw=InkGray!55, line width=0.6pt,
-              fill=LightGray, align=center, inner sep=3.4pt, text width=2.0cm},
+              fill=LightGray, align=center, inner sep=3.4pt, text width=2.6cm},
   core/.style={rectangle, rounded corners=2pt, draw=HogPink, line width=1.1pt,
                fill=HogPink!12, align=center, inner sep=4pt, text width=2.15cm,
                font=\footnotesize\heiti},
@@ -219,7 +222,7 @@ P_t = \frac{c-a}{d} - \frac{b}{d}\,P_{t-1}.
 \draw[ar] (feed) -- (poultry);
 \draw[ar] (poultry) -- (aqua);
 \draw[ar] (ind) -- (crop);
-\draw[ar, SoftRed, line width=1pt] (hog) -- node[above, font=\tiny, SoftRed] {\ 补栏} (poultry);
+\draw[ar, SoftRed, line width=1pt] (hog) -- node[above right, xshift=1pt, font=\tiny, SoftRed] {\ 补栏} (poultry);
 \draw[ar] (hog) -- (ruminant);
 \draw[ar] (ruminant) -- (crop);
 \draw[ar, SoftRed, line width=1pt] (hog) -- (aqua);
@@ -231,7 +234,6 @@ P_t = \frac{c-a}{d} - \frac{b}{d}\,P_{t-1}.
 \end{tikzpicture}
 \caption{农业需求三条链与跨品种周期传导路径}
 \label{fig:demand-chain}
-\srcfile{作者根据产业链逻辑自绘；箭头粗细表示传导强度，红色箭头为猪周期主导的传导。}
 \end{figure}
 
 \subsection{数据来源与处理方法}
@@ -239,41 +241,40 @@ P_t = \frac{c-a}{d} - \frac{b}{d}\,P_{t-1}.
 
 \subsubsection{数据来源}
 
-本报告全部数据来自公开渠道，通过 \texttt{akshare} 开源财经数据接口获取并本地留痕。
+本报告全部数据来自公开渠道，经统一脚本抓取、清洗并本地留痕，处理过程可复现。
 
 \begin{table}[htbp]
 \centering
 \small
-\caption{主要数据来源与接口}
+\caption{主要数据来源}
 \label{tab:data-source}
-\begin{tabularx}{\textwidth}{@{}l l X l@{}}
+\begin{tabularx}{\textwidth}{@{}l X l@{}}
 \toprule
-\textbf{数据类别} & \textbf{来源} & \textbf{接口} & \textbf{频率} \\
+\textbf{数据类别} & \textbf{来源} & \textbf{频率} \\
 \midrule
-期货主力连续行情 & 新浪财经 & \texttt{futures\_main\_sina}（26 个农产品相关品种） & 日 \\
-生猪价格指数 & 猪易数据 & \texttt{index\_hog\_spot\_price}（含成交均重） & 日 \\
-生猪产业指标 & 大连商品交易所 & \texttt{futures\_hog\_core/cost/supply} & 周/月 \\
-期货库存与仓单 & 东方财富、99 期货 & \texttt{futures\_inventory\_em/99} & 周 \\
-行业指数与成份股 & 申万宏源 & \texttt{index\_hist\_sw}、\texttt{index\_component\_sw} & 日 \\
-公司概况与股本 & 巨潮资讯网 & \texttt{stock\_profile\_cninfo}、\texttt{stock\_share\_change\_cninfo} & 事件 \\
-财务报表与指标 & 新浪财经、东方财富 & \texttt{stock\_financial\_abstract}、\texttt{stock\_financial\_analysis\_indicator} & 季 \\
-公告全文检索 & 巨潮资讯网 & \texttt{stock\_zh\_a\_disclosure\_report\_cninfo} & 事件 \\
-宏观与价格指数 & 国家统计局、中价指数 & \texttt{macro\_china\_cpi\_yearly}、\texttt{macro\_china\_qyspjg} & 月 \\
+期货主力连续行情 & 期货交易所公开行情数据 & 日 \\
+生猪价格与产业指标 & 猪易数据、玄田数据 & 日/周/月 \\
+行业指数与成份股 & 申万宏源《申万行业分类标准（2021 版）》 & 日 \\
+公司概况、股本与分红 & 上市公司公告（巨潮资讯网） & 事件 \\
+财务报表与指标 & 上市公司定期报告（合并报表口径） & 季 \\
+公告全文检索 & 上市公司公告（巨潮资讯网） & 事件 \\
+宏观与价格指数 & 国家统计局、中价指数 & 月 \\
 \bottomrule
 \end{tabularx}
 \end{table}
-\srcfile{akshare 版本 1.18.97；数据抓取脚本见 \texttt{scripts/fetch\_*.py}，抓取时间戳、行列数与接口名记录于 \texttt{data/raw/\_manifest.json}。}
 
 \subsubsection{处理方法}
 
 \begin{enumerate}
-  \item \textbf{主力连续价格}的拼接会在换月处产生跳空，本报告对\emph{收益率}类统计
-  （波动率、相关系数）使用月度对数收益率，并剔除换月跳空异常值（$|\ln$ 收益$|>35\%$
-  视为换月跳空）；对\emph{价格水平}类图形使用月度均价。
-  \item \textbf{归一化}：跨品种比较统一以 2021 年 1 月$=100$（生猪期货上市月）为基期；
-  数据长度不足的品种以其首个完整月份为基期并在图中注明。
-  \item \textbf{相关性}采用皮尔逊相关系数，样本为月度对数收益率；月频 60 个观测下
-  5\% 显著性水平对应 $|\rho|\approx0.25$，故低于该阈值的相关性不作因果解读。
+  \item \textbf{主力连续价格}的拼接会在换月处产生跳空，故\emph{价格水平}与\emph{收益率}类统计
+  统一以\emph{月度均价}为基础：价格水平类图形直接使用月度均价，收益率类统计
+  （波动率、相关系数）使用月度均价的对数收益率 $r_t=\ln(\bar{P}_t/\bar{P}_{t-1})$，
+  并剔除换月跳空异常值（$|\ln$ 收益$|>35\%$ 视为换月跳空）。
+  \item \textbf{归一化}：跨品种比较统一以 2021 年 2 月$=100$ 为基期（生猪期货 2021 年 1 月
+  上市，2 月为其首个完整月份）；数据长度不足的品种以其首个完整月份为基期并在图中注明。
+  \item \textbf{相关性}采用皮尔逊相关系数，样本为月度对数收益率；主窗口 $n=67$ 时
+  5\% 双侧显著性对应 $|\rho|\approx0.24$，全文统一以此作为显著性阈值，
+  低于该阈值的相关性不作因果解读。
   \item \textbf{领先滞后}检验：以生猪期货月收益率与各品种月收益率在 $-12\sim+12$ 个月
   滞后阶上做互相关，取 $|\rho|$ 最大的滞后阶作为“领先 / 同步 / 滞后”判据。
   \item \textbf{财务口径}：报表数据以合并报表为准，2026 年数据为半年度（截至 2026 年

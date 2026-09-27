@@ -1,4 +1,4 @@
-\section{粮食与油料：玉米、小麦、稻米、大豆及压榨链}
+\section{粮食与油料：玉米、大豆及压榨链}
 \label{sec:grain}
 
 如果说猪周期是农业需求侧的节拍器，那么\hl{粮食与油料就是被这个节拍器驱动、但有自己的旋律}的
@@ -71,8 +71,6 @@
 \end{tabular}
 \caption{中国玉米供给端关键指标（2024---2025）}
 \label{tab:corn-supply}
-\srcfile{国家统计局《关于 2025 年粮食产量数据的公告》\cite{stats2025grain}；
-海关总署数据经新湖期货整理\cite{xinhu2025corn}。}
 \end{table}
 
 玉米供给端最重要的事件是\hl{进口的断崖式退出}：在 2021---2023 年连续三年进口超过
@@ -84,8 +82,8 @@
 这一转变的政策含义是：\hl{国内玉米价格的政策底由“进口成本”变成了“国内种植成本 + 补贴”}。
 进口配额 20 余年稳定在 720 万吨、配额外 65\% 的关税，意味着只要进口量被行政性压低，
 国内玉米价格就失去了外部的天花板与地板，\emph{价格更多由国内产量与库存决定}。
-2026/27 年度预测产量 30600 万吨（+1.6\%）\cite{casde119}，
-叠加饲用消费上调至 21090 万吨、工业消费下调至 8100 万吨\cite{casde119}，
+2026/27 年度预测产量 \num{30600} 万吨（+1.6\%）\cite{casde119}；
+2025/26 年度饲用消费估计值上调至 \num{21090} 万吨、工业消费下调至 \num{8100} 万吨\cite{casde119}，
 供需处于紧平衡状态。
 
 \subsubsection{大豆：创纪录进口与来源结构重构}
@@ -118,7 +116,8 @@
 同比增长 8.6\%，创历史新高}\cite{chinafeed2025}。分品种看，
 猪饲料 16639.4 万吨（+15.6\%，占总量的 48.6\%）、肉禽料 10097.7 万吨（+3.5\%，首次突破 1 亿吨）、
 蛋禽料 3282.0 万吨（+1.4\%）、水产料 2323.1 万吨（+2.7\%）、反刍料 1475.8 万吨（+1.8\%）、
-宠物料 188.4 万吨（+17.9\%）\cite{chinafeed2025}。
+宠物料 188.4 万吨（+17.9\%）\cite{chinafeed2025}。上述六类合计 34006 万吨、占总量 \num{99.4}\%，
+其余为其他饲料。
 
 \begin{figure}[htbp]
 \centering
@@ -126,9 +125,10 @@
 \begin{axis}[agri axis, yearticks,
   width=13.6cm, height=5.8cm,
   xlabel={年份}, ylabel={全国工业饲料产量（万吨）},
-  xmin=2022.6, xmax=2026.2, ymin=28000, ymax=35000,
-  xtick={2023,2024,2025}, ytick={29000,31000,33000,35000},
-  legend style={at={(0.02,0.03)}, anchor=south west, cells={anchor=west}},
+  xmin=2022.6, xmax=2026.2, ymin=12000, ymax=35000,
+  xtick={2023,2024,2025}, ytick={15000,20000,25000,30000,35000},
+  % 图例移到图外上方：两条序列（总产量、猪饲料）数值区间不同，图内四角都会被数据占用
+  legend style={at={(0.5,1.02)}, anchor=south, legend columns=2, cells={anchor=west}},
   legend entries={工业饲料总产量, 其中：猪饲料},
 ]
 \addplot[AgriGreen, thick, mark=*, mark size=2pt] coordinates {
@@ -141,7 +141,6 @@
 \end{tikzpicture}
 \caption{全国工业饲料产量与猪饲料产量（2023---2025）}
 \label{fig:feed-output}
-\srcfile{中国饲料工业协会《2023---2025 年全国饲料工业发展概况》\cite{chinafeed2025,chinafeed2024}。}
 \end{figure}
 
 饲料产量的波动本身就是一次“需求侧周期”的完整案例：2024 年受养殖业深度亏损影响，
@@ -161,9 +160,10 @@
 \begin{axis}[agri axis, yearticks,
   width=14.2cm, height=6.8cm,
   xlabel={年份（2021 年 2 月 $=100$）}, ylabel={归一化价格指数},
-  xmin=2021.0, xmax=2026.9, ymin=35, ymax=185,
+  xmin=2021.0, xmax=2026.9, ymin=35, ymax=200,
   xtick={2021,2022,2023,2024,2025,2026},
-  legend style={at={(0.99,0.03)}, anchor=south east, legend columns=3,
+  % 图例移到图外下方：留在图内会遮住曲线末端的数值标注
+  legend style={at={(0.5,-0.24)}, anchor=north, legend columns=5,
                 cells={anchor=west}, font=\tiny},
   legend entries={生猪, 鸡蛋, 玉米, 豆粕, 豆油, 棕榈油, 白糖, 棉花, 天然橡胶},
 ]
@@ -176,13 +176,12 @@
 \addplot[SoftRed, thick] table[x=x, y=SR]{data/clean/fut_norm_grain.dat};
 \addplot[AquaTeal, thick] table[x=x, y=CF]{data/clean/fut_norm_grain.dat};
 \addplot[InkGray, thick] table[x=x, y=RU]{data/clean/fut_norm_grain.dat};
-\node[font=\scriptsize, HogPink, anchor=west] at (axis cs:2026.02,43) {生猪 41.8};
-\node[font=\scriptsize, Grain, anchor=west] at (axis cs:2026.02,78) {玉米 80.3};
+\node[font=\scriptsize, HogPink, anchor=east] at (axis cs:2026.88,196) {生猪 41.8};
+\node[font=\scriptsize, Grain, anchor=east] at (axis cs:2026.88,180) {玉米 80.3};
 \end{axis}
 \end{tikzpicture}
-\caption{主要农产品期货价格归一化走势（2021 年 2 月 $=100$，月度均价）}
+\caption{主要农产品期货价格归一化走势（2021 年 2 月 $=100$，月度均价；图中数值为 2026 年 9 月的最新指数）}
 \label{fig:fut-norm}
-\srcfile{新浪财经期货主力连续合约日行情（经 akshare 抓取，本报告计算）。}
 \end{figure}
 
 图 \ref{fig:fut-norm} 呈现了本轮周期最关键的\hl{分化}：2021 年 2 月至 2026 年 9 月，
@@ -197,22 +196,22 @@
 \centering
 \begin{tikzpicture}
 \begin{axis}[agri axis, catbar,
-  width=13.0cm, height=6.4cm,
+  width=13.0cm, height=7.4cm,
   xlabel={年化波动率（\%）}, xmin=0, xmax=30,
   yticklabels from table={data/clean/vol_bar.dat}{label},
   ytick=data,
   legend style={at={(0.97,0.03)}, anchor=south east},
   legend entries={主窗口 2021-02\textasciitilde2026-08, 全样本},
 ]
-\addplot[xbar, bar width=5pt, fill=AgriGreen!75, draw=AgriGreen]
-  table[x=vol, y expr=\coordindex]{data/clean/vol_bar.dat};
-\addplot[xbar, bar width=5pt, fill=AgriGold!80, draw=AgriGold]
-  table[x=full, y expr=\coordindex]{data/clean/vol_bar.dat};
+% 两组条形错开 0.2 行：同 y 绘制会互相遮盖，只剩较长的一根可见
+\addplot[xbar, bar width=3.6pt, fill=AgriGreen!75, draw=AgriGreen]
+  table[x=vol, y expr=\coordindex-0.2]{data/clean/vol_bar.dat};
+\addplot[xbar, bar width=3.6pt, fill=AgriGold!80, draw=AgriGold]
+  table[x=full, y expr=\coordindex+0.2]{data/clean/vol_bar.dat};
 \end{axis}
 \end{tikzpicture}
-\caption{农产品期货年化波动率：主窗口与全样本对比}
+\caption{农产品期货年化波动率：主窗口与全样本对比（主窗口为 2021 年 2 月---2026 年 8 月的 67 个月度点；全样本自各品种上市首月至 2026 年 8 月；月度对数收益率年化，$\times\sqrt{12}$）}
 \label{fig:vol-bar}
-\srcfile{按日对数收益率年化（252 个交易日）计算；主窗口为生猪期货上市后的完整月份。}
 \end{figure}
 
 波动率的分层同样值得注意（图 \ref{fig:vol-bar}）：生猪（27.1\%）、红枣（25.9\%）、
@@ -220,7 +219,7 @@
 而粳米（4.0\%）、白糖（8.7\%）、玉米（9.2\%）波动率最低。
 \hl{玉米的低波动是“政策定价”的直接结果}——进口受配额约束、国储与地方储备调节库存，
 价格被限制在种植成本与替代品价格之间；而生猪、鸡蛋、红枣完全由市场供需定价，
-且供给调整存在刚性，因此波动率是玉米的三倍以上。
+且供给调整存在刚性，因此其波动率约为玉米的三倍（生猪 27.1\% / 玉米 9.2\%）。
 
 \subsection{与猪周期的连接：量与价的分离}
 \label{sec:grain-hog-link}

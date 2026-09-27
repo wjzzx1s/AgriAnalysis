@@ -26,6 +26,13 @@
 \setlength{\parindent}{2em}
 \usepackage{fancyhdr}
 \usepackage{titlesec}
+% 页眉高度（fancyhdr 默认 12pt 会对 24pt 的页眉报警告并于页顶溢出）
+\setlength{\headheight}{24pt}
+% 目录页码宽度：本报告页码超过三位数，默认 1.55em 会使页码超出右边界 1.2pt
+\makeatletter
+\renewcommand{\@pnumwidth}{2.4em}
+\renewcommand{\@tocrmarg}{3.2em}
+\makeatother
 
 % ---------- 数学与符号 ----------
 \usepackage{amsmath, amssymb, amsfonts, mathtools}
@@ -44,6 +51,7 @@
 
 % ---------- 图形 ----------
 \usepackage{graphicx}
+\usepackage{adjustbox}
 \usepackage{xcolor}
 \usepackage{tikz}
 \usepackage{pgfplots}
@@ -123,43 +131,37 @@
   },
 }
 
-% ---------- 列表、盒子 ----------
+% ---------- 列表 ----------
 \usepackage{enumitem}
 \setlist[itemize]{itemsep=2pt, topsep=3pt, parsep=0pt, leftmargin=1.6em}
 \setlist[enumerate]{itemsep=2pt, topsep=3pt, parsep=0pt, leftmargin=1.8em}
-\usepackage[most]{tcolorbox}
 
-\newtcolorbox{keybox}[1][核心结论]{
-  enhanced, breakable, colback=AgriPale, colframe=AgriGreen,
-  boxrule=0.4pt, left=6pt, right=6pt, top=4pt, bottom=4pt,
-  fonttitle=\sffamily\bfseries\small, title={#1},
-  attach boxed title to top left={xshift=6pt, yshift=-2.4pt},
-  boxed title style={colback=AgriGreen, colframe=AgriGreen, size=small},
-  arc=1.5pt, before skip=6pt, after skip=6pt}
-
-\newtcolorbox{noteh}[1][数据说明]{
-  enhanced, breakable, colback=LightGray, colframe=InkGray!40,
-  boxrule=0.3pt, left=6pt, right=6pt, top=4pt, bottom=4pt,
-  fonttitle=\sffamily\bfseries\scriptsize, title={#1},
-  arc=1pt, before skip=5pt, after skip=5pt}
+% 核心结论块：不使用文本框（无边框、无底色），改为加粗小标题 + 普通段落。
+% 这样保留全部文字，只去掉框体；正文段落宽度与其余正文一致。
+\newenvironment{keybox}[1][核心结论]
+  {\par\addvspace{10pt}\noindent{\heiti\zihao{-4}#1}\par\nobreak\vspace{2pt}\nobreak}
+  {\par\addvspace{10pt}}
 
 % ---------- 标题格式 ----------
 \ctexset{
-  section/format = {\heiti\zihao{4}\color{AgriGreen}},
-  subsection/format = {\heiti\zihao{-4}\color{InkGray}},
-  subsubsection/format = {\heiti\zihao{-4}\color{InkGray!80!black}},
+  section/format = {\heiti\zihao{4}},
+  subsection/format = {\heiti\zihao{-4}},
+  subsubsection/format = {\heiti\zihao{-4}},
   section/aftername = \quad,
   subsection/aftername = \quad,
 }
 % 部（Part）样式：ctexart 无 chapter，故用 titlesec 定制 \part
-\titleclass{\part}{straight}[\section]
+% \thepart 在 ctexart 下是罗马数字（I、II），直接交给 \zhnumber 会被解析为 0，
+% 因此必须先取 \arabic{part}。
+% 部分标题页：标签与标题均水平居中，并在版心内垂直居中（before-space 取版心高度的 0.42 倍）。
+\titleclass{\part}{page}[\section]
 \titleformat{\part}[display]
-  {\centering\heiti\zihao{2}\color{AgriGreen}}
-  {\zihao{5}\sffamily\color{AgriGold} 第\,\zhnumber{\thepart}\,部分}
+  {\centering\heiti\zihao{2}}
+  {\zihao{3}\sffamily 第\,\zhnumber{\arabic{part}}\,部分}
   {12pt}
   {}
-  [\vspace{-8pt}\textcolor{AgriLight}{\rule{0.6\textwidth}{0.8pt}}]
-\titlespacing*{\part}{0pt}{0pt}{28pt}
+  []
+\titlespacing*{\part}{0pt}{0.42\textheight}{28pt}
 \usepackage{zhnumber}
 \titleformat{\paragraph}[runin]{\heiti\zihao{-4}}{}{0pt}{}[：]
 
@@ -168,28 +170,29 @@
 \lstset{basicstyle=\ttfamily\scriptsize, breaklines=true,
         frame=single, rulecolor=\color{InkGray!40},
         backgroundcolor=\color{LightGray}, columns=fullflexible}
-\usepackage[colorlinks=true, linkcolor=AgriGreen, citecolor=AgriGreen,
-            urlcolor=OilBlue, bookmarksnumbered=true,
+\usepackage[hidelinks, bookmarksnumbered=true,
             CJKbookmarks=true]{hyperref}
 \usepackage{footmisc}
 \usepackage{caption}
-\captionsetup{font={small,sf}, labelfont={bf,color=AgriGreen},
+\captionsetup{font={small,sf}, labelfont={bf},
               labelsep=quad, skip=4pt}
 \captionsetup[table]{position=top}
 
 % ---------- 自定义宏 ----------
 % 图表数据来源脚注（放在图表正下方）
 \newcommand{\srcfile}[1]{\par\vspace{-2pt}%
-  {\footnotesize\sffamily\color{InkGray!85}资料来源：#1\par}}
+  {\footnotesize\sffamily 资料来源：#1\par}}
 % 数据口径说明
-\newcommand{\datacal}[1]{{\footnotesize\sffamily\color{InkGray!75}（#1）}}
+\newcommand{\datacal}[1]{{\footnotesize\sffamily（#1）}}
+% 公司画像中的小标题
+\newcommand{\pfl}[1]{\par\vspace{2pt}\noindent\textbf{#1}\quad}
 % 周期阶段标记
-\newcommand{\phase}[1]{\textcolor{AgriGreen}{\textbf{【#1】}}}
-% 关键数字高亮
-\newcommand{\hl}[1]{\textcolor{SoftRed}{\textbf{#1}}}
-\newcommand{\up}{\textcolor{SoftRed}{$\blacktriangle$}}
-\newcommand{\down}{\textcolor{AgriGreen}{$\blacktriangledown$}}
+\newcommand{\phase}[1]{\textbf{【#1】}}
+% 关键数字加粗（不再使用彩色文字）
+\newcommand{\hl}[1]{\textbf{#1}}
+\newcommand{\up}{$\blacktriangle$}
+\newcommand{\down}{$\blacktriangledown$}
 % 公司代码
 \newcommand{\stk}[1]{\texttt{#1}}
 % 缺失数据标记
-\newcommand{\nadata}{\textcolor{InkGray!60}{---}}
+\newcommand{\nodata}{\textcolor{InkGray!60}{---}}

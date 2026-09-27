@@ -3,7 +3,7 @@
 
 生猪是中国农业中体量最大、价格波动最剧烈、产业链最长的一条主线。它连接着种植（玉米、大豆）、
 饲料加工、兽药疫苗、屠宰与肉制品，因此\hl{猪周期不只是生猪养殖自己的周期，而是整个农业需求侧
-的节拍器}。本章先解剖猪周期自身的机制与历史，为第 \ref{sec:corr} 章的跨品种比较提供基准。
+的节拍器}。
 
 \subsection{驱动机制：产能—利润—价格三角}
 \label{sec:hog-mechanism}
@@ -37,9 +37,9 @@
 \end{tikzpicture}
 \end{center}
 
-在蛛网模型的框架下（第 \ref{sec:fw-framework} 节），生猪的供给价格弹性在半年内接近零（母猪的
-生物学周期刚性），需求价格弹性同样很低（猪肉是刚需蛋白），于是 $b/d$ 接近 1，价格呈现
-\hl{等幅振荡}：2021 年以来生猪期货月度价格的三次上行段平均持续 5.3 个月、平均涨幅 +41\%，
+在蛛网模型的框架下（第 \ref{sec:fw-framework} 节），母猪的生物学周期使供给在半年内几乎不响应
+价格，而猪肉是刚需蛋白、需求价格弹性同样很低，价格因此需要大幅摆动才能推动产能进入与退出：
+2021 年以来生猪期货价格（ZigZag 阈值 18\%）的三次上行段平均持续 5.3 个月、平均涨幅 +41\%，
 三次下行段平均持续 15.6 个月、平均跌幅 -46\%——\emph{跌的时间比涨的时间长一倍以上}，
 这是产能退出慢于进入的直接结果。
 
@@ -74,17 +74,20 @@
 \end{tikzpicture}
 \caption{生猪现货价格指数与四轮周期（2015 年 1 月---2026 年 9 月，周度转月度）}
 \label{fig:hog-price-cycle}
-\srcfile{猪易数据生猪价格指数（akshare \texttt{index\_hog\_spot\_price}），作者按月取均值并做 ZigZag 分段。}
 \end{figure}
 
 \input{tex/gen/hog_legs_long.tex}
 
-四轮周期的特征可以概括为：
+表中首段（2015 年 1 月至 3 月）为样本端点锚定段，其幅度低于阈值，仅用于标注起点，
+后续各段均满足 20\% 的幅度条件。四轮周期的特征可以概括为：
 
 \begin{keybox}[猪周期的四条经验规律]
 \normalsize
-\textbf{① 上行短、下行长}：上行段平均 8.7 个月、平均涨幅 +\hl{85\%}；下行段平均 9.2 个月、
-平均跌幅 -37\%。价格以“快涨慢跌”的方式完成一轮分配。\par\vspace{3pt}
+\textbf{① 上行短、下行长}（本条的样本为 2015 年以来的\textbf{生猪现货价格指数}、ZigZag 阈值
+20\%，与上文基于生猪期货的短样本口径不可直接比较）：上行段平均 8.7 个月、平均涨幅 +\hl{85\%}，
+折合月均 +\num{9.7}\%；下行段平均 9.2 个月、平均跌幅 -37\%，折合月均 -\num{4.1}\%——
+\emph{下行段的时间虽与上行段接近，但幅度的释放速度只有上行段的一半不到}，价格以“快涨慢跌”
+的方式完成一轮分配。\par\vspace{3pt}
 \textbf{② 外生冲击决定振幅}：非洲猪瘟使 2018 年 5 月至 2020 年 2 月的上行幅度达到
 +\hl{278.7\%}，是常规周期（+40\%$\sim$+70\%）的四倍以上。\par\vspace{3pt}
 \textbf{③ 高利润必然导致产能过冲}：2019---2020 年的超级利润吸引了大量资本进入养殖业，
@@ -96,7 +99,8 @@
 这一形态与产业界的观察一致：21 世纪以来生猪产业已经历 6 个完整周期，前 5 个周期相对规律、
 平均约 48 个月（上行 24 个月、下行 24 个月）；\hl{自第 6 个周期（2022 年）以来周期规律失灵、
 下行期显著延长}，第 7 个周期自 2024 年 2 月上行至 2024 年 8 月后进入下行，
-至 2025 年底仍未结束\cite{sun2026hog}。本报告的 ZigZag 分段给出的是同一结论的量化版本：
+至 2025 年底仍未结束，并延续到本报告样本的低点（2026 年 4 月）\cite{sun2026hog}。
+本报告的 ZigZag 分段给出的是同一结论的量化版本：
 价格波动的\emph{振幅}并未收敛，但\emph{时间结构}已被产能规模化与政策调控改写。
 
 \subsection{产能视角：能繁母猪存栏的四年调整}
@@ -111,11 +115,12 @@
 \begin{axis}[agri axis, yearticks,
   width=14.4cm, height=6.8cm,
   xlabel={年份}, ylabel={能繁母猪存栏（万头）},
-  xmin=2008.5, xmax=2026.2, ymin=2800, ymax=5400,
+  xmin=2008.5, xmax=2027.1, ymin=2800, ymax=5400,
+  % 刻度保持 2 年间隔：2026 与 2025 同时出现会挤在一起
   xtick={2009,2011,2013,2015,2017,2019,2021,2023,2025},
   ytick={3000,3500,4000,4500,5000},
-  legend style={at={(0.98,0.97)}, anchor=north east},
-  legend entries={年末存栏（年度）, 2025 年季度/月度},
+  legend style={at={(0.98,0.86)}, anchor=north east},
+  legend entries={年末存栏（年度）, 季度/月度存栏（2025---2026）},
 ]
 \addplot[AgriGreen, thick, mark=square*, mark size=1.6pt]
   table[x index=0, y index=1]{data/clean/hog_能繁母猪存栏_y.dat};
@@ -126,19 +131,20 @@
 \node[font=\scriptsize, SoftRed, anchor=south, align=center]
   at (axis cs:2018.6,3120) {非洲猪瘟\\-24.5\%};
 \node[font=\scriptsize, AgriGreen, anchor=north, align=center]
-  at (axis cs:2023.2,3980) {产能再度回落\\（2023---2025）};
+  at (axis cs:2023.2,3990) {产能再度回落\\（2023---2026）};
+\node[font=\scriptsize, SoftRed, anchor=north east, align=right]
+  at (axis cs:2026.95,3640) {2026 年 7 月\\3\,780 万头（最新）};
 % 政策目标线（3900 万头）：若能核实则由研究资料补充
 \end{axis}
 \end{tikzpicture}
-\caption{全国能繁母猪存栏：年度数据（2009---2024）与 2025 年季度/月度数据}
+\caption{全国能繁母猪存栏：年度数据（2009---2024）与 2025---2026 年季度/月度数据（2026 年 7 月为最新）}
 \label{fig:hog-capacity}
-\srcfile{国家统计局；2025 年数据为季末与月末口径（akshare \texttt{futures\_hog\_supply}）。}
 \end{figure}
 
 \input{tex/gen/hog_capacity_recent.tex}
 
-三个关键事实：\hl{① 2018 年存栏从 4226 万头降至 3189 万头（-24.5\%）}，2019 年进一步降至
-3080 万头，这是非洲猪瘟造成的产能断裂，直接导致 2019---2020 年猪价三倍上涨；
+三个关键事实：\hl{① 能繁母猪存栏由 2017 年的 4226 万头降至 2018 年的 3189 万头（-24.5\%）}，
+2019 年进一步降至 3080 万头，这是非洲猪瘟造成的产能断裂，直接导致 2019---2020 年猪价三倍上涨；
 \hl{② 2021---2022 年补栏过冲至 4390 万头}，随后 2023、2024 年连续回落至 4142、4078 万头
 （2024 年末为 3900 万头调控目标的 104.6\%，接近绿色区间上限\cite{sun2026hog}）；
 \hl{③ 2025 年下半年起进入连续去化阶段}：2025 年末全国能繁母猪存栏 3961 万头，
@@ -163,28 +169,28 @@
 \begin{groupplot}[group style={group size=3 by 1, horizontal sep=0.7cm},
   agri axis, width=4.65cm, height=4.2cm,
   tick label style={font=\tiny}, label style={font=\scriptsize},
-  every axis plot/.append style={line width=0.9pt}]
-\nextgroupplot[yearticks, title={（a）猪粮比价（倍）},
+  every axis plot/.append style={line width=0.9pt},
+  title style={font=\scriptsize}]
+\nextgroupplot[yearticks, title={（a）猪粮比价},
   xmin=2020, xmax=2027, ymin=0, ymax=20,
   xtick={2020,2022,2024,2026}, ytick={0,5,10,15,20}]
   \addplot[SoftRed, thick] table[x index=0, y index=1]{data/clean/hogx_猪粮比价.dat};
   \addplot[dashed, InkGray, domain=2020:2027]{6};
   \addplot[dashed, SoftRed, domain=2020:2027]{5};
   \node[font=\tiny, InkGray, anchor=west] at (axis cs:2020.1,6.6) {6:1 三级预警};
-  \node[font=\tiny, SoftRed, anchor=west] at (axis cs:2020.1,3.4) {5:1 一级预警};
-\nextgroupplot[yearticks, title={（b）仔猪价格（元/公斤）},
+  \node[font=\tiny, SoftRed, anchor=west] at (axis cs:2020.1,1.6) {5:1 一级预警};
+\nextgroupplot[yearticks, title={（b）仔猪价格},
   xmin=2019, xmax=2027, ymin=0, ymax=160,
   xtick={2019,2021,2023,2025}]
   \addplot[Grain, thick] table[x index=0, y index=1]{data/clean/hogx_仔猪价格.dat};
-\nextgroupplot[yearticks, title={（c）二元母猪价格（元/公斤）},
+\nextgroupplot[yearticks, title={（c）二元母猪价格},
   xmin=2018, xmax=2027, ymin=0, ymax=90,
   xtick={2018,2020,2022,2024,2026}]
   \addplot[HogPink, thick] table[x index=0, y index=1]{data/clean/hogx_二元母猪价格.dat};
 \end{groupplot}
 \end{tikzpicture}
-\caption{生猪养殖成本与利润的关键指标：猪粮比价、仔猪价格与二元母猪价格}
+\caption{生猪养殖成本与利润的关键指标：猪粮比价（倍）、仔猪价格（元/公斤）与二元母猪价格（元/公斤）}
 \label{fig:hog-cost}
-\srcfile{玄田数据（akshare \texttt{futures\_hog\_supply}、\texttt{futures\_hog\_cost}）；月度均值。}
 \end{figure}
 
 三点结论：
@@ -257,7 +263,7 @@
 \begin{axis}[agri axis, yearticks,
   width=13.6cm, height=5.6cm,
   xlabel={年份}, ylabel={生猪出栏平均体重（公斤）},
-  xmin=2015, xmax=2027, ymin=95, ymax=150,
+  xmin=2015, xmax=2027, ymin=92, ymax=150,
   xtick={2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026,2027},
   ytick={100,110,120,130,140,150},
   legend pos=south west, legend entries={出栏平均体重（月度）},
@@ -274,7 +280,6 @@
 \end{tikzpicture}
 \caption{生猪出栏平均体重（2015 年 8 月---2026 年 9 月）}
 \label{fig:hog-weight}
-\srcfile{猪易数据成交均重（akshare \texttt{index\_hog\_spot\_price}），月度均值；2015 年早期观测缺失。}
 \end{figure}
 
 体重数据的三个要点：\hl{① 2021 年中的 146.2 公斤}是压栏行为的极端值，出现在猪价崩塌前，
@@ -297,7 +302,7 @@
   14.1 元/公斤\cite{dxzq2026pig,jiemian2026pig,sun2026hog}；
   \item 产能维度：能繁母猪存栏从 2022 年的 4390 万头降至 2026 年 7 月的
   \hl{3780 万头}（-13.9\%），已回到 3750 万头新调控目标的绿色区间\cite{jiemian2026pig}；
-  \item 效率维度：2025 年样本出栏均重约 127.13 公斤、为近几年最高，
+  \item 效率维度：2025 年样本出栏均重约 127.3 公斤、为近几年最高，
   2026 年 8---9 月骤降至 125.3 公斤，说明政策要求下的降重已经落地
   \cite{stcn2026profit}；
   \item 行为维度：仔猪价格与二元母猪价格处于历史低位，补栏意愿尚未恢复。
