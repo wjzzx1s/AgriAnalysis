@@ -338,7 +338,9 @@ __pycache__/
 notes/tmp/
 
 # 原始抓取数据（约 50MB，可由 scripts/fetch_*.py 完全重跑生成）
-data/raw/
+data/raw/**
+# 但抓取清单要入库：它是数据溯源记录（接口名、行列数、抓取时间）
+!data/raw/_manifest.json
 # 巨潮/新浪的临时与备份文件
 *.tmp*
 _manifest.json.bad*
