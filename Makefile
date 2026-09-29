@@ -13,7 +13,7 @@ TEXSRC := $(wildcard $(TEXDIR)/*.tex)
 GENSRC := $(wildcard $(TEXDIR)/gen/*.tex) $(wildcard $(TEXDIR)/gen/profiles/*.tex)
 DATSRC := $(wildcard $(DATADIR)/*.dat) $(wildcard $(DATADIR)/*.csv)
 
-.PHONY: all pdf data profiles aux check clean distclean view fetch
+.PHONY: all pdf data profiles aux check clean distclean view fetch part1
 
 all: pdf
 
@@ -28,6 +28,19 @@ $(MAIN).pdf: $(MAIN).tex $(TEXSRC) $(GENSRC) $(DATSRC) refs.bib
 	biber $(MAIN)
 	$(LATEX) $(LATEXFLAGS) $(MAIN)
 	$(LATEX) $(LATEXFLAGS) $(MAIN)
+
+# 第一部分（农业子行业周期性分析）单独成册：封面+摘要+目录+ch01--ch06+参考文献
+# 正文 \input 与 main.tex 同一批文件，只改前置部分与收录范围。
+PART1     := main-part1
+PART1SRC  := $(PART1).tex tex/abstract-part1.tex $(addprefix $(TEXDIR)/, ch01-framework.tex ch02-hog-cycle.tex ch03-grain-oilseed.tex ch04-soft-crops.tex ch05-other-livestock.tex ch06-correlation.tex)
+
+part1: $(PART1).pdf
+
+$(PART1).pdf: $(PART1SRC) $(filter-out $(TEXDIR)/ch07%,$(TEXSRC)) $(GENSRC) $(DATSRC) refs.bib
+	-$(LATEX) $(LATEXFLAGS) $(PART1)
+	biber $(PART1)
+	$(LATEX) $(LATEXFLAGS) $(PART1)
+	$(LATEX) $(LATEXFLAGS) $(PART1)
 
 # 抓取/更新原始数据并生成 LaTeX 用数据表与分析表
 data:
@@ -60,8 +73,10 @@ view: pdf
 clean:
 	rm -f $(MAIN).aux $(MAIN).log $(MAIN).toc $(MAIN).out $(MAIN).lof \
 	      $(MAIN).lot $(MAIN).fls $(MAIN).fdb_latexmk $(MAIN).synctex.gz \
+	      $(PART1).aux $(PART1).log $(PART1).toc $(PART1).out $(PART1).lof \
+	      $(PART1).lot $(PART1).bbl $(PART1).bcf $(PART1).blg $(PART1).run.xml \
 	      $(TEXDIR)/*.aux
 	@echo "cleaned intermediate files"
 
 distclean: clean
-	rm -f $(MAIN).pdf
+	rm -f $(MAIN).pdf $(PART1).pdf

@@ -74,7 +74,18 @@ make profiles                  # 只重跑公司表与逐公司画像（快）
 # 3) 报告编译（xelatex 三遍 + biber）
 make pdf                       # 或 latexmk -xelatex main.tex
 make check                     # 编译产物自检：错误行、Overfull 数、越界页、页数
+
+# 4) 只出第一部分（农业子行业周期性分析，ch01--ch06）的单册 PDF
+make part1                     # 产出 main-part1.pdf；正文 \input 与 main.tex 同一批文件
 ```
+
+**主报告与第一部分分册的关系**：`main.tex` 为全报告（527 页）；
+`main-part1.tex` 只收录封面 + 摘要（第一部分口径，见 `tex/abstract-part1.tex`）+
+目录 + 图表目录 + 第一部分（ch01--ch06）+ 参考文献，编译为 `main-part1.pdf`（42 页）。
+两者正文来自同一批 `tex/ch0*.tex` 与 `tex/gen/*.tex`，不复制、不改写正文，
+因此第一部分的章号、节号、图表编号与页码在分册中与主报告完全一致；
+仅前置部分与收录范围不同。分册的摘要删去了“第二部分的主要发现”（见另一册），
+并去掉了指向第二部分章节的交叉引用（分册中不存在该标签）。
 
 **编译依赖**：TeX Live（`ctex`、`tikz`/`pgfplots`/`pgfplotstable`、`booktabs`、
 `tabularx`、`tcolorbox`、`zhnumber`、`siunitx`）与中文字体 **思源宋体 CN / 思源黑体 CN**

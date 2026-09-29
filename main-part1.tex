@@ -1,0 +1,67 @@
+% ============================================================================
+%  中国农业周期性分析报告 —— 第一部分（农业子行业周期性分析）单独成册
+%  编译：xelatex main-part1.tex （两遍 + biber），或 make part1
+%  内容 = 封面 + 摘要（第一部分口径）+ 目录 + 图表目录 + 第一章至第六章 + 参考文献
+%  正文内容与 main.tex 完全同源（\input 同一批 tex/ch0*.tex），不复制、不改写；
+%  仅前置部分与收录范围不同。
+% ============================================================================
+\documentclass[11pt, a4paper, fontset=none, zihao=-4]{ctexart}
+\input{tex/preamble.tex}
+
+\title{中国农业周期性分析报告（第一部分）}
+\author{农业行业研究}
+\date{2026 年 9 月}
+
+\begin{document}
+
+% ---------------------------------------------------------------- 封面
+\input{tex/cover.tex}
+\newpage
+
+% ---------------------------------------------------------------- 摘要与目录
+\pagenumbering{Roman}
+\input{tex/abstract-part1.tex}
+\newpage
+% 目录页首不再单独排版“目录”标题（页眉已标明），只保留页眉标记
+\makeatletter
+\renewcommand\tableofcontents{%
+  \@mkboth{\contentsname}{\contentsname}%
+  \@starttoc{toc}%
+}
+\makeatother
+\tableofcontents
+\newpage
+
+% ---------------------------------------------------------------- 图表目录
+\phantomsection
+\addcontentsline{toc}{section}{图目录}
+\listoffigures
+\clearpage
+\phantomsection
+\addcontentsline{toc}{section}{表目录}
+\listoftables
+\newpage
+
+% ---------------------------------------------------------------- 正文
+\pagenumbering{arabic}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily 中国农业周期性分析报告（第一部分）}
+\fancyhead[R]{\small\sffamily\leftmark}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\leaders\hrule height \headrulewidth\hfill}}
+
+\part{农业子行业周期性分析}
+\input{tex/ch01-framework.tex}
+\input{tex/ch02-hog-cycle.tex}
+\input{tex/ch03-grain-oilseed.tex}
+\input{tex/ch04-soft-crops.tex}
+\input{tex/ch05-other-livestock.tex}
+\input{tex/ch06-correlation.tex}
+
+% ---------------------------------------------------------------- 参考文献
+\newpage
+\printbibliography[heading=bibintoc, title={参考文献}]
+
+\end{document}
