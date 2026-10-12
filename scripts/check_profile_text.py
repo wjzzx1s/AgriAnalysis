@@ -11,6 +11,7 @@ r"""画像正文的文字自检：把“照抄公告 / 省略号 / 排版不统�
 2. 残句：句子收在“的/后/时/中/及/等/且/并/为/将/在/从/向/以/与/和”等连接词上；
 3. 空括号、未配对引号、标点连用、重复词、中文与数字之间缺空格；
 4. 公告搬运痕迹：文号、证券代码、公告编号、未闭合书名号等；
+4b. 内部工作语：底稿、脚本、接口、抓取、留痕等（属于制作过程，不属于报告内容）；
 5. 段内重复：同一段落里出现两遍的 10 字以上实词片段（排除通用财务术语）；
 6. 段落长度分布，用于检查“归纳提炼”后是否仍有过长段落。
 """
@@ -35,6 +36,7 @@ PUNCT_RE = re.compile(r"[，,]{2,}|。{2,}|[；;]{2,}|[、]{2,}")
 PAREN_RE = re.compile(r"（\s*）|\(\s*\)")
 QUOTE_RE = re.compile(r"“|”")
 MISS_SPACE_RE = re.compile(r"([\u4e00-\u9fff])([0-9A-Za-z])|([0-9A-Za-z])([\u4e00-\u9fff])")
+INTERNAL_RE = re.compile(r"底稿|脚本|接口|抓取|留痕|子代理|占位|TODO|数据清洗")
 BORROW_RE = re.compile(r"(?<=[\]\d])号文|证监许可|证券代码|本次检索|披露日期|公告编号|备查|／|"
                        r"《[^》]{0,40}$")
 COMMON = ("筹资活动现金流净额", "经营活动现金流净额", "资产负债率", "归母净利润", "营业收入",
@@ -90,12 +92,16 @@ def main(limit: int = 8) -> int:
                     add("正文省略号", where, ELL_RE.search(prose).group(0))
                 if ELL_RE.search(tables):
                     add("表格省略号", where, ELL_RE.search(tables).group(0))
+                if INTERNAL_RE.search(tables):
+                    mt = INTERNAL_RE.search(tables)
+                    add("表格内部工作语", where, tables[max(0, mt.start() - 25):mt.end() + 25])
                 for sent in re.split(r"(?<=[。；])", plain):
                     sent = sent.strip()
                     if sent and DANGLING_RE.search(sent):
                         add("残句", where, sent)
                 for kind, rx in (("重复词", DUP_WORD_RE), ("标点连用", PUNCT_RE),
-                                 ("空括号", PAREN_RE), ("公告搬运痕迹/全角斜杠", BORROW_RE)):
+                                 ("空括号", PAREN_RE), ("公告搬运痕迹/全角斜杠", BORROW_RE),
+                                 ("内部工作语", INTERNAL_RE)):
                     m = rx.search(plain)
                     if m:
                         add(kind, where, plain[max(0, m.start() - 20):m.end() + 20])
