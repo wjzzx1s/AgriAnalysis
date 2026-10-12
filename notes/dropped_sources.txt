@@ -1,0 +1,19 @@
+# 因来源 URL 不可达（复检仍失败）或为行情接口而非页面而删除的事实条目
+# 字段：代码 / 来源URL / 原事项文本
+
+000019	https://push2.eastmoney.com/api/qt/stock/get?secid=0.000019&fields=f57,f58,f43,f84,f85,f116,f117&invt=2&fltt=2	
+000505	https://push2.eastmoney.com/api/qt/stock/get?secid=0.000505&fields=f57,f58,f43,f84,f85,f116,f117&invt=2&fltt=2	
+002286	https://www.stcn.com/yq/yqsl/202107/t20210714_3440123.html	
+002852	https://push2.eastmoney.com/api/qt/stock/get?secid=0.002852&fields=f57,f58,f43,f84,f85,f116,f117&invt=2&fltt=2	
+002891	https://push2.eastmoney.com/api/qt/stock/get?secid=0.002891&fields=f57,f58,f43,f84,f85,f116,f117&invt=2&fltt=2	
+002982	https://dfjrjgj.hunan.gov.cn/dfjrjgj/tslm_71665/jrzx/202004/t20200416_11955062.html	
+002982	https://dfjrjgj.hunan.gov.cn/dfjrjgj/tslm_71665/jrzx/202004/t20200416_11955062.html	
+002982	https://dfjrjgj.hunan.gov.cn/dfjrjgj/tslm_71665/jrzx/202004/t20200416_11955062.html	
+300498	https://www.wens.com.cn/uploadfiles/2023/09/202309111130185504.pdf	
+300673	https://push2.eastmoney.com/api/qt/stock/get?secid=0.300673&fields=f57,f58,f43,f84,f85,f116,f117&invt=2&fltt=2	
+300999	https://push2.eastmoney.com/api/qt/stock/get?secid=0.300999&fields=f57,f58,f43,f84,f85,f116,f117&invt=2&fltt=2	
+301498	https://push2.eastmoney.com/api/qt/stock/get?secid=0.301498&fields=f57,f58,f43,f84,f85,f116,f117&invt=2&fltt=2	
+600127	https://push2.eastmoney.com/api/qt/stock/get?secid=1.600127&fields=f57,f58,f43,f84,f85,f116,f117&invt=2&fltt=2	
+603182	https://push2.eastmoney.com/api/qt/stock/get?secid=1.603182&fields=f57,f58,f43,f84,f85,f116,f117&invt=2&fltt=2	
+603231	https://push2.eastmoney.com/api/qt/stock/get?secid=1.603231&fields=f57,f58,f43,f84,f85,f116,f117&invt=2&fltt=2	
+603668	http://big5.sse.com.cn/site/cht/www.sse.com.cn/disclosure/listedinfo/announcement/c/new/2026-09-17/603668_20260917_GF3X.pdf	

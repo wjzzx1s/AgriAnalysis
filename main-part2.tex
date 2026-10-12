@@ -1,0 +1,90 @@
+% ============================================================================
+%  中国农业周期性分析报告 —— 第二部分（农业上市公司画像）单独成册
+%  编译：xelatex main-part2.tex（两遍 + biber），或 make part2
+%  内容 = 封面 + 摘要（第二部分口径）+ 目录 + 图表目录
+%         + 第七至第十五章 + 参考文献 + 附录 A（数据来源与口径）、附录 B（公司明细表）
+%  正文与 main.tex 同源（\input 同一批 tex/ch07--ch15.tex 与 tex/gen/**），
+%  不复制、不改写正文，因此章号、节号、图/表编号与主报告完全一致。
+%  第二部分正文里有若干指向第一部分的交叉引用（如“第 \ref{sec:hog} 章”“第
+%  \ref{sec:soft} 章”）——第一部分不在本册中，故由 scripts/make_part_refs.py 从
+%  main.aux 取出这些外部标签的编号，生成 tex/gen/part1-refs.tex 作为桩文件引入，
+%  使引用仍印出与主报告一致的编号。（不用 xr-hyper 的 \externaldocument{main}：
+%  它会把 main.aux 的全部标签一起引入，其中包含第二部分自身的标签，从而每次编译都
+%  报上百条 “Label ... multiply defined”。）
+% ============================================================================
+\documentclass[11pt, a4paper, fontset=none, zihao=-4]{ctexart}
+\input{tex/preamble.tex}
+\input{tex/gen/part1-refs.tex}        % 第一部分标签的桩（仅这些，避免标签重定义）
+
+\title{中国农业周期性分析报告（第二部分）}
+\author{农业行业研究}
+\date{2026 年 10 月}
+
+\begin{document}
+
+% ---------------------------------------------------------------- 封面
+\input{tex/cover.tex}
+\newpage
+
+% ---------------------------------------------------------------- 摘要与目录
+\pagenumbering{Roman}
+\input{tex/abstract-part2.tex}
+\newpage
+\makeatletter
+\renewcommand\tableofcontents{%
+  \@mkboth{\contentsname}{\contentsname}%
+  \@starttoc{toc}%
+}
+\makeatother
+\tableofcontents
+\newpage
+
+% ---------------------------------------------------------------- 图表目录
+\phantomsection
+\addcontentsline{toc}{section}{图目录}
+\listoffigures
+\clearpage
+\phantomsection
+\addcontentsline{toc}{section}{表目录}
+\listoftables
+\newpage
+
+% ---------------------------------------------------------------- 正文
+\pagenumbering{arabic}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily 中国农业周期性分析报告（第二部分）}
+\fancyhead[R]{\small\sffamily\leftmark}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\leaders\hrule height \headrulewidth\hfill}}
+
+% 部分与章的编号与主报告对齐：主报告中第二部分是“第二部分”、首个 \section 为第 7 章
+\setcounter{part}{1}
+\part{农业上市公司画像（近三年）}
+\setcounter{section}{6}
+\input{tex/ch07-listed-overview.tex}
+\input{tex/ch08-planting.tex}
+\input{tex/ch09-breeding.tex}
+\input{tex/ch10-feed.tex}
+\input{tex/ch11-animal-health.tex}
+\input{tex/ch12-processing.tex}
+\input{tex/ch13-fishery-forestry.tex}
+\input{tex/ch14-strategy-financing.tex}
+\input{tex/ch15-conclusion.tex}
+
+% ---------------------------------------------------------------- 参考文献
+% 第二部分的正文与附录不使用 \cite（逐公司来源以 URL 形式保存在事实底稿
+% data/facts/*.yaml 中，见附录 A 的口径说明），因此本册的参考文献列表用 \nocite{*}
+% 输出与主报告完全相同的那一份（51 条），保证分册自成一体、不出现空书目。
+\nocite{*}
+\newpage
+\printbibliography[heading=bibintoc, title={参考文献}]
+
+% ---------------------------------------------------------------- 附录
+% 附录 C（期货合约参数）属第一部分，本册不含；附录 A、B 均属第二部分的数据口径与明细
+\appendix
+\input{tex/appendix-a-sources.tex}
+\input{tex/appendix-b-companies.tex}
+
+\end{document}

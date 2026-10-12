@@ -13,7 +13,7 @@ TEXSRC := $(wildcard $(TEXDIR)/*.tex)
 GENSRC := $(wildcard $(TEXDIR)/gen/*.tex) $(wildcard $(TEXDIR)/gen/profiles/*.tex)
 DATSRC := $(wildcard $(DATADIR)/*.dat) $(wildcard $(DATADIR)/*.csv)
 
-.PHONY: all pdf data profiles aux check clean distclean view fetch part1
+.PHONY: all pdf data profiles aux check clean distclean view fetch part1 part2
 
 all: pdf
 
@@ -41,6 +41,31 @@ $(PART1).pdf: $(PART1SRC) $(filter-out $(TEXDIR)/ch07%,$(TEXSRC)) $(GENSRC) $(DA
 	biber $(PART1)
 	$(LATEX) $(LATEXFLAGS) $(PART1)
 	$(LATEX) $(LATEXFLAGS) $(PART1)
+
+# 第二部分（农业上市公司画像）单独成册：封面+摘要+目录+ch07--ch15+参考文献+附录A/B
+# 正文与 main.tex 同一批文件；第二部分正文里有指向第一部分章节的交叉引用，
+# 故用 xr-hyper 读 main.aux（\externaldocument{main}），必须先有 main.pdf/aux。
+PART2     := main-part2
+PART2SRC  := $(PART2).tex tex/abstract-part2.tex $(addprefix $(TEXDIR)/, \
+             ch07-listed-overview.tex ch08-planting.tex ch09-breeding.tex ch10-feed.tex \
+             ch11-animal-health.tex ch12-processing.tex ch13-fishery-forestry.tex \
+             ch14-strategy-financing.tex ch15-conclusion.tex \
+             appendix-a-sources.tex appendix-b-companies.tex)
+
+part2: $(MAIN).aux tex/gen/part1-refs.tex $(PART2).pdf
+
+# 分册依赖主报告的 .aux（第一部分标签的编号来源）：没有就先编主报告
+$(MAIN).aux: $(MAIN).pdf
+
+# 只补第一部分标签的桩文件（避免引入第二部分自身标签造成的重定义警告）
+tex/gen/part1-refs.tex: $(MAIN).aux scripts/make_part_refs.py $(PART2SRC)
+	.venv/bin/python scripts/make_part_refs.py
+
+$(PART2).pdf: $(PART2SRC) tex/gen/part1-refs.tex $(GENSRC) $(DATSRC) refs.bib
+	-$(LATEX) $(LATEXFLAGS) $(PART2)
+	biber $(PART2)
+	$(LATEX) $(LATEXFLAGS) $(PART2)
+	$(LATEX) $(LATEXFLAGS) $(PART2)
 
 # 抓取/更新原始数据并生成 LaTeX 用数据表与分析表
 data:
@@ -75,8 +100,10 @@ clean:
 	      $(MAIN).lot $(MAIN).fls $(MAIN).fdb_latexmk $(MAIN).synctex.gz \
 	      $(PART1).aux $(PART1).log $(PART1).toc $(PART1).out $(PART1).lof \
 	      $(PART1).lot $(PART1).bbl $(PART1).bcf $(PART1).blg $(PART1).run.xml \
+	      $(PART2).aux $(PART2).log $(PART2).toc $(PART2).out $(PART2).lof \
+	      $(PART2).lot $(PART2).bbl $(PART2).bcf $(PART2).blg $(PART2).run.xml \
 	      $(TEXDIR)/*.aux
 	@echo "cleaned intermediate files"
 
 distclean: clean
-	rm -f $(MAIN).pdf $(PART1).pdf
+	rm -f $(MAIN).pdf $(PART1).pdf $(PART2).pdf

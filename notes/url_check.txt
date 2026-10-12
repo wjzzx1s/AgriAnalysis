@@ -1,0 +1,35 @@
+# 事实底稿来源 URL 可达性自检
+
+唯一 URL 2220 条：OK 2192、BLOCKED 6、DEAD 22
+
+## DEAD（需复核，可能需从底稿中删除）
+- [DEAD(ReadTimeout)] http://big5.sse.com.cn/site/cht/www.sse.com.cn/disclosure/listedinfo/announcement/c/new/2026-09-17/603668_20260917_GF3X.pdf  （）
+- [DEAD] http://jjdb.sdenews.com/jjdb/jjdb/PDF/20260206/03.pdf  （）
+- [DEAD(ConnectionError)] http://m.eeo.com.cn/2022/0430/532774.shtml  （）
+- [DEAD(ConnectionError)] http://www.eeo.com.cn/2026/0302/804128.shtml  （）
+- [DEAD(SSLError)] https://dfjrjgj.hunan.gov.cn/dfjrjgj/tslm_71665/jrzx/202004/t20200416_11955062.html  （）
+- [DEAD(SSLError)] https://news.stcn.com/sd/202110/t20211011_3745305.html  （）
+- [DEAD(ConnectionError)] https://push2.eastmoney.com/api/qt/stock/get?secid=0.000019&fields=f57,f58,f43,f84,f85,f116,f117&invt=2&fltt=2  （）
+- [DEAD(ConnectionError)] https://push2.eastmoney.com/api/qt/stock/get?secid=0.000505&fields=f57,f58,f43,f84,f85,f116,f117&invt=2&fltt=2  （）
+- [DEAD(ConnectionError)] https://push2.eastmoney.com/api/qt/stock/get?secid=0.002852&fields=f57,f58,f43,f84,f85,f116,f117&invt=2&fltt=2  （）
+- [DEAD(ConnectionError)] https://push2.eastmoney.com/api/qt/stock/get?secid=0.002891&fields=f57,f58,f43,f84,f85,f116,f117&invt=2&fltt=2  （）
+- [DEAD(ConnectionError)] https://push2.eastmoney.com/api/qt/stock/get?secid=0.300673&fields=f57,f58,f43,f84,f85,f116,f117&invt=2&fltt=2  （）
+- [DEAD(ConnectionError)] https://push2.eastmoney.com/api/qt/stock/get?secid=0.300999&fields=f57,f58,f43,f84,f85,f116,f117&invt=2&fltt=2  （）
+- [DEAD(ConnectionError)] https://push2.eastmoney.com/api/qt/stock/get?secid=0.301498&fields=f57,f58,f43,f84,f85,f116,f117&invt=2&fltt=2  （）
+- [DEAD(ConnectionError)] https://push2.eastmoney.com/api/qt/stock/get?secid=1.600127&fields=f57,f58,f43,f84,f85,f116,f117&invt=2&fltt=2  （）
+- [DEAD(ConnectionError)] https://push2.eastmoney.com/api/qt/stock/get?secid=1.603182&fields=f57,f58,f43,f84,f85,f116,f117&invt=2&fltt=2  （）
+- [DEAD(ConnectionError)] https://push2.eastmoney.com/api/qt/stock/get?secid=1.603231&fields=f57,f58,f43,f84,f85,f116,f117&invt=2&fltt=2  （）
+- [DEAD(SSLError)] https://www.100est.com/res/financial-report/r2023/SZ001201_202404291631627113.pdf  （）
+- [DEAD(SSLError)] https://www.100est.com/res/financial-report/r2024/SZ002567_202504291664091986.pdf  （）
+- [DEAD(SSLError)] https://www.cfi.cn/p20260828004906.html  （）
+- [DEAD] https://www.stcn.com/company/gsxw/202206/t20220608_4628869.html  （）
+- [DEAD] https://www.stcn.com/yq/yqsl/202107/t20210714_3440123.html  （）
+- [DEAD] https://www.wens.com.cn/uploadfiles/2023/09/202309111130185504.pdf  （）
+
+## BLOCKED（反爬/需登录，保留）
+- https://baike.baidu.com/item/%E6%AD%A3%E8%99%B9%E7%A7%91%E6%8A%80/12649412
+- https://baike.baidu.com/item/%E6%B0%91%E5%92%8C%E8%82%A1%E4%BB%BD/12650038
+- https://baike.baidu.com/item/%E6%B5%B7%E5%8D%97%E7%A5%9E%E5%86%9C%E5%A4%A7%E4%B8%B0%E7%A7%8D%E4%B8%9A%E7%A7%91%E6%8A%80%E8%82%A1%E4%BB%BD%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8/2997597
+- https://baike.baidu.com/item/%E9%BB%91%E9%BE%99%E6%B1%9F%E5%8C%97%E5%A4%A7%E8%8D%92%E5%86%9C%E4%B8%9A%E8%82%A1%E4%BB%BD%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8/9019138
+- https://gzjkq.ganzhou.gov.cn/jkqzf/c105053/202309/282415b09a3d4712ae40433d11377677.shtml
+- https://www.chinawznews.net/news/china/2017-02-06/19418.html

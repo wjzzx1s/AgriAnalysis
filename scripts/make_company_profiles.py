@@ -757,7 +757,7 @@ def build_contexts(recs: list[dict], dossiers: dict) -> None:
         "debt": _median([_fin(r, "负债率", H1) for r in recs]),
         "vol": _median([r.get("年化波动") for r in recs]),
         "yoy": _median([r.get("近一年涨跌%") for r in recs]),
-        "cap": _median([r.get("流通市值亿元") for r in recs]),
+        "cap": _median([r.get("总市值亿元") for r in recs]),
         "csr": _median([_fin(r, "现金短债比", H1) for r in recs]),
     }
     by_ind: dict[str, list[dict]] = {}
@@ -794,22 +794,44 @@ def build_contexts(recs: list[dict], dossiers: dict) -> None:
         # 三级行业同口径的 ROE 中位数：正文里“行业同口径”一句必须用这个，
         # 不能拿全样本中位数冒充行业值（两者在生猪养殖等重灾行业差别很大）
         _roes = pd.Series([x["ROE"].get(H1) for x in group], dtype="float64").dropna()
+        _gms = pd.Series([_fin(x, "毛利率", H1) for x in group], dtype="float64").dropna()
+        _dbs = pd.Series([_fin(x, "负债率", H1) for x in group], dtype="float64").dropna()
         r["ctx"] = {
             "rng": R,
             "med": med,
             "med_ind_roe": float(_roes.median()) if len(_roes) else float("nan"),
+            "med_ind_gross": float(_gms.median()) if len(_gms) else float("nan"),
+            "med_ind_debt": float(_dbs.median()) if len(_dbs) else float("nan"),
             "arch": CT.archetype(r, d),
             "tier": classify_tier(r),
             "n_ind": len(group),
-            "rank_cap": _rank(group, r, lambda x: x.get("流通市值亿元")),
+            "rank_cap": _rank(group, r, lambda x: x.get("总市值亿元")),
             "rank_roe": _rank(group, r, lambda x: _fin(x, "ROE", H1)),
+            "rank_rev": _rank(group, r, lambda x: _fin(x, "营收亿", H1)),
             "rank_debt": _rank(group, r, lambda x: _fin(x, "负债率", H1), higher_better=False),
             "rank_vol": _rank(group, r, lambda x: x.get("年化波动")),
+            "top_holders": parse_top_holders(r.get("前三大股东")),
+            "holder_period": r.get("股权期次") or "",
+            "holder_n": r.get("股东户数"),
             "comp_period": _period_cn(((r.get("comp") or {}).get("期")) or "2026-06-30"),
             "zz": ZZ_PCT,
             "cycle_note": CYCLE_NOTE.get(ind, CYCLE_NOTE["其他种植业"]).replace("{tail}", tail),
             "lag_vs_index": lag,
         }
+
+
+def parse_top_holders(s) -> list[tuple[str, float]]:
+    """快照里的“前三大股东”字符串 → [(名称, 持股比例%)]。"""
+    out: list[tuple[str, float]] = []
+    for part in str(s or "").split("；"):
+        m = re.match(r"(.+?)\(([\d.]+|—)%?\)\s*$", part.strip())
+        if not m:
+            continue
+        try:
+            out.append((m.group(1).strip(), float(m.group(2))))
+        except ValueError:                      # 比例字段缺失（“—”）时只保留股东名称
+            out.append((m.group(1).strip(), float("nan")))
+    return out
 
 
 # ------------------------------------------------------------------ LaTeX 输出
@@ -869,8 +891,11 @@ def csv_row(r: dict) -> dict:
         "注册地": r.get("省市"), "注册资本万元": r.get("注册资本"),
         "主营": r.get("主营"),
         "最新收盘": r.get("最新收盘"), "行情日期": r.get("行情日期"),
-        "流通市值亿元": r.get("流通市值亿元"), "近一年涨跌%": r.get("近一年涨跌%"),
+        "总市值亿元": r.get("总市值亿元"), "流通市值亿元": r.get("流通市值亿元"),
+        "近一年涨跌%": r.get("近一年涨跌%"),
         "总股本亿股": r.get("总股本亿股"),
+        "股权期次": r.get("股权期次"), "前三大股东": r.get("前三大股东"),
+        "股东户数": r.get("股东户数"),
         "样本起月": str(r["起月"])[:7], "样本终月": str(r["终月"])[:7],
         "区间涨跌%": r["区间涨跌"], "区间最高": r["高"], "最高月": str(r["高月"])[:7],
         "区间最低": r["低"], "最低月": str(r["低月"])[:7], "年化波动%": r.get("年化波动"),
@@ -965,9 +990,13 @@ def main() -> None:
                 "主营": meta.get("主营") or str(m.get("主营业务", "") or ""),
                 "最新收盘": num(m.get("最新收盘", np.nan)),
                 "行情日期": str(m.get("行情日期", ""))[:10],
+                "总市值亿元": num(m.get("总市值亿元", np.nan)),
                 "流通市值亿元": num(m.get("流通市值亿元", np.nan)),
                 "近一年涨跌%": num(m.get("近一年涨跌%", np.nan)),
                 "总股本亿股": num(m.get("总股本亿股", np.nan)),
+                "股权期次": str(m.get("股权期次", ""))[:10],
+                "前三大股东": str(m.get("前三大股东", "") or ""),
+                "股东户数": num(m.get("股东户数", np.nan)),
             })
         r = analyze(code, name, meta)
         if r is None:
@@ -975,8 +1004,8 @@ def main() -> None:
             continue
         recs.append(r)
 
-    recs.sort(key=lambda x: -(x.get("流通市值亿元") if np.isfinite(
-        x.get("流通市值亿元", np.nan)) else 0))
+    recs.sort(key=lambda x: -(x.get("总市值亿元") if np.isfinite(
+        x.get("总市值亿元", np.nan)) else 0))
     log(f"成功生成 {len(recs)} 家，跳过 {len(skipped)} 家：{skipped}\n")
 
     # ---- 事实底稿（data/facts/*.yaml）：逐公司画像的叙述来源 ----
@@ -1008,7 +1037,7 @@ def main() -> None:
         sub = [r for r in recs if group_of(r) == g]
         if not sub:
             continue
-        out = [f"% 农业上市公司画像：{'、'.join(inds)}（共 {len(sub)} 家，按流通市值降序）",
+        out = [f"% 农业上市公司画像：{'、'.join(inds)}（共 {len(sub)} 家，按总市值降序）",
                f"% 由 scripts/make_company_profiles.py 自动生成，请勿手工修改", ""]
         for r in sub:
             d = dossiers.get(r["代码"]) or CF.Dossier(code=r["代码"], name=r["名称"])

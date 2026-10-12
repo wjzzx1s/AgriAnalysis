@@ -26,7 +26,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FACTS_DIR = os.path.join(ROOT, "data", "facts")
 
 # 底稿中的事实分区（顺序即叙述时的优先级）
-SECTIONS = ["沿革", "主营与结构", "融资历史", "风险与困境", "战略与转型", "融资需求线索", "其他要点"]
+SECTIONS = ["沿革", "股权与控制权", "主营与结构", "经营要点", "行业基本面", "竞争优势",
+            "融资历史", "风险与困境", "战略与转型", "融资需求线索", "其他要点"]
 
 # 视为“重大”的关键词：用于挑选概述句与事件标注
 MAJOR_KEYS = ["重整", "预重整", "破产", "退市", "控制权", "易主", "借壳", "重组",
@@ -109,6 +110,22 @@ class Dossier:
     @property
     def 其他要点(self) -> list[Item]:
         return self.by_section("其他要点")
+
+    @property
+    def 股权与控制权(self) -> list[Item]:
+        return self.by_section("股权与控制权")
+
+    @property
+    def 经营要点(self) -> list[Item]:
+        return self.by_section("经营要点")
+
+    @property
+    def 行业基本面(self) -> list[Item]:
+        return self.by_section("行业基本面")
+
+    @property
+    def 竞争优势(self) -> list[Item]:
+        return self.by_section("竞争优势")
 
     @property
     def 主营与结构(self) -> list[Item]:

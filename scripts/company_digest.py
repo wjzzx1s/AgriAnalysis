@@ -39,7 +39,10 @@ ACTION_RE = re.compile(
     r"回购|激励|持股计划|分红|派现|设立|成立|新建|投产|达产|扩产|产能|募资|募集|"
     r"违约|逾期|冻结|查封|诉讼|仲裁|处罚|立案|问询|警示|退市|破产|计提|减值|"
     r"签署|协议|合同|中标|解除|终止|撤回|变更|控制权|易主|更名|托管|"
-    r"亏损|扭亏|业绩预告|销量|出栏|存栏|价格|成本|毛利|补贴|补助|退税|召回|疫情|火灾")
+    r"亏损|扭亏|业绩预告|销量|出栏|存栏|价格|成本|毛利|补贴|补助|退税|召回|疫情|火灾|"
+    r"经销商|代理商|门店|网点|终端|加盟|直营|网点数量|产能|产线|生产线|装机|机组|船队|"
+    r"牧场|鱼塘|种植面积|养殖面积|产能利用率|开机率|批文|批准文号|专利|品种审定|审定|中标|订单|"
+    r"投苗|料肉比|成活率|PSY|单产|亩产|市占|份额")
 
 # 标志性事件：权重最高的一类
 MARQUEE_RE = re.compile(
@@ -103,6 +106,10 @@ def tidy(s) -> str:
     s = re.sub(r"(公司|本公司|其)(?:于\s*(?:19|20)\d{2}\s*年[^，。；]{0,10})?\s*披露", r"\1", s)
     s = re.sub(r"(?:^|[，,；;。])\s*(?:公告|年报|半年报|定期报告)?(?:显示|披露|载明)[，,]?", "", s)
     s = re.sub(r"(?:^|[，,；;。])\s*(?:公告|公司|其)称[，,]?", "", s)
+    # 尾部的原因归属短语（“；公司称系税收政策理解偏差”）信息量低，且被并回上一子句后
+    # 会读成“预计减少 14.10 亿元系税收政策理解偏差”这种断句错误的句子，直接删掉
+    s = re.sub(r"[；;，,]?\s*(?:公司|本公司|其)?\s*(?:称|表示|认为|解释)?\s*系"
+               r"[^，。；;]{0,20}(?:偏差|差异|误解|原因|所致|影响)(?=[。；;，,]|$)", "", s)
     s = re.sub(r"(?:^|[，,；;])\s*公告(?:拟|将|计划|披露)?\s*(?=[\u4e00-\u9fff])", "", s)
     # 承销/保荐等中介程序语（“招商证券主承销”“上市推荐人平安证券”等对判断无信息量）
     s = re.sub(r"[，,；;]?\s*(?:由)?[\u4e00-\u9fff]{2,12}(?:证券|投行|银行|信托|基金)"
@@ -446,6 +453,7 @@ def shorten(s: str, limit: int) -> str:
     s = str(s or "").strip(_TRAIL_PUNCT)
     if len(s) <= limit:
         return s
+    s = _protect(s)                                          # 千分位逗号不能被当成子句分隔符
     segs = [x for x in re.split(r"[，,]", s) if x.strip()]   # 只按逗号收缩，顿号列举整体保留
     out: list[str] = []
     for seg in segs:
@@ -455,13 +463,13 @@ def shorten(s: str, limit: int) -> str:
                 out.append(seg)
             break
         out.append(seg)
-    r = "，".join(out).strip(_TRAIL_PUNCT)
+    r = _restore("，".join(out).strip(_TRAIL_PUNCT))
     if not _has_amount(r) and any(_has_amount(x) for x in segs):
         amt = next((x for x in segs if _has_amount(x)), "")
         tail = _list_tail(amt)
         if tail and len(tail) >= 8:
             r = "，".join(out[:1] + [tail]) if out else tail
-    return r or s[:limit].strip(_TRAIL_PUNCT)
+    return _restore(r) or _restore(s[:limit]).strip(_TRAIL_PUNCT)
 
 
 def _list_tail(seg: str) -> str:
@@ -532,14 +540,14 @@ def digest(it, budget: int = 46) -> str:
     # 同一句里重复出现的子句（“以自有资产抵押向银行申请贷款，以自有资产抵押向银行申请贷款”）
     _segs: list[str] = []
     _seen: set[str] = set()
-    for seg in re.split(r"[，,]", out):
+    for seg in re.split(r"[，,]", _protect(out)):
         k = re.sub(r"^\s*(?:19|20)\d{2}\s*年(?:\s*\d{1,2}\s*月)?[，,]?\s*", "", seg)
         k = re.sub(r"^(?:公司|本公司|其|该)", "", k).strip()
         if len(k) >= 8 and k in _seen:
             continue
         _seen.add(k)
         _segs.append(seg)
-    out = "，".join(_segs)
+    out = _restore("，".join(_segs))
     # “募集资金使用情况：……”这类小标题式前缀去掉，直接写内容
     out = re.sub(r"^[^：:]{0,16}(?:情况|要点|安排|方案|措施|结构|明细)[：:]\s*", "", out)
     for lo, hi in (("“", "”"), ("《", "》")):
@@ -561,7 +569,7 @@ def digest(it, budget: int = 46) -> str:
         out = "公司股票" + out
     elif not SUBJECT_RE.match(out) and LEAD_VERB_RE.match(out):
         out = "公司" + out
-    return space_out(out).strip(_TRAIL_PUNCT)
+    return space_out(_restore(out)).strip(_TRAIL_PUNCT)
 
 
 def phrase(it, budget: int = 46) -> str:

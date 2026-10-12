@@ -366,14 +366,14 @@ def para_basic(r: dict, d, ctx: dict) -> str:
     load.append("，".join(seg) + "。")
 
     # 市值与行业地位
-    cap = r.get("流通市值亿元", np.nan)
+    cap = r.get("总市值亿元", np.nan)
     rank, total = ctx["rank_cap"], ctx["n_ind"]
     seg = []
     if np.isfinite(cap):
         seg.append(f"截至 {_dstr(r.get('行情日期'))}收盘价 {num_txt(r.get('最新收盘'), 2)} 元，"
-                   f"流通市值 {num_txt(cap, 1)} 亿元，近一年{signed_pct(r.get('近一年涨跌%'))}")
+                   f"对应总市值 {num_txt(cap, 1)} 亿元，近一年{signed_pct(r.get('近一年涨跌%'))}")
         if rank and total:
-            seg.append(f"流通市值在三级行业“{ind3}”的 {total} 家公司中按由大到小排{order_cn(rank)}")
+            seg.append(f"总市值在三级行业“{ind3}”的 {total} 家公司中按由大到小排{order_cn(rank)}")
     yoy = r.get("近一年涨跌%", np.nan)
     if np.isfinite(yoy) and np.isfinite(ctx["med"].get("yoy", np.nan)):
         m = ctx["med"]["yoy"]
@@ -464,6 +464,266 @@ def para_basic(r: dict, d, ctx: dict) -> str:
     if bits:
         load.append("股权结构方面，" + "；".join(tesc(x) for x in bits) + "。")
     return " ".join(load) + src_note(hist[:3])
+
+
+# ------------------------------------------------------------------ 1b 股权结构与控制权
+# 以补语/比较语开头的短语（“比上年增加 100 万吨”“同比增长 12%”）读起来是半截话
+_FRAG_HEAD = re.compile(r"^(?:比上年|同比|环比|较上年|比去年|占|系|其中|预计|合计|共计|分别|"
+                        r"增长|下降|减少|增加|达到|提升|降至|升至|超过|低于|高于|仍|也|则|而)")
+# 以动词开头、且前 12 字内没有主语的名词短语同样是半截话
+_VERB_HEAD = re.compile(r"^(?:收到|实现|完成|签署|发布|披露|召开|审议|通过|决定|出售|收购|转让|"
+                        r"增资|出资|计提|确认|取得|获得|新增|投产|建成|开展|推进|计划|拟)")
+_SUBJ_HINT = re.compile(r"公司|集团|银行|基金|股东|基地|项目|产品|业务|行业|全国|企业|政府|"
+                        r"委员会|研究院|大学|协会|中心|市场|部门|品种|面积|存量|存栏|产量|销量")
+
+
+def _frag_ok(ph: str) -> bool:
+    """短语是否自足（含主语/主题），用于过滤提炼后丢了主语的半截话。"""
+    body = re.sub(r"^(?:(?:19|20)\d{2}\s*年(?:\s*\d{1,2}\s*月)?[，,]?\s*)+", "", str(ph or ""))
+    if not body:
+        return False
+    if _FRAG_HEAD.match(body):
+        return False
+    if _VERB_HEAD.match(body) and not _SUBJ_HINT.search(body[:12]):
+        return False
+    return True
+
+
+def _subjectless(ph: str) -> bool:
+    """判断提炼后的短语是否丢了主语（以谓语或补语开头，读起来是半截话）。"""
+    body = re.sub(r"^(?:(?:19|20)\d{2}\s*年(?:\s*\d{1,2}\s*月)?[，,]?\s*)+", "", str(ph or ""))
+    if re.match(r"^(占|系|其中|预计|同比|环比|合计|共|已|拟|将|不|未|较|为|约|均|全)", body):
+        return True
+    return not re.match(r"^(公司|本公司|其|控股股东|实际控制人|第一大股东|上市公司|全体股东|"
+                        r"[\u4e00-\u9fff]{2,14}?(?:集团|公司|基金|银行|投资|合伙|企业|管理局|"
+                        r"国资委|委员会|财政局|大学|研究院)|"
+                        r"[\u4e00-\u9fff]{2,4}(?=持股|持有|受让|转让|质押|增持|减持))", body)
+
+
+def para_holders(r: dict, d, ctx: dict) -> str:
+    """股权结构与控制权：股东名册（结构化）+ 底稿中的控制权变动、质押、股东性质。"""
+    R = ctx["rng"]
+    load: list[str] = []
+    top = ctx.get("top_holders") or []
+    period = ctx.get("holder_period") or ""
+    n_holder = ctx.get("holder_n")
+    if top:
+        items = "；".join((f"{tesc(n)} 持股 {num_txt(p, 2)}\\%" if np.isfinite(p)
+                          else f"{tesc(n)}（持股比例未披露）") for n, p in top[:3] if n)
+        seg = f"按{_dstr(period)}的股东名册，" if period else "按最新披露的股东名册，"
+        if items:
+            load.append(f"{seg}前三大股东为{items}"
+                        + (f"，股东户数 {int(n_holder):,} 户" if isinstance(n_holder, float)
+                           and np.isfinite(n_holder) and n_holder > 0 else "")
+                        + "。")
+    # 底稿：控股股东与实际控制人的性质、控制权变动、无偿划转、质押
+    # 股东名册里已出现的股东全称不再重复写（10 字以上的重复片段会被文字自检判为错误）
+    shown = [n for n, _ in top[:3] if len(str(n)) >= 6]
+    facts = []
+    for i in d.股权与控制权:
+        ph = DG.phrase(i, budget=56)
+        if ph and not any(n in ph for n in shown) and _fresh(ctx, ph):
+            facts.append(ph)
+        if len(facts) >= 3:
+            break
+    if not facts:
+        for i in list(d.其他要点) + list(d.沿革):
+            t = DG.tidy(i.text)
+            if not re.search(r"控股股东|实际控制人|控制权|无偿划转|股权质押|国资|国资委", t):
+                continue
+            ph = DG.phrase(i, budget=50)
+            # 提炼后若丢了主语（“2026 年 6 月，占总股本 41.03%”），句子会读不通，宁可不用
+            if ph and not _subjectless(ph) and _fresh(ctx, ph):
+                facts.append(ph)
+            if len(facts) >= 2:
+                break
+    if facts:
+        lead = R.choice(["控制权与股东性质方面，", "股权结构的另一条线索是，",
+                         "从控制权角度看，", "股东结构与控制权方面，"])
+        load.append(lead + "；".join(tesc(x) for x in facts) + "。")
+    elif top and top[0][1] < 10:
+        load.append("股东名册显示公司股权较为分散，第一大股东持股不足 \\num{10}\\%，"
+                    "机构与个人投资者居于其后，控制权稳定性依赖大股东后续动作。")
+    return " ".join(load)
+
+
+# 纯报账类指标（只出现在“财务分析”段）
+_ACCT_ONLY_RE = re.compile(r"归母净利润|净利率|毛利率|ROE|每股收益|资产负债率|经营活动现金流|"
+                           r"营业收入|利润总额|净资产|总资产|所有者权益")
+
+
+# 经营类事实的关键词（经营要点段落只在命中这些词时才写，避免把报表科目当经营事实）
+OPS_RE = re.compile(r"产量|产能|销量|销售量|出栏|存栏|投苗|门店|渠道|客户数量|客户数|基地|"
+                    r"产能利用率|市占|份额|均价|完全成本|单位成本|屠宰量|日产能|批准文号|专利|"
+                    r"品种审定|推广面积|种植面积|养殖面积|万头|万羽|万只|万套|亿羽|万吨|"
+                    r"头均|存栏量|出栏量|开机率|客单价")
+# 纯报表科目（属于“财务分析”段落，不属于经营要点）
+FIN_NOISE_RE = re.compile(r"营业收入|营收|净利润|利润总额|归属于|每股收益|经营活动现金流|"
+                          r"净资产|负债率|毛利率|周转|营业成本|主营业务成本|商誉|应收|股东户数|"
+                          r"总资产|所有者权益|归母")
+# ------------------------------------------------------------------ 1c 经营要点
+def para_ops(r: dict, d, ctx: dict) -> str:
+    """经营要点：产能、产量、销量、渠道、成本、牌照等经营层面的事实（逐家不同）。"""
+    R = ctx["rng"]
+    facts = []
+    for i in d.经营要点:
+        if _ACCT_ONLY_RE.search(DG.tidy(i.text)):
+            continue                    # 纯报表指标属于“财务分析”，不属于经营要点
+        ph = DG.phrase(i, budget=64)
+        if ph and _frag_ok(ph) and _fresh(ctx, ph):
+            facts.append(ph)
+        if len(facts) >= 4:
+            break
+    if not facts:                       # 回退一：底稿的“其他要点/主营与结构”里找经营类事实
+        for i in list(d.其他要点) + list(d.主营与结构):
+            t = DG.tidy(i.text)
+            if not OPS_RE.search(t) or not re.search(r"\d", t) or FIN_NOISE_RE.search(t):
+                continue
+            ph = DG.phrase(i, budget=58)
+            if ph and _frag_ok(ph) and _fresh(ctx, ph):
+                facts.append(ph)
+            if len(facts) >= 2:
+                break
+    if not facts:                       # 回退二：放宽到任何带数字的非报账事实
+        for i in list(d.主营与结构) + list(d.其他要点):
+            t = DG.tidy(i.text)
+            if not re.search(r"\d", t) or _ACCT_ONLY_RE.search(t) or len(t) < 15:
+                continue
+            if re.search(r"利润分配|派发|现金红利|权益分派|每 10 股|分红", t):
+                continue                # 分红方案属于“历史融投资”，不属于经营要点
+            ph = DG.phrase(i, budget=58)
+            if ph and _frag_ok(ph) and _fresh(ctx, ph):
+                facts.append(ph)
+            if len(facts) >= 1:
+                break
+    if not facts:
+        return ""
+    lead = R.choice(["经营层面，", "从经营要点看，", "经营与产能方面，", "业务与产能层面，"])
+    return lead + "；".join(tesc(x) for x in facts) + "。"
+
+
+# ------------------------------------------------------------------ 1d 所处行业的基本面（供需）
+# 每个三级行业的供需主线（与第一部分的分品种供需框架一致：需求来自消费、工业原料与饲料三条链，
+# 供给则取决于产能、存栏、种植面积、进口与政策）。
+IND_SD = {
+    "生猪养殖": "生猪的供给由能繁母猪存栏决定、需求由猪肉消费与替代品价格决定，"
+              "本轮下行的成因在供给端的产能去化不彻底，而非需求收缩",
+    "肉鸡养殖": "白羽与黄羽肉鸡的供给取决于祖代引种量与父母代存栏，需求端受餐饮与替代效应驱动，"
+              "产能周期只有 6---12 个月",
+    "其他养殖": "牛、羊的供给由母畜存栏与出栏节奏决定、扩张周期长，水产则由投苗量与消费需求决定",
+    "畜禽饲料": "饲料的供给即产能（门槛低、产能利用率偏低），需求直接来自下游存栏，"
+              "利润则由玉米、豆粕等原料价格与成品售价的价差决定",
+    "水产饲料": "水产饲料的需求由投苗量与存塘鱼价决定，是饲料中毛利率最高、也最依赖服务的品类",
+    "动物保健Ⅲ": "动保的需求由下游存栏规模而非养殖盈利决定，供给端则由产品批文与研发能力设卡，"
+                "疫苗是其中格局最稳定的细分",
+    "动物保健": "动保的需求由下游存栏规模而非养殖盈利决定，供给端的进入壁垒在批文与技术",
+    "种子": "种子的供给由制种面积与库存决定、需求由粮价与种植意愿决定，"
+           "制种面积在 2025 年起出现萎缩，是本轮供给端最先出清的环节",
+    "粮食种植": "粮食种植的供给由播种面积与单产决定、需求由口粮与饲料用粮决定，"
+              "价格更多由最低收购价与储备政策托底",
+    "其他种植业": "该子行业按品种各自定价：天然橡胶看全球供给与汽车需求，棉花看新疆产量与配额，"
+                "农药看原药价格与农业服务需求",
+    "食用菌": "食用菌的供给是工厂化产能（投放周期 6---9 个月），需求是刚性消费，"
+             "价格随产能快速调整",
+    "粮油加工": "粮油加工的供给由大豆、菜籽等原料进口与压榨产能决定，需求由食用消费决定，"
+              "利润来自原料与成品的价差而非价格方向",
+    "果蔬加工": "果蔬加工的价格由产地原料果价格与出口订单决定，需求端受海外需求与关税影响",
+    "其他农产品加工": "该子行业横跨制糖、番茄制品、糖醇与添加剂，供给受种植面积与进口配额约束，"
+                    "需求端分食用与工业两类",
+    "水产养殖": "水产养殖的供给由养殖面积与投苗量决定，需求由餐饮与家庭消费决定，"
+              "价格弹性大于畜禽",
+    "海洋捕捞": "海洋捕捞的供给受资源与配额约束，需求端依赖餐饮与出口，成本端跟随燃油与人工",
+    "林业Ⅲ": "林业的供给由林木蓄积与采伐限额决定、需求来自木材加工与基建，变现周期长",
+    "宠物食品": "宠物食品的供给是产能（含海外基地），需求由宠物数量与单宠消费驱动，"
+              "是农业中与农产品价格周期联动最弱的一块",
+    "农业综合Ⅱ": "农业综合类公司的收入分布在多个品种上，供需由各自品种决定，"
+                "整体上更接近农资与服务的需求驱动",
+    "农产品加工": "农产品加工的价格由原料与成品价差决定",
+}
+IND_SD_DEFAULT = "该子行业的供需由自身的产能投放与终端需求决定，与猪周期的联动有限"
+
+
+def para_industry(r: dict, d, ctx: dict) -> str:
+    """所处行业的基本面：先写细分行业的供需主线，再写逐家检索到的行业数据（存栏、面积、价格）。"""
+    R = ctx["rng"]
+    ind = r.get("三级") or r.get("二级") or ""
+    load = [f"{IND_SD.get(ind, IND_SD_DEFAULT)}（第 \\ref{{sec:framework}} 章的供需框架）。"]
+    facts = []
+    for i in d.行业基本面:
+        ph = DG.phrase(i, budget=62)
+        if ph and _frag_ok(ph) and _fresh(ctx, ph):
+            facts.append(ph)
+        if len(facts) >= 3:
+            break
+    if facts:
+        lead = R.choice(["当期该行业的关键数据是：", "从供需两端的当期数据看，",
+                         "行业层面的最新情况是：", "与该公司直接相关的行业数据包括："])
+        load.append(lead + "；".join(tesc(x) for x in facts) + "。")
+    sub = ctx.get("sub_ind_note")
+    if sub:
+        load.append(sub)
+    return " ".join(load)
+
+
+# ------------------------------------------------------------------ 1e 竞争优势（与同类公司比较）
+def para_edge(r: dict, d, ctx: dict) -> str:
+    """竞争优势：先做三级行业内的横向比较（规模、毛利率、ROE、杠杆），再写底稿中的相对优势。"""
+    R = ctx["rng"]
+    ind3 = r.get("三级") or r.get("二级") or ""
+    n = ctx.get("n_ind") or 0
+    bits: list[str] = []
+    rev = get(r, "营收亿", H1)
+    if np.isfinite(rev) and ctx.get("rank_rev") and n:
+        bits.append(f"2026 年上半年营业收入 {num_txt(rev, 1)} 亿元、"
+                    f"在三级行业“{ind3}”的 {n} 家公司中排{order_cn(ctx['rank_rev'])}")
+    gm = get(r, "毛利率", H1)
+    mg = ctx.get("med_ind_gross", np.nan)
+    if np.isfinite(gm) and np.isfinite(mg):
+        bits.append(f"毛利率 {num_txt(gm, 1)}\\%、"
+                    f"{'高于' if gm > mg else '低于'}行业内中位数 {num_txt(abs(gm - mg), 1)} 个百分点"
+                    if abs(gm - mg) > 0.05 else
+                    f"毛利率 {num_txt(gm, 1)}\\%、与行业内中位数基本持平")
+    roe = get(r, "ROE", H1)
+    mr = ctx.get("med_ind_roe", np.nan)
+    if np.isfinite(roe) and np.isfinite(mr):
+        bits.append(f"半年 ROE {num_txt(roe, 1)}\\%（未年化）、"
+                    f"{'高于' if roe > mr else '低于'}行业内中位数（{num_txt(mr, 2)}\\%）")
+    debt = get(r, "负债率", H1)
+    md = ctx.get("med_ind_debt", np.nan)
+    if np.isfinite(debt) and np.isfinite(md):
+        bits.append(f"资产负债率 {num_txt(debt, 1)}\\%、"
+                    f"{'低于' if debt < md else '高于'}行业内中位数（{num_txt(md, 1)}\\%）")
+    load = []
+    if bits:
+        load.append("把该公司放回同类公司比较，" + "；".join(bits) + "。")
+    edge = []
+    for i in d.竞争优势:
+        ph = DG.phrase(i, budget=64)
+        if ph and _frag_ok(ph) and _fresh(ctx, ph):
+            edge.append(ph)
+        if len(edge) >= 3:
+            break
+    if edge:
+        lead = R.choice(["公司在公开资料中自述与同业比较的相对优势在于：",
+                         "相对优势方面，",
+                         "公司区别于同类公司的经营特征包括：",
+                         "与同类公司相比，公司的差异化在于："])
+        load.append(lead + "；".join(tesc(x) for x in edge) + "。")
+    if not load:
+        return ""
+    # 结论句：优势有没有体现在报表上
+    if np.isfinite(gm) and np.isfinite(mg) and gm > mg + 3:
+        load.append("优势在报表上主要体现为高于行业平均的毛利率，"
+                    "这在周期底部是抵御亏损的主要缓冲。")
+    elif np.isfinite(roe) and np.isfinite(mr) and roe > mr:
+        load.append("优势在当期体现为高于行业中位数的资本回报，"
+                    "但优势能否持续仍取决于周期与自身产能投放节奏。")
+    else:
+        load.append("就当期报表看，公司尚未把经营层面的特征转化为高于行业的资本回报，"
+                    "周期底部的相对优势更多体现在现金流与资产负债表上。")
+    return " ".join(load)
+
+
 # ------------------------------------------------------------------ 2 历史股价
 def para_price(r: dict, d, ctx: dict) -> str:
     R = ctx["rng"]
@@ -1268,6 +1528,13 @@ def tex_company(r: dict, d, ctx: dict) -> str:
     L = [r"\subsubsection{%s（%s）}" % (name, r["代码"]),
          r"\label{co:%s}" % r["代码"], ""]
     L += [r"\pfl{公司基本情况} " + _para(para_basic(r, d, ctx)), ""]
+    if (h := para_holders(r, d, ctx)):
+        L += [r"\pfl{股权结构与控制权} " + _para(h), ""]
+    if (o := para_ops(r, d, ctx)):
+        L += [r"\pfl{经营要点} " + _para(o), ""]
+    L += [r"\pfl{所处行业的基本面} " + _para(para_industry(r, d, ctx)), ""]
+    if (e := para_edge(r, d, ctx)):
+        L += [r"\pfl{竞争优势} " + _para(e), ""]
     L += [r"\pfl{历史股价} " + _para(para_price(r, d, ctx)), ""]
     L += [CH.price_chart(r), ""]
     L += [r"\pfl{过去周期分析} " + _para(para_cycle(r, d, ctx)), ""]
